@@ -1,9 +1,10 @@
 package org.usfirst.frc.team2996.robot;
 
-import edu.wpi.first.wpilibj.CANTalon;
+import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+
 
 public class Drive {
 Joystick stick = new Joystick(0);
@@ -17,6 +18,8 @@ CANTalon frontLeftMotor;
 CANTalon frontRightMotor;
 CANTalon backLeftMotor;
 CANTalon backRightMotor;
+
+
 DoubleSolenoid solenoid1;
 DoubleSolenoid solenoid2;
 DoubleSolenoid solenoid3;
