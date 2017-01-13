@@ -1,16 +1,29 @@
-
 package org.usfirst.frc.team2996.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.AxisType;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.RobotDrive.MotorType;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 import org.usfirst.frc.team2996.robot.commands.ExampleCommand;
 import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
+
+import com.ctre.CANTalon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,8 +38,18 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
-	
-
+	RobotDrive myRobot;
+	Joystick stick;
+	int autoLoopCounter;
+    CANTalon frontLeftMotor = new CANTalon(1);
+	CANTalon frontRightMotor = new CANTalon(2);
+	CANTalon backLeftMotor = new CANTalon(0);
+	CANTalon backRightMotor = new CANTalon(3);
+	Compressor compressor = new Compressor();
+	   DoubleSolenoid solenoid1 = new DoubleSolenoid(0,1);
+	   DoubleSolenoid solenoid2 = new DoubleSolenoid(2,3);
+	   DoubleSolenoid solenoid3 = new DoubleSolenoid(4,5);
+	   DoubleSolenoid solenoid4 = new DoubleSolenoid(6,7);
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -38,6 +61,9 @@ public class Robot extends IterativeRobot {
 		chooser.addDefault("Default Auto", new ExampleCommand());
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
+		myRobot = new RobotDrive( backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
+
+    	stick = new Joystick(0);
 	}
 
 	/**
@@ -88,6 +114,13 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		if(autoLoopCounter < 100) //Check if we've completed 100 loops (approximately 2 seconds)
+		{
+			myRobot.drive(-0.5, 0.0); 	// drive forwards half speed
+			autoLoopCounter++;
+			} else {
+			myRobot.drive(0.0, 0.0); 	// stop robot
+		}
 	}
 
 	@Override
@@ -106,6 +139,14 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		Drive robotDrive = new Drive(stick, myRobot, solenoid1, solenoid2, solenoid3, solenoid4, frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
+    	Toggle driveToggle = new Toggle(stick, 1);
+    	compressor.setClosedLoopControl(true);
+    	compressor.start();
+    	while(true){
+    	    boolean state = driveToggle.toggle();
+    		robotDrive.drive(state);
+    	}
 	}
 
 	/**
