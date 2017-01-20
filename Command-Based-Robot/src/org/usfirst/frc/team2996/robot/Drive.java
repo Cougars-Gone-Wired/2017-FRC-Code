@@ -2,13 +2,14 @@ package org.usfirst.frc.team2996.robot;
 
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 
 public class Drive {
 Joystick stick = new Joystick(0);
-RobotDrive myRobot;
+RobotDrive robotDrive;
 int arcadeDriveYAxis = 1;
 int arcadeDriveRotate = 4;
 int mecanumDriveXAxis = 0;
@@ -24,9 +25,13 @@ DoubleSolenoid solenoid1;
 DoubleSolenoid solenoid2;
 DoubleSolenoid solenoid3;
 DoubleSolenoid solenoid4;
-Drive(Joystick stick, RobotDrive myRobot, DoubleSolenoid solenoid1,DoubleSolenoid solenoid2, DoubleSolenoid solenoid3, DoubleSolenoid solenoid4,  CANTalon frontLeftMotor, CANTalon frontRightMotor,CANTalon backLeftMotor, CANTalon backRightMotor  ){
+
+
+Drive(Joystick stick, RobotDrive robotDrive,
+		DoubleSolenoid solenoid1,DoubleSolenoid solenoid2, DoubleSolenoid solenoid3, DoubleSolenoid solenoid4,  
+		CANTalon frontLeftMotor, CANTalon frontRightMotor,CANTalon backLeftMotor, CANTalon backRightMotor){
 	this.stick = stick;
-	this.myRobot = myRobot;
+	this.robotDrive = robotDrive;
 	this.solenoid1 = solenoid1;
 	this.solenoid2 = solenoid2;
 	this.solenoid3 = solenoid3;
@@ -49,17 +54,14 @@ public void invertMotors( boolean frontLeftMotorInvert, boolean frontRightMotorI
 	backLeftMotor.setInverted(backLeftMotorInvert);
 	backRightMotor.setInverted(backRightMotorInvert);
 }
-Drive(Joystick stick, RobotDrive myRobot){
-	this.stick = stick;
-	this.myRobot = myRobot;
-}
+
 public  void arcadeDrive(){
-	 myRobot.arcadeDrive(Threshold.threshold(-stick.getRawAxis(4)), Threshold.threshold(-stick.getRawAxis(1)));
+	 robotDrive.arcadeDrive(Threshold.threshold(-stick.getRawAxis(4)), Threshold.threshold(-stick.getRawAxis(1)));
 	 SetSolenoids(DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kForward);
 
 }
 public void mecanumDrive(){
-	  myRobot.mecanumDrive_Cartesian(Threshold.threshold(stick.getRawAxis(0)) ,Threshold.threshold(-stick.getRawAxis(1)),Threshold.threshold(-stick.getRawAxis(4)) ,0.0);
+	  robotDrive.mecanumDrive_Cartesian(Threshold.threshold(stick.getRawAxis(0)) ,Threshold.threshold(-stick.getRawAxis(1)),Threshold.threshold(-stick.getRawAxis(4)) ,0.0);
 	SetSolenoids(DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kReverse);
 	
 
