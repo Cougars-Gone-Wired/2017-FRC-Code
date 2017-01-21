@@ -16,22 +16,25 @@ public class AutonomousMethods {
 		this.drive = robot.getDrive();
 	}
 
-	public double turn(String direction, double angle) {
-		gyro.reset();
+	public boolDoub turn(String direction, double angle) {
+		double initialAngle = gyro.getAngle();// get initial angle
+		boolean finished = false;
 		drive.arcadeDrive();
 		direction = direction.toLowerCase();
 		if (direction == "left") {
-			while (gyro.getAngle() > -angle) {
+			if (gyro.getAngle() > -angle) {
 				drive.robotDrive.arcadeDrive(0, 0.5);
+			}else{
+				finished = true;
 			}
 		} else {
-			while (gyro.getAngle() < angle) {
+			if (gyro.getAngle() < angle) {
 				drive.robotDrive.arcadeDrive(0, -0.5);
+			}else{
+				finished = true;
 			}
 		}
-		drive.robotDrive.tankDrive(0, 0);
-		gyro.reset();
-		return gyro.getAngle();
+		return new boolDoub(finished, gyro.getAngle());
 	}
 
 	public double moveStraight(String direction, int distance) {

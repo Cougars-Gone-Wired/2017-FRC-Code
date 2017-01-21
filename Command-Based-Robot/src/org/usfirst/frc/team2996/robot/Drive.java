@@ -3,7 +3,7 @@ package org.usfirst.frc.team2996.robot;
 import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -23,10 +23,10 @@ CANTalon backLeftMotor;
 CANTalon backRightMotor;
 
 
-DoubleSolenoid solenoid1;
-DoubleSolenoid solenoid2;
-DoubleSolenoid solenoid3;
-DoubleSolenoid solenoid4;
+Solenoid solenoid1;
+Solenoid solenoid2;
+Solenoid solenoid3;
+Solenoid solenoid4;
 
 int wheelDiameter;
 int ticksPerRevolution;
@@ -47,11 +47,11 @@ Drive(Robot robot){
 	this.gyro = robot.getGyro();
 }
 
-public void SetSolenoids(DoubleSolenoid.Value Value1,DoubleSolenoid.Value Value2,DoubleSolenoid.Value Value3,DoubleSolenoid.Value Value4){
-	solenoid1.set(Value1);
-	solenoid2.set(Value2);
-	solenoid3.set(Value3);
-	solenoid4.set(Value4);
+public void SetSolenoids(boolean solenoid1,boolean solenoid2,boolean solenoid3,boolean solenoid4){
+	this.solenoid1.set(solenoid1);
+	this.solenoid2.set(solenoid2);
+	this.solenoid3.set(solenoid3);
+	this.solenoid4.set(solenoid4);
 }
 public void invertMotors( boolean frontLeftMotorInvert, boolean frontRightMotorInvert, boolean backLeftMotorInvert, boolean backRightMotorInvert){
 	frontLeftMotor.setInverted(frontLeftMotorInvert);
@@ -62,12 +62,12 @@ public void invertMotors( boolean frontLeftMotorInvert, boolean frontRightMotorI
 
 public  void arcadeDrive(){
 	 robotDrive.arcadeDrive(Threshold.threshold(-stick.getRawAxis(4)), Threshold.threshold(-stick.getRawAxis(1)));
-	 SetSolenoids(DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kForward);
+	 SetSolenoids(true, true, true, true);
 
 }
 public void mecanumDrive(){
 	  robotDrive.mecanumDrive_Cartesian(Threshold.threshold(stick.getRawAxis(0)) ,Threshold.threshold(-stick.getRawAxis(1)),Threshold.threshold(-stick.getRawAxis(4)) ,0.0);
-	SetSolenoids(DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kReverse);
+	SetSolenoids(false, false, false, false);
 	
 
 }

@@ -8,9 +8,8 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SPI;
 
 
@@ -47,16 +46,18 @@ public class Robot extends IterativeRobot {
 	CANTalon backLeftMotor = new CANTalon(0);
 	CANTalon backRightMotor = new CANTalon(3);
 	Compressor compressor = new Compressor();
-	DoubleSolenoid solenoid1 = new DoubleSolenoid(0, 1);
-	DoubleSolenoid solenoid2 = new DoubleSolenoid(2, 3);
-	DoubleSolenoid solenoid3 = new DoubleSolenoid(4, 5);
-	DoubleSolenoid solenoid4 = new DoubleSolenoid(6, 7);
+	Solenoid solenoid1 = new Solenoid(0);
+	Solenoid solenoid2 = new Solenoid(1);
+	Solenoid solenoid3 = new Solenoid(2);
+	Solenoid solenoid4 = new Solenoid(3);
+	
 	Drive drive;
 	Toggle driveToggle;
 	AutonomousMethods auto;
 	boolean autoFinished;
 	int ticksPerRevolution = 20;
-
+	double firstTurnAngle=90;
+	boolean firstTurnFinished=false;
 
 
 	/**
@@ -77,7 +78,7 @@ public class Robot extends IterativeRobot {
 		gyro = new AHRS(SPI.Port.kMXP);
 		gyro.reset();
 		auto = new AutonomousMethods(this);
-		autoFinished = false;
+		//autoFinished = false;
 	}
 
 	/**
@@ -108,9 +109,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autoFinished = false;
+		//autoFinished = false;
 		gyro.reset();
 		autonomousCommand = chooser.getSelected();
+		
 
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -130,7 +132,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-
+/*
 		if (autoFinished == false) // Check if we've completed 750 loops
 									// (approximately 15 seconds)
 		{
@@ -146,6 +148,15 @@ public class Robot extends IterativeRobot {
 
 			robotDrive.tankDrive(0.0, 0.0); // stop robot
 		}
+		*/ 
+		
+	if(!firstTurnFinished){
+		double initialAngle = gyro.getAngle();// get initial angle
+		boolDoub firstTurn = auto.turn("right", firstTurnAngle);// turn small amount and return if turn is finished and the final gyro angle
+		double howMuchTurned = Math.abs(firstTurn.doub-initialAngle);
+		firstTurnAngle = firstTurnAngle-howMuchTurned;//how much to turn next time
+		firstTurnFinished = firstTurn.bool;// check if you finished turn
+	}
 
 	}
 
@@ -228,19 +239,19 @@ public class Robot extends IterativeRobot {
 		return compressor;
 	}
 
-	public DoubleSolenoid getSolenoid1() {
+	public Solenoid getSolenoid1() {
 		return solenoid1;
 	}
 
-	public DoubleSolenoid getSolenoid2() {
+	public Solenoid getSolenoid2() {
 		return solenoid2;
 	}
 
-	public DoubleSolenoid getSolenoid3() {
+	public Solenoid getSolenoid3() {
 		return solenoid3;
 	}
 
-	public DoubleSolenoid getSolenoid4() {
+	public Solenoid getSolenoid4() {
 		return solenoid4;
 	}
 
