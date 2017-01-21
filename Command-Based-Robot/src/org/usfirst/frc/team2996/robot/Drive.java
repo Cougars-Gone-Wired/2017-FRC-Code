@@ -1,6 +1,8 @@
 package org.usfirst.frc.team2996.robot;
 
 import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -26,20 +28,23 @@ DoubleSolenoid solenoid2;
 DoubleSolenoid solenoid3;
 DoubleSolenoid solenoid4;
 
+int wheelDiameter;
+int ticksPerRevolution;
+AHRS gyro;
 
-Drive(Joystick stick, RobotDrive robotDrive,
-		DoubleSolenoid solenoid1,DoubleSolenoid solenoid2, DoubleSolenoid solenoid3, DoubleSolenoid solenoid4,  
-		CANTalon frontLeftMotor, CANTalon frontRightMotor,CANTalon backLeftMotor, CANTalon backRightMotor){
-	this.stick = stick;
-	this.robotDrive = robotDrive;
-	this.solenoid1 = solenoid1;
-	this.solenoid2 = solenoid2;
-	this.solenoid3 = solenoid3;
-	this.solenoid4 = solenoid4;
-	this.frontLeftMotor = frontLeftMotor;
-	this.frontRightMotor = frontRightMotor;
-	this.backLeftMotor = backLeftMotor;
-	this.backRightMotor = backRightMotor;
+Drive(Robot robot){
+	this.stick = robot.getStick();
+	this.robotDrive = robot.getRobotDrive();
+	this.solenoid1 = robot.getSolenoid1();
+	this.solenoid2 = robot.getSolenoid2();
+	this.solenoid3 = robot.getSolenoid3();
+	this.solenoid4 = robot.getSolenoid4();
+	this.frontLeftMotor = robot.getFrontLeftMotor();
+	this.frontRightMotor = robot.getFrontRightMotor();
+	this.backLeftMotor = robot.getBackLeftMotor();
+	this.backRightMotor = robot.getBackRightMotor();
+	this.ticksPerRevolution = robot.getTicksPerRevolution();
+	this.gyro = robot.getGyro();
 }
 
 public void SetSolenoids(DoubleSolenoid.Value Value1,DoubleSolenoid.Value Value2,DoubleSolenoid.Value Value3,DoubleSolenoid.Value Value4){

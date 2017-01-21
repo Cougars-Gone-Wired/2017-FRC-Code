@@ -8,28 +8,17 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+
 
 import org.usfirst.frc.team2996.robot.commands.ExampleCommand;
 import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
 
 import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,22 +34,30 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 	RobotDrive robotDrive;
+
+	public Command getAutonomousCommand() {
+		return autonomousCommand;
+	}
+
 	Joystick stick;
 	AHRS gyro;
 	int autoLoopCounter;
-    CANTalon frontLeftMotor = new CANTalon(1);
+	CANTalon frontLeftMotor = new CANTalon(1);
 	CANTalon frontRightMotor = new CANTalon(2);
 	CANTalon backLeftMotor = new CANTalon(0);
 	CANTalon backRightMotor = new CANTalon(3);
 	Compressor compressor = new Compressor();
-	   DoubleSolenoid solenoid1 = new DoubleSolenoid(0,1);
-	   DoubleSolenoid solenoid2 = new DoubleSolenoid(2,3);
-	   DoubleSolenoid solenoid3 = new DoubleSolenoid(4,5);
-	   DoubleSolenoid solenoid4 = new DoubleSolenoid(6,7);
-	   Drive drive;
-	   Toggle driveToggle;
-	   AutonomousMethods auto;
-		boolean autoFinished;
+	DoubleSolenoid solenoid1 = new DoubleSolenoid(0, 1);
+	DoubleSolenoid solenoid2 = new DoubleSolenoid(2, 3);
+	DoubleSolenoid solenoid3 = new DoubleSolenoid(4, 5);
+	DoubleSolenoid solenoid4 = new DoubleSolenoid(6, 7);
+	Drive drive;
+	Toggle driveToggle;
+	AutonomousMethods auto;
+	boolean autoFinished;
+	int ticksPerRevolution = 20;
+
+
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -74,13 +71,13 @@ public class Robot extends IterativeRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
-		drive = new Drive(stick, robotDrive, solenoid1, solenoid2, solenoid3, solenoid4, frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
-    	driveToggle = new Toggle(stick, 1);
-    
-    	gyro = new AHRS(SPI.Port.kMXP);
-    	gyro.reset();
-    	auto = new AutonomousMethods(gyro, drive);
-    	autoFinished = false;
+		drive = new Drive(this);
+		driveToggle = new Toggle(stick, 1);
+
+		gyro = new AHRS(SPI.Port.kMXP);
+		gyro.reset();
+		auto = new AutonomousMethods(this);
+		autoFinished = false;
 	}
 
 	/**
@@ -114,14 +111,14 @@ public class Robot extends IterativeRobot {
 		autoFinished = false;
 		gyro.reset();
 		autonomousCommand = chooser.getSelected();
-	
+
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
 		 * = new MyAutoCommand(); break; case "Default Auto": default:
 		 * autonomousCommand = new ExampleCommand(); break; }
 		 */
-	
+
 		// schedule the autonomous command (example)
 		if (autonomousCommand != null)
 			autonomousCommand.start();
@@ -133,37 +130,38 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-	
-		if(autoFinished == false) //Check if we've completed 750 loops (approximately 15 seconds)
+
+		if (autoFinished == false) // Check if we've completed 750 loops
+									// (approximately 15 seconds)
 		{
 			SmartDashboard.putNumber("Gyro", gyro.getAngle());
-			
-			auto.turn("right", 86);//our gyro reads values 4 degrees less than the target
-		robotDrive.tankDrive(0, 0);
-			
+
+			auto.turn("right", 86);// our gyro reads values 4 degrees less than
+									// the target
+			robotDrive.tankDrive(0, 0);
+
 			autoFinished = true;
 
-			} else {
-				
-			robotDrive.tankDrive(0.0, 0.0); 	// stop robot
+		} else {
+
+			robotDrive.tankDrive(0.0, 0.0); // stop robot
 		}
-	
-		
+
 	}
 
 	@Override
-	public void teleopInit(){
+	public void teleopInit() {
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
 		gyro.reset();
 		compressor.setClosedLoopControl(true);
-    	compressor.start();
-		if (autonomousCommand != null){
+		compressor.start();
+		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-		
+
 	}
 
 	/**
@@ -171,14 +169,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-    	
+
 		Scheduler.getInstance().run();
 
-    	    boolean state = driveToggle.toggle();
-    		drive.drive(state);
-    		SmartDashboard.putNumber("Gyro", gyro.getAngle());
-    	
-    	
+		boolean state = driveToggle.toggle();
+		drive.drive(state);
+		SmartDashboard.putNumber("Gyro", gyro.getAngle());
+
 	}
 
 	/**
@@ -188,4 +185,81 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 		LiveWindow.run();
 	}
+
+
+
+	public SendableChooser<Command> getChooser() {
+		return chooser;
+	}
+
+	public RobotDrive getRobotDrive() {
+		return robotDrive;
+	}
+
+	public Joystick getStick() {
+		return stick;
+	}
+
+	public AHRS getGyro() {
+		return gyro;
+	}
+
+	public int getAutoLoopCounter() {
+		return autoLoopCounter;
+	}
+
+	public CANTalon getFrontLeftMotor() {
+		return frontLeftMotor;
+	}
+
+	public CANTalon getFrontRightMotor() {
+		return frontRightMotor;
+	}
+
+	public CANTalon getBackLeftMotor() {
+		return backLeftMotor;
+	}
+
+	public CANTalon getBackRightMotor() {
+		return backRightMotor;
+	}
+
+	public Compressor getCompressor() {
+		return compressor;
+	}
+
+	public DoubleSolenoid getSolenoid1() {
+		return solenoid1;
+	}
+
+	public DoubleSolenoid getSolenoid2() {
+		return solenoid2;
+	}
+
+	public DoubleSolenoid getSolenoid3() {
+		return solenoid3;
+	}
+
+	public DoubleSolenoid getSolenoid4() {
+		return solenoid4;
+	}
+
+	public Drive getDrive() {
+		return drive;
+	}
+
+	public Toggle getDriveToggle() {
+		return driveToggle;
+	}
+
+	public AutonomousMethods getAuto() {
+		return auto;
+	}
+
+public boolean isAutoFinished() {
+	return autoFinished;
+}
+public int getTicksPerRevolution() {
+	return ticksPerRevolution;
+}
 }
