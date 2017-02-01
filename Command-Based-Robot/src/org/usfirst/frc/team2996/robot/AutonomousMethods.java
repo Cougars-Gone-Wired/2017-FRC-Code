@@ -3,9 +3,11 @@ package org.usfirst.frc.team2996.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousMethods {
-	int wheelDiameter = 5;
+	int wheelDiameter;
 	int encoderTick;
 
 	AHRS gyro;
@@ -14,102 +16,99 @@ public class AutonomousMethods {
 	AutonomousMethods(Robot robot) {
 		this.gyro = robot.getGyro();
 		this.drive = robot.getDrive();
+		this.wheelDiameter = robot.getWHEELDIAMETER();
 	}
 
-	public boolDoub turn(String direction, double angle) {
-		double initialAngle = gyro.getAngle();// get initial angle
-		boolean finished = false;
-		drive.arcadeDrive();
+	public double turn(String direction, double angle) {
+		gyro.reset();
+		if (drive.isMechanum()) {
+			drive.arcadeDrive();
+		}
 		direction = direction.toLowerCase();
-		if (direction == "left") {
-			if (gyro.getAngle() > -angle) {
-				drive.robotDrive.arcadeDrive(0, 0.5);
-			}else{
-				finished = true;
+		if ((direction.equals("left")) && DriverStation.getInstance().isAutonomous()) {
+			while (gyro.getAngle() > -angle) {
+				drive.robotDrive.arcadeDrive(0, 0.6);// rotate speed in voltage
 			}
 		} else {
-			if (gyro.getAngle() < angle) {
-				drive.robotDrive.arcadeDrive(0, -0.5);
-			}else{
-				finished = true;
+			while ((gyro.getAngle() < angle) && DriverStation.getInstance().isAutonomous()) {
+				drive.robotDrive.arcadeDrive(0, -0.6);
 			}
 		}
-		return new boolDoub(finished, gyro.getAngle());
+		double finalAngle = gyro.getAngle();
+		gyro.reset();
+		return finalAngle;
 	}
 
 	public double moveStraight(String direction, int distance) {
+		double encoderAverage = 0;
+		int encodersWorking = 0;
 		direction = direction.toLowerCase();
 		gyro.reset();
-		double distPerTick = (Math.PI * wheelDiameter) / drive.ticksPerRevolution;
-		double neededEncCounts = distance / distPerTick;
-		neededEncCounts = Math.round(neededEncCounts);
+		drive.encoderReset();
 
-		if (direction == "forward") {
-			
-			
-			while ((average(drive.frontLeftMotor.getEncPosition(),
-					drive.frontRightMotor.getEncPosition()) < neededEncCounts)
-					|| (average(drive.frontLeftMotor.getEncPosition(),
-							drive.backRightMotor.getEncPosition()) < neededEncCounts)
-					|| (average(drive.frontLeftMotor.getEncPosition(),
-							drive.backLeftMotor.getEncPosition()) < neededEncCounts)
-					|| (average(drive.frontRightMotor.getEncPosition(),
-							drive.backRightMotor.getEncPosition()) < neededEncCounts)
-					|| (average(drive.frontLeftMotor.getEncPosition(),
-							drive.backLeftMotor.getEncPosition()) < neededEncCounts)
-					|| (average(drive.backLeftMotor.getEncPosition(),
-							drive.backRightMotor.getEncPosition()) < neededEncCounts)) {
-				if(gyro.getAngle() < -1){
-					drive.robotDrive.tankDrive(0.55, 0.5);
-				}else if(gyro.getAngle() > 1){
+		drive.arcadeDrive();
+
+		// Wheel calculations not being used currently
+		// double distPerTick = (Math.PI * wheelDiameter) /
+		// drive.ticksPerRevolution;
+		// double neededEncCounts = distance / distPerTick;
+		// neededEncCounts = Math.round(neededEncCounts);
+
+		if (direction.equals("forward")) {
+			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
+				encodersWorking = encodersWorking();
+				encoderAverage = encoderAverage(encodersWorking);
+				SmartDashboard.putNumber("encoderAVG", encoderAverage);
+				SmartDashboard.putNumber("encodersWorking", encodersWorking);
+				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
+				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
+				// gyro correction while driving
+				if (gyro.getAngle() < 1) {
 					drive.robotDrive.tankDrive(0.5, 0.55);
-				}else{
+				} else if (gyro.getAngle() > 1) {
+					drive.robotDrive.tankDrive(0.55, 0.5);
+				} else {
 					drive.robotDrive.tankDrive(0.5, 0.5);
 				}
 			}
 		} else {
-			while ((average(drive.frontLeftMotor.getEncPosition(),
-					drive.frontRightMotor.getEncPosition()) > neededEncCounts)
-					|| (average(drive.frontLeftMotor.getEncPosition(),
-							drive.backRightMotor.getEncPosition()) > neededEncCounts)
-					|| (average(drive.frontLeftMotor.getEncPosition(),
-							drive.backLeftMotor.getEncPosition()) > neededEncCounts)
-					|| (average(drive.frontRightMotor.getEncPosition(),
-							drive.backRightMotor.getEncPosition()) > neededEncCounts)
-					|| (average(drive.frontLeftMotor.getEncPosition(),
-							drive.backLeftMotor.getEncPosition()) > neededEncCounts)
-					|| (average(drive.backLeftMotor.getEncPosition(),
-							drive.backRightMotor.getEncPosition()) > neededEncCounts)) {
-				if(gyro.getAngle() < -1){
+
+			while ((encoderAverage >= -distance) && DriverStation.getInstance().isAutonomous()) {
+				encodersWorking = encodersWorking(); // amount of encoders
+														// working
+				encoderAverage = encoderAverage(encodersWorking);
+				SmartDashboard.putNumber("encoderAVG", encoderAverage);
+				SmartDashboard.putNumber("encodersWorking", encodersWorking);
+				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
+				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
+				if (gyro.getAngle() < -1) {
 					drive.robotDrive.tankDrive(-0.5, -0.55);
-				}else if(gyro.getAngle() > 1){
+				} else if (gyro.getAngle() > 1) {
 					drive.robotDrive.tankDrive(-0.55, -0.5);
-				}else{
+				} else {
 					drive.robotDrive.tankDrive(-0.5, -0.5);
 				}
-
-	
 			}
-			drive.robotDrive.tankDrive(0.0, 0.0);
 		}
 
-		return average(average(drive.frontLeftMotor.getEncPosition(), drive.frontRightMotor.getEncPosition()),
-				average(drive.backLeftMotor.getEncPosition(), drive.backRightMotor.getEncPosition()));
+		drive.robotDrive.tankDrive(0.0, 0.0);
+		drive.encoderReset();
+
+		return encoderAverage;
+
 	}
 
-	public double strafe(String direction, int distance) {
+	public double strafe(String direction, int distance) { // strafe not
+															// currently working
 
 		gyro.reset();
 
 		direction = direction.toLowerCase();
-
-		double distPerTick = (Math.PI * wheelDiameter) / drive.ticksPerRevolution;
-		double neededEncCounts = distance / distPerTick;
-		neededEncCounts = Math.round(neededEncCounts);
 		drive.mecanumDrive();
 
 		if (direction == "left") {
 			while (gyro.getDisplacementX() > -distance) {
+				SmartDashboard.putNumber("backLeft", gyro.getDisplacementY());
 				drive.robotDrive.mecanumDrive_Cartesian(0.5, 0, 0, gyro.getAngle());
 			}
 
@@ -125,16 +124,33 @@ public class AutonomousMethods {
 		return displacementX;
 	}
 
-	public double average(double x, double y) {
-		return (x + y) / 2;
+	public int encodersWorking() { // calculates number of encoders working
+		int encodersWorking = 4;
+		if (Math.abs(drive.frontLeftMotor.getEncPosition()) <= 1) {
+			encodersWorking--;
+		}
+		if (Math.abs(drive.frontRightMotor.getEncPosition()) <= 1) {
+			encodersWorking--;
+		}
+		if (Math.abs(drive.backLeftMotor.getEncPosition()) <= 1) {
+			encodersWorking--;
+		}
+		if (Math.abs(drive.backRightMotor.getEncPosition()) <= 1) {
+			encodersWorking--;
+		}
+
+		if (encodersWorking == 0) { // starts the encoder counts at 1 so no zero
+									// division
+			encodersWorking = 1;
+		}
+		return encodersWorking;
 	}
-	/*
-	 * public double move(String direction, double distance){
-	 * 
-	 * direction = direction.toLowerCase(); if(direction == "back"){
-	 * while(encoder.get()>-distance){ //move backwards } }else{
-	 * while(encoder.get()<distance){ //move forwards } }
-	 * 
-	 * }
-	 */
+
+	public int encoderAverage(int encodersWorking) { // calculates average
+														// encoder counts
+		int average = (drive.getFrontLeftEncoder() + drive.getFrontRightEncoder() + drive.getBackLeftEncoder()
+				+ drive.getBackRightEncoder()) / encodersWorking;
+
+		return average;
+	}
 }
