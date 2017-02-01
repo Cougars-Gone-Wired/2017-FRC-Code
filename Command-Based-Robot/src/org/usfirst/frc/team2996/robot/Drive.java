@@ -64,7 +64,7 @@ public class Drive {
 		this.arcadeDriveYAxis = robot.getARCADEDRIVEYAXIS();
 		this.arcadeDriveRotate = robot.getARCADEDRIVEROTATE();
 		this.mecanumDriveYAxis = robot.getMECANUMDRIVEYAXIS();
-		this.mecanumDriveXAxis = robot.getMECANUMDRIVEYAXIS();
+		this.mecanumDriveXAxis = robot.getMECANUMDRIVEXAXIS();
 		this.mecanumDriveRotate = robot.getMECANUMDRIVEROTATE();
 		this.arcadeDriveYAxisInvert = robot.getARCADEDRIVEYAXISINVERT();
 		this.arcadeDriveRotateInvert = robot.getARCADEDRIVEROTATEINVERT();

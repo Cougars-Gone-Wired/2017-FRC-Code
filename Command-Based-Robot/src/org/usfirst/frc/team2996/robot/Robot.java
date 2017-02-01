@@ -109,7 +109,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto mode", chooser);
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
 		drive = new Drive(this);
-		driveToggle = new Toggle(stickDrive, 1);
+		driveToggle = new Toggle(stickDrive, 1);//toggle button
 
 		gyro = new AHRS(SPI.Port.kMXP);
 		gyro.reset();
