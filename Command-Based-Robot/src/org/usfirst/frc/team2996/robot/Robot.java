@@ -40,30 +40,33 @@ public class Robot extends IterativeRobot {
 		return autonomousCommand;
 	}
 
-	final int FRONTLEFTMOTORTALONNUMBER = 1;
-	final int FRONTRIGHTMOTORTALONNUMBER = 2;
-	final int BACKLEFTMOTORTALONNUMBER = 0;
-	final int BACKRIGHTMOTORTALONNUMBER = 3;
-	final int FRONTLEFTMOTORSOLENOID = 0;
-	final int FRONTRIGHTMOTORSOLENOID = 1;
-	final int BACKLEFTMOTORSOLENOID = 2;
-	final int BACKRIGHTMOTORSOLENOID = 3;
-	final int STICKDRIVE = 0;
-	final int TICKSPERREVOLUTION = 160;
-	final int WHEELDIAMETER = 5;
-
-	final int ARCADEDRIVEYAXIS = 1;
-	final int ARCADEDRIVEROTATE = 4;
-	final int MECANUMDRIVEXAXIS = 0;
-	final int MECANUMDRIVEYAXIS = 1;
-	final int MECANUMDRIVEROTATE = 4;
-
-	final int ARCADEDRIVEYAXISINVERT = -1;// IF 1 INVERT JOYSTICK, IF NOT 1 DONT
-											// INVERT JOYSTICK
-	final int ARCADEDRIVEROTATEINVERT = -1;
-	final int MECANUMDRIVEXAXISINVERT = 1;
-	final int MECANUMDRIVEYAXISINVERT = -1;
-	final int MECANUMDRIVEROTATEINVERT = -1;
+	static final int FRONTLEFTMOTORTALONNUMBER = 1;
+	static final int FRONTRIGHTMOTORTALONNUMBER = 2;
+	static final int BACKLEFTMOTORTALONNUMBER = 0;
+	static final int BACKRIGHTMOTORTALONNUMBER = 3;
+	static final int FRONTLEFTMOTORSOLENOID = 0;
+	static final int FRONTRIGHTMOTORSOLENOID = 1;
+	static final int BACKLEFTMOTORSOLENOID = 2;
+	static final int BACKRIGHTMOTORSOLENOID = 3;
+	static final int STICKDRIVE = 0;
+	static final int TICKSPERREVOLUTION = 20;
+	static final int WHEELDIAMETER = 5;
+	static final int ARCADEDRIVEYAXIS = 1;
+	static final int ARCADEDRIVEROTATE = 4;
+	static final int MECANUMDRIVEXAXIS = 0;
+	static final int MECANUMDRIVEYAXIS = 1;
+	static final int MECANUMDRIVEROTATE = 4;
+	static final int ARCADEDRIVEYAXISINVERT = -1;// IF -1 INVERT JOYSTICK, IF 1 DONT									
+	static final int ARCADEDRIVEROTATEINVERT = -1;// INVERT JOYSTICK
+	static final int MECANUMDRIVEXAXISINVERT = 1;
+	static final int MECANUMDRIVEYAXISINVERT = -1;
+	static final int MECANUMDRIVEROTATEINVERT = -1;
+	static final int DRIVETOGGLEJOYSTICKBUTTON = 1;
+	static final int FRONTLEFTMOTORNEGATENCODER = -1; //negates encoder counts
+	static final int FRONTRIGHTMOTORNEGATENCODER = 1;
+	static final int BACKLEFTMOTORNEGATENCODER = 1;
+	static final int BACKRIGHTMOTORNEGATENCODER = 1;
+	
 	Joystick stickDrive;
 	AHRS gyro;
 	int autoLoopCounter;
@@ -81,7 +84,6 @@ public class Robot extends IterativeRobot {
 	Toggle driveToggle;
 	AutonomousMethods auto;
 	boolean autoFinished; // checks if autonomous is finished
-	int ticksPerRevolution = TICKSPERREVOLUTION;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -109,7 +111,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto mode", chooser);
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
 		drive = new Drive(this);
-		driveToggle = new Toggle(stickDrive, 1);//toggle button
+		driveToggle = new Toggle(stickDrive, DRIVETOGGLEJOYSTICKBUTTON);
 
 		gyro = new AHRS(SPI.Port.kMXP);
 		gyro.reset();
@@ -167,7 +169,7 @@ public class Robot extends IterativeRobot {
 
 			// auto.turn("right", 90);// our gyro reads values 4 degrees less
 			// than the target
-			// auto.moveStraight("forward", 5000);
+			 auto.moveStraight("forward", 5000);
 			// auto.moveStraight("backward", 1000);
 			// robotDrive.tankDrive(0, 0);
 			//auto.strafe("left", 100);
@@ -291,51 +293,5 @@ public class Robot extends IterativeRobot {
 		return autoFinished;
 	}
 
-	public int getTicksPerRevolution() {
-		return ticksPerRevolution;
-	}
 
-	public int getARCADEDRIVEYAXIS() {
-		return ARCADEDRIVEYAXIS;
-	}
-
-	public int getARCADEDRIVEROTATE() {
-		return ARCADEDRIVEROTATE;
-	}
-
-	public int getMECANUMDRIVEXAXIS() {
-		return MECANUMDRIVEXAXIS;
-	}
-
-	public int getMECANUMDRIVEYAXIS() {
-		return MECANUMDRIVEYAXIS;
-	}
-
-	public int getMECANUMDRIVEROTATE() {
-		return MECANUMDRIVEROTATE;
-	}
-
-	public int getARCADEDRIVEYAXISINVERT() {
-		return ARCADEDRIVEYAXISINVERT;
-	}
-
-	public int getARCADEDRIVEROTATEINVERT() {
-		return ARCADEDRIVEROTATEINVERT;
-	}
-
-	public int getMECANUMDRIVEXAXISINVERT() {
-		return MECANUMDRIVEXAXISINVERT;
-	}
-
-	public int getMECANUMDRIVEYAXISINVERT() {
-		return MECANUMDRIVEYAXISINVERT;
-	}
-
-	public int getMECANUMDRIVEROTATEINVERT() {
-		return MECANUMDRIVEROTATEINVERT;
-	}
-
-	public int getWHEELDIAMETER() {
-		return WHEELDIAMETER;
-	}
 }

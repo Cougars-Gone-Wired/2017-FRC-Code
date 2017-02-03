@@ -17,26 +17,13 @@ public class Drive {
 	CANTalon frontRightMotor;
 	CANTalon backLeftMotor;
 	CANTalon backRightMotor;
-
-	int arcadeDriveYAxis;
-	int arcadeDriveRotate;
-	int mecanumDriveXAxis;
-	int mecanumDriveYAxis;
-	int mecanumDriveRotate;
-	int arcadeDriveYAxisInvert;// IF 1 INVERT JOYSTICK, IF NOT 1 DONT INVERT
-								// JOYSTICK
-	int arcadeDriveRotateInvert;
-	int mecanumDriveXAxisInvert;
-	int mecanumDriveYAxisInvert;
-	int mecanumDriveRotateInvert;
-
+	
 	Solenoid solenoid1;
 	Solenoid solenoid2;
 	Solenoid solenoid3;
 	Solenoid solenoid4;
 
 	int wheelDiameter;
-	int ticksPerRevolution;
 	AHRS gyro;
 	boolean driveState = false; // state = true means Mechanum , false is arcade
 
@@ -59,18 +46,8 @@ public class Drive {
 		this.frontRightMotor = robot.getFrontRightMotor();
 		this.backLeftMotor = robot.getBackLeftMotor();
 		this.backRightMotor = robot.getBackRightMotor();
-		this.ticksPerRevolution = robot.getTicksPerRevolution();
 		this.gyro = robot.getGyro();
-		this.arcadeDriveYAxis = robot.getARCADEDRIVEYAXIS();
-		this.arcadeDriveRotate = robot.getARCADEDRIVEROTATE();
-		this.mecanumDriveYAxis = robot.getMECANUMDRIVEYAXIS();
-		this.mecanumDriveXAxis = robot.getMECANUMDRIVEXAXIS();
-		this.mecanumDriveRotate = robot.getMECANUMDRIVEROTATE();
-		this.arcadeDriveYAxisInvert = robot.getARCADEDRIVEYAXISINVERT();
-		this.arcadeDriveRotateInvert = robot.getARCADEDRIVEROTATEINVERT();
-		this.mecanumDriveXAxisInvert = robot.getMECANUMDRIVEXAXISINVERT();
-		this.mecanumDriveYAxisInvert = robot.getMECANUMDRIVEYAXISINVERT();
-		this.mecanumDriveRotateInvert = robot.getMECANUMDRIVEROTATEINVERT();
+
 	}
 
 	public void SetSolenoids(boolean solenoid1, boolean solenoid2, boolean solenoid3, boolean solenoid4) {
@@ -91,8 +68,8 @@ public class Drive {
 	public void arcadeDrive() {
 		driveState = false; // in arcade
 		invertMotors(false, false, false, false);
-		robotDrive.arcadeDrive(Threshold.threshold((arcadeDriveYAxisInvert) * stick.getRawAxis(arcadeDriveYAxis)),
-				Threshold.threshold((arcadeDriveRotateInvert) * stick.getRawAxis(arcadeDriveRotate)));
+		robotDrive.arcadeDrive(Threshold.threshold((Robot.ARCADEDRIVEYAXISINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEYAXIS)),
+				Threshold.threshold((Robot.ARCADEDRIVEROTATEINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEROTATE)));
 		SetSolenoids(true, true, true, true);
 
 	}
@@ -101,9 +78,9 @@ public class Drive {
 		driveState = true;// in mechanum
 		invertMotors(true, false, true, false);
 		robotDrive.mecanumDrive_Cartesian(
-				Threshold.threshold((mecanumDriveXAxisInvert) * stick.getRawAxis(mecanumDriveXAxis)),
-				Threshold.threshold((mecanumDriveYAxisInvert) * stick.getRawAxis(mecanumDriveYAxis)),
-				Threshold.threshold((mecanumDriveRotateInvert) * stick.getRawAxis(mecanumDriveRotate)), 0.0);
+				Threshold.threshold((Robot.MECANUMDRIVEXAXISINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEXAXIS)),
+				Threshold.threshold((Robot.MECANUMDRIVEYAXISINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEYAXIS)),
+				Threshold.threshold((Robot.MECANUMDRIVEROTATEINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEROTATE)), 0.0);
 		SetSolenoids(false, false, false, false);
 
 	}
@@ -133,18 +110,18 @@ public class Drive {
 	}
 
 	public int getFrontLeftEncoder() {
-		return -frontLeftMotor.getEncPosition();
+		return (Robot.FRONTLEFTMOTORNEGATENCODER) * frontLeftMotor.getEncPosition();
 	}
 
 	public int getFrontRightEncoder() {
-		return frontRightMotor.getEncPosition();
+		return (Robot.FRONTRIGHTMOTORNEGATENCODER) * frontRightMotor.getEncPosition();
 	}
 
 	public int getBackLeftEncoder() {
-		return backLeftMotor.getEncPosition();
+		return (Robot.BACKLEFTMOTORNEGATENCODER) * backLeftMotor.getEncPosition();
 	}
 
 	public int getBackRightEncoder() {
-		return backRightMotor.getEncPosition();
+		return (Robot.BACKRIGHTMOTORNEGATENCODER) * backRightMotor.getEncPosition();
 	}
 }

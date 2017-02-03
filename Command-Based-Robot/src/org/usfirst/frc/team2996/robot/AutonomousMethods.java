@@ -8,15 +8,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousMethods {
 	int wheelDiameter;
-	int encoderTick;
-
 	AHRS gyro;
 	Drive drive;
 
 	AutonomousMethods(Robot robot) {
 		this.gyro = robot.getGyro();
 		this.drive = robot.getDrive();
-		this.wheelDiameter = robot.getWHEELDIAMETER();
+		this.wheelDiameter = robot.WHEELDIAMETER;
 	}
 
 	public double turn(String direction, double angle) {
@@ -48,14 +46,13 @@ public class AutonomousMethods {
 
 		drive.arcadeDrive();
 
-		// Wheel calculations not being used currently
-		// double distPerTick = (Math.PI * wheelDiameter) /
-		// drive.ticksPerRevolution;
-		// double neededEncCounts = distance / distPerTick;
-		// neededEncCounts = Math.round(neededEncCounts);
+	double distPerTick = (Math.PI * wheelDiameter) / Robot.TICKSPERREVOLUTION;
+	double neededEncCounts = distance / distPerTick;
+	neededEncCounts = Math.round(neededEncCounts);
+	SmartDashboard.putNumber("neededEncCounts", neededEncCounts);
 
 		if (direction.equals("forward")) {
-			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
+			while ((encoderAverage < neededEncCounts) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
@@ -73,7 +70,7 @@ public class AutonomousMethods {
 			}
 		} else {
 
-			while ((encoderAverage >= -distance) && DriverStation.getInstance().isAutonomous()) {
+			while ((encoderAverage >= -neededEncCounts) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking(); // amount of encoders
 														// working
 				encoderAverage = encoderAverage(encodersWorking);
