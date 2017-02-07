@@ -8,27 +8,35 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousMethods {
 	int wheelDiameter;
-	AHRS gyro;
-	Drive drive;
+	public AHRS gyro;
+	public Drive drive;
+	public Robot robot;
 
-	AutonomousMethods(Robot robot) {
+	public AutonomousMethods(Robot robot) {
+		this.robot = robot;
 		this.gyro = robot.getGyro();
 		this.drive = robot.getDrive();
-		this.wheelDiameter = robot.WHEELDIAMETER;
+		this.wheelDiameter = Robot.WHEELDIAMETER;
 	}
 
 	public double turn(String direction, double angle) {
 		gyro.reset();
+		
+		sleep();
+		
 		if (drive.isMechanum()) {
 			drive.arcadeDrive();
 		}
+		
 		direction = direction.toLowerCase();
 		if ((direction.equals("left")) && DriverStation.getInstance().isAutonomous()) {
 			while (gyro.getAngle() > -angle) {
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				drive.robotDrive.arcadeDrive(0, 0.6);// rotate speed in voltage
 			}
 		} else {
 			while ((gyro.getAngle() < angle) && DriverStation.getInstance().isAutonomous()) {
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				drive.robotDrive.arcadeDrive(0, -0.6);
 			}
 		}
@@ -37,15 +45,16 @@ public class AutonomousMethods {
 		return finalAngle;
 	}
 
-	public double moveStraight(String direction, int distance) {
+	public double moveStraight(String direction, int distance, double speed) {
 		double encoderAverage = 0;
 		int encodersWorking = 0;
 		direction = direction.toLowerCase();
 		gyro.reset();
 		drive.encoderReset();
-
 		drive.arcadeDrive();
-
+		
+		sleep();
+		
 	double distPerTick = (Math.PI * wheelDiameter) / Robot.TICKSPERREVOLUTION;
 	double neededEncCounts = distance / distPerTick;
 	neededEncCounts = Math.round(neededEncCounts);
@@ -60,17 +69,17 @@ public class AutonomousMethods {
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
 				// gyro correction while driving
-				if (gyro.getAngle() < 1) {
-					drive.robotDrive.tankDrive(0.5, 0.55);
+				if (gyro.getAngle() < -1) {
+					drive.robotDrive.tankDrive(speed + 0.05, speed);
 				} else if (gyro.getAngle() > 1) {
-					drive.robotDrive.tankDrive(0.55, 0.5);
+					drive.robotDrive.tankDrive(speed, speed + 0.05);
 				} else {
-					drive.robotDrive.tankDrive(0.5, 0.5);
+					drive.robotDrive.tankDrive(speed, speed);
 				}
 			}
 		} else {
 
-			while ((encoderAverage >= -neededEncCounts) && DriverStation.getInstance().isAutonomous()) {
+			while ((-encoderAverage >= -neededEncCounts) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking(); // amount of encoders
 														// working
 				encoderAverage = encoderAverage(encodersWorking);
@@ -79,46 +88,52 @@ public class AutonomousMethods {
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
 				if (gyro.getAngle() < -1) {
-					drive.robotDrive.tankDrive(-0.5, -0.55);
+					drive.robotDrive.tankDrive(-speed, -speed - 0.1);
 				} else if (gyro.getAngle() > 1) {
-					drive.robotDrive.tankDrive(-0.55, -0.5);
+					drive.robotDrive.tankDrive(-speed - 0.1, -speed);
 				} else {
-					drive.robotDrive.tankDrive(-0.5, -0.5);
+					drive.robotDrive.tankDrive(-speed, -speed);
 				}
 			}
 		}
 
 		drive.robotDrive.tankDrive(0.0, 0.0);
 		drive.encoderReset();
-
 		return encoderAverage;
 
 	}
 
-	public double strafe(String direction, int distance) { // strafe not
-															// currently working
-
-		gyro.reset();
-
-		direction = direction.toLowerCase();
+	public double strafe(String direction, int distance, double speed) {
 		drive.mecanumDrive();
+		gyro.reset();
+		drive.encoderReset();
+		
+		sleep();
+		
+		double encoderAverage = 0;
+		int encodersWorking = 0;
+		direction = direction.toLowerCase();
+		
 
 		if (direction == "left") {
-			while (gyro.getDisplacementX() > -distance) {
-				SmartDashboard.putNumber("backLeft", gyro.getDisplacementY());
-				drive.robotDrive.mecanumDrive_Cartesian(0.5, 0, 0, gyro.getAngle());
+			while ((-encoderAverage > -distance) && DriverStation.getInstance().isAutonomous()) {
+				encodersWorking = encodersWorking();
+                encoderAverage = encoderAverage(encodersWorking);
+				drive.robotDrive.mecanumDrive_Cartesian(speed, 0, 0, 0);
 			}
 
 		} else {
-			while (gyro.getDisplacementX() < distance) {
-				drive.robotDrive.mecanumDrive_Cartesian(-0.5, 0, 0, gyro.getAngle());
+			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
+				encodersWorking = encodersWorking();
+				encoderAverage = encoderAverage(encodersWorking);
+				drive.robotDrive.mecanumDrive_Cartesian(-speed, 0, 0, 0);
 			}
 		}
-		double displacementX = gyro.getDisplacementX();
-		gyro.reset();
 		drive.robotDrive.tankDrive(0.0, 0.0);
+		gyro.reset();
+		drive.encoderReset();
 
-		return displacementX;
+		return encoderAverage;
 	}
 
 	public int encodersWorking() { // calculates number of encoders working
@@ -145,9 +160,29 @@ public class AutonomousMethods {
 
 	public int encoderAverage(int encodersWorking) { // calculates average
 														// encoder counts
-		int average = (drive.getFrontLeftEncoder() + drive.getFrontRightEncoder() + drive.getBackLeftEncoder()
-				+ drive.getBackRightEncoder()) / encodersWorking;
+		int average = (Math.abs(drive.getFrontLeftEncoder()) + Math.abs(drive.getFrontRightEncoder()) + Math.abs(drive.getBackLeftEncoder())
+		+ Math.abs(drive.getBackRightEncoder()) / encodersWorking);
 
 		return average;
+	}
+	
+	public void moveForwardTurnLeftPlaceGear(){
+		   moveStraight("forward", (int)SmartDashboard.getNumber("auto first drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
+   			robot.wait(100);
+			turn("right", SmartDashboard.getNumber("auto turn angle", 0));
+			robot.wait(100);
+			moveStraight("forward", (int)SmartDashboard.getNumber("auto second drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
+			drive.robotDrive.tankDrive(0, 0);
+	}
+	public void stop(){
+		drive.robotDrive.tankDrive(0, 0);
+	}
+	public static void sleep(){
+		try {
+			Thread.sleep(Robot.SLEEPAUTO);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

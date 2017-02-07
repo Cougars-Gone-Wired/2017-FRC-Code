@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drive {
 	Joystick stick;
-	RobotDrive robotDrive;
+	public RobotDrive robotDrive;
 
 	CANTalon frontLeftMotor;
 	CANTalon frontRightMotor;
@@ -47,7 +47,11 @@ public class Drive {
 		this.backLeftMotor = robot.getBackLeftMotor();
 		this.backRightMotor = robot.getBackRightMotor();
 		this.gyro = robot.getGyro();
-
+		
+		frontLeftMotor.configEncoderCodesPerRev(20);
+		frontRightMotor.configEncoderCodesPerRev(20);
+		backLeftMotor.configEncoderCodesPerRev(20);
+		backRightMotor.configEncoderCodesPerRev(20);
 	}
 
 	public void SetSolenoids(boolean solenoid1, boolean solenoid2, boolean solenoid3, boolean solenoid4) {

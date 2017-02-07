@@ -8,14 +8,12 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.cscore.AxisCamera;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SPI;
 
 import org.usfirst.frc.team2996.robot.commands.ExampleCommand;
+import org.usfirst.frc.team2996.robot.commands.GearOnLeftPeg;
 import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
 
 import com.ctre.CANTalon;
@@ -34,6 +32,7 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
+	
 	RobotDrive robotDrive;
 
 	public Command getAutonomousCommand() {
@@ -66,6 +65,7 @@ public class Robot extends IterativeRobot {
 	static final int FRONTRIGHTMOTORNEGATENCODER = 1;
 	static final int BACKLEFTMOTORNEGATENCODER = 1;
 	static final int BACKRIGHTMOTORNEGATENCODER = 1;
+	static final int SLEEPAUTO = 100;//how long it waits before going to next step in auto //minimum = 100
 	
 	Joystick stickDrive;
 	AHRS gyro;
@@ -91,6 +91,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+	
 		// CAMERA CODE WORKS
 		/*
 		 * //AxisCamera axis = new AxisCamera("axis", "axis-camera");
@@ -104,9 +105,12 @@ public class Robot extends IterativeRobot {
 		 * //camera.startAutomaticCapture(axis);
 		 * 
 		 */
+	
+		
 		oi = new OI();
 		stickDrive = new Joystick(STICKDRIVE);
-		chooser.addDefault("Default Auto", new ExampleCommand());
+		chooser =  new SendableChooser<>();
+		chooser.addDefault("Default Auto", new GearOnLeftPeg(this));
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
@@ -116,6 +120,11 @@ public class Robot extends IterativeRobot {
 		gyro = new AHRS(SPI.Port.kMXP);
 		gyro.reset();
 		auto = new AutonomousMethods(this);
+		SmartDashboard.putNumber("Autonomous Select", 0);
+		SmartDashboard.putNumber("auto turn angle", 0);
+		SmartDashboard.putNumber("auto first drive distance", 0);
+		SmartDashboard.putNumber("auto second drive distance", 0);
+		SmartDashboard.putNumber("auto drive speed", 0);
 
 	}
 
@@ -148,11 +157,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		autoFinished = false;
+		compressor.setClosedLoopControl(true);
+		compressor.start();
 		gyro.reset();
-		autonomousCommand = chooser.getSelected();
 		drive.arcadeDrive();
-		if (autonomousCommand != null)
-			autonomousCommand.start();
+
+		//drive.encoderReset();
 	}
 
 	/**
@@ -160,25 +170,29 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		Scheduler.getInstance().run();
+		
+	Scheduler.getInstance().run();
+		
 
 		if (autoFinished == false) // if autonomous is not finished keep going
 		{
-			// BUNCH OF TESTING AUTO METHOD
-			// SmartDashboard.putNumber("Gyro", gyro.getAngle());
-
-			// auto.turn("right", 90);// our gyro reads values 4 degrees less
-			// than the target
-			 auto.moveStraight("forward", 5000);
-			// auto.moveStraight("backward", 1000);
-			// robotDrive.tankDrive(0, 0);
-			//auto.strafe("left", 100);
-			autoFinished = true;
-
-		} else { // if autonomous has finished
-
-			robotDrive.tankDrive(0.0, 0.0); // stop robot
+			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
+		switch(autonomous){
+		case 0:
+			auto.stop();//do nothing
+			break;
+		case 1:
+			auto.moveForwardTurnLeftPlaceGear();
+			break;
+		default:
+			auto.stop();
+			break;
 		}
+		autoFinished = true;
+		} else { // if autonomous has finished
+			auto.stop();
+		}
+		
 
 	}
 
@@ -203,11 +217,12 @@ public class Robot extends IterativeRobot {
 		boolean state = driveToggle.toggle();
 		drive.drive(state);
 		// display stuff
-		SmartDashboard.putNumber("frontLeftMotor", drive.frontLeftMotor.getEncPosition());
-		SmartDashboard.putBoolean("inverted", drive.frontLeftMotor.getInverted());
-		SmartDashboard.putNumber("frontRightMotor", drive.frontRightMotor.getEncPosition());
-		SmartDashboard.putNumber("backLeftMotor", drive.backLeftMotor.getEncPosition());
-		SmartDashboard.putNumber("backRightMotor", drive.backRightMotor.getEncPosition());
+		SmartDashboard.putNumber("gyro", gyro.getAngle());
+		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
+		//SmartDashboard.putBoolean("inverted", drive.frontLeftMotor.getFrontLeftEncoder());
+		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
+		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
+		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
 		// SmartDashboard.putNumber("Gyro", gyro.getAngle());
 
 	}
@@ -224,6 +239,14 @@ public class Robot extends IterativeRobot {
 	public SendableChooser<Command> getChooser() {
 		return chooser;
 	}
+	public void wait(int sleep){
+	try {	
+		Thread.sleep(sleep);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 
 	public RobotDrive getRobotDrive() {
 		return robotDrive;
