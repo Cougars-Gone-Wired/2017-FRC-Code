@@ -8,12 +8,20 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.cscore.AxisCamera;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SPI;
 
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team2996.robot.commands.ExampleCommand;
-import org.usfirst.frc.team2996.robot.commands.GearOnLeftPeg;
 import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
 
 import com.ctre.CANTalon;
@@ -32,8 +40,9 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
-	
+
 	RobotDrive robotDrive;
+	Thread visionThread;
 
 	public Command getAutonomousCommand() {
 		return autonomousCommand;
@@ -55,18 +64,20 @@ public class Robot extends IterativeRobot {
 	static final int MECANUMDRIVEXAXIS = 0;
 	static final int MECANUMDRIVEYAXIS = 1;
 	static final int MECANUMDRIVEROTATE = 4;
-	static final int ARCADEDRIVEYAXISINVERT = -1;// IF -1 INVERT JOYSTICK, IF 1 DONT									
+	static final int ARCADEDRIVEYAXISINVERT = -1;// IF -1 INVERT JOYSTICK, IF 1
+													// DONT
 	static final int ARCADEDRIVEROTATEINVERT = -1;// INVERT JOYSTICK
 	static final int MECANUMDRIVEXAXISINVERT = 1;
 	static final int MECANUMDRIVEYAXISINVERT = -1;
 	static final int MECANUMDRIVEROTATEINVERT = -1;
 	static final int DRIVETOGGLEJOYSTICKBUTTON = 1;
-	static final int FRONTLEFTMOTORNEGATENCODER = -1; //negates encoder counts
+	static final int FRONTLEFTMOTORNEGATENCODER = -1; // negates encoder counts
 	static final int FRONTRIGHTMOTORNEGATENCODER = 1;
 	static final int BACKLEFTMOTORNEGATENCODER = 1;
 	static final int BACKRIGHTMOTORNEGATENCODER = 1;
-	static final int SLEEPAUTO = 100;//how long it waits before going to next step in auto //minimum = 100
-	
+	static final int SLEEPAUTO = 100;// how long it waits before going to next
+										// step in auto //minimum = 100
+
 	Joystick stickDrive;
 	AHRS gyro;
 	int autoLoopCounter;
@@ -82,7 +93,7 @@ public class Robot extends IterativeRobot {
 
 	Drive drive;
 	Toggle driveToggle;
-	AutonomousMethods auto;
+	AutonomousPrograms auto;
 	boolean autoFinished; // checks if autonomous is finished
 
 	/**
@@ -91,35 +102,48 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-	
-		// CAMERA CODE WORKS
+
+		// CameraServer camera = CameraServer.getInstance();
 		/*
-		 * //AxisCamera axis = new AxisCamera("axis", "axis-camera");
-		 * CameraServer camera = CameraServer.getInstance();
-		 * //camera.addCamera(axis); UsbCamera usb = new UsbCamera("usb", 0);
-		 * //UsbCamera usb = camera.startAutomaticCapture("usb", 0);
-		 * usb.setResolution(1280, 720); usb.setFPS(1);
-		 * camera.startAutomaticCapture(usb); //UsbCamera usb2 =
-		 * camera.startAutomaticCapture("usb2", 0); AxisCamera axis =
-		 * camera.addAxisCamera("10.29.96.11"); axis.setResolution(800, 600);
-		 * //camera.startAutomaticCapture(axis);
-		 * 
+		 * camera.addAxisCamera("10.29.96.11");
 		 */
-	
-		
+		// UsbCamera usb = camera.startAutomaticCapture("usb", 0);
+		// usb.setResolution(1280, 720);
+
+		visionThread = new Thread(() -> {
+			// AxisCamera axisCamera =
+			// CameraServer.getInstance().addAxisCamera("axis", "axis-camera");
+			// axisCamera.setResolution(640, 480);
+			CameraServer camera = CameraServer.getInstance();
+			UsbCamera usb = camera.startAutomaticCapture("usb", 0);
+			usb.setResolution(1280, 720);
+			CvSink cvsink = CameraServer.getInstance().getVideo();
+			CvSource outputStream = CameraServer.getInstance().putVideo("rectangle", 640, 480);
+			Mat mat = new Mat();
+			while (!Thread.interrupted()) {
+				if (cvsink.grabFrame(mat) == 0) {
+					outputStream.notifyError(cvsink.getError());
+					continue;
+				}
+				Imgproc.rectangle(mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
+				outputStream.putFrame(mat);
+			}
+		});
+		visionThread.setDaemon(true);
+		visionThread.start();
+
 		oi = new OI();
 		stickDrive = new Joystick(STICKDRIVE);
-		chooser =  new SendableChooser<>();
-		chooser.addDefault("Default Auto", new GearOnLeftPeg(this));
+		//chooser = new SendableChooser<>();
 		// chooser.addObject("My Auto", new MyAutoCommand());
-		SmartDashboard.putData("Auto mode", chooser);
+		//SmartDashboard.putData("Auto mode", chooser);
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
 		drive = new Drive(this);
 		driveToggle = new Toggle(stickDrive, DRIVETOGGLEJOYSTICKBUTTON);
 
 		gyro = new AHRS(SPI.Port.kMXP);
 		gyro.reset();
-		auto = new AutonomousMethods(this);
+		auto = new AutonomousPrograms(this);
 		SmartDashboard.putNumber("Autonomous Select", 0);
 		SmartDashboard.putNumber("auto turn angle", 0);
 		SmartDashboard.putNumber("auto first drive distance", 0);
@@ -162,7 +186,7 @@ public class Robot extends IterativeRobot {
 		gyro.reset();
 		drive.arcadeDrive();
 
-		//drive.encoderReset();
+		// drive.encoderReset();
 	}
 
 	/**
@@ -170,29 +194,27 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		
-	Scheduler.getInstance().run();
-		
+
+		Scheduler.getInstance().run();
 
 		if (autoFinished == false) // if autonomous is not finished keep going
 		{
 			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
-		switch(autonomous){
-		case 0:
-			auto.stop();//do nothing
-			break;
-		case 1:
-			auto.moveForwardTurnLeftPlaceGear();
-			break;
-		default:
-			auto.stop();
-			break;
-		}
-		autoFinished = true;
+			switch (autonomous) {
+			case 0:
+				auto.stop();// do nothing
+				break;
+			case 1:
+				auto.moveForwardTurnLeftPlaceGear();
+				break;
+			default:
+				auto.stop();
+				break;
+			}
+			autoFinished = true;
 		} else { // if autonomous has finished
 			auto.stop();
 		}
-		
 
 	}
 
@@ -219,7 +241,8 @@ public class Robot extends IterativeRobot {
 		// display stuff
 		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
-		//SmartDashboard.putBoolean("inverted", drive.frontLeftMotor.getFrontLeftEncoder());
+		// SmartDashboard.putBoolean("inverted",
+		// drive.frontLeftMotor.getFrontLeftEncoder());
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
@@ -239,14 +262,15 @@ public class Robot extends IterativeRobot {
 	public SendableChooser<Command> getChooser() {
 		return chooser;
 	}
-	public void wait(int sleep){
-	try {	
-		Thread.sleep(sleep);
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+
+	public void wait(int sleep) {
+		try {
+			Thread.sleep(sleep);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-}
 
 	public RobotDrive getRobotDrive() {
 		return robotDrive;
@@ -315,6 +339,4 @@ public class Robot extends IterativeRobot {
 	public boolean isAutoFinished() {
 		return autoFinished;
 	}
-
-
 }

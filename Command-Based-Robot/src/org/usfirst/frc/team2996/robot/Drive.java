@@ -17,7 +17,7 @@ public class Drive {
 	CANTalon frontRightMotor;
 	CANTalon backLeftMotor;
 	CANTalon backRightMotor;
-	
+
 	Solenoid solenoid1;
 	Solenoid solenoid2;
 	Solenoid solenoid3;
@@ -47,7 +47,7 @@ public class Drive {
 		this.backLeftMotor = robot.getBackLeftMotor();
 		this.backRightMotor = robot.getBackRightMotor();
 		this.gyro = robot.getGyro();
-		
+
 		frontLeftMotor.configEncoderCodesPerRev(20);
 		frontRightMotor.configEncoderCodesPerRev(20);
 		backLeftMotor.configEncoderCodesPerRev(20);
@@ -72,7 +72,8 @@ public class Drive {
 	public void arcadeDrive() {
 		driveState = false; // in arcade
 		invertMotors(false, false, false, false);
-		robotDrive.arcadeDrive(Threshold.threshold((Robot.ARCADEDRIVEYAXISINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEYAXIS)),
+		robotDrive.arcadeDrive(
+				Threshold.threshold((Robot.ARCADEDRIVEYAXISINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEYAXIS)),
 				Threshold.threshold((Robot.ARCADEDRIVEROTATEINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEROTATE)));
 		SetSolenoids(true, true, true, true);
 
@@ -84,7 +85,8 @@ public class Drive {
 		robotDrive.mecanumDrive_Cartesian(
 				Threshold.threshold((Robot.MECANUMDRIVEXAXISINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEXAXIS)),
 				Threshold.threshold((Robot.MECANUMDRIVEYAXISINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEYAXIS)),
-				Threshold.threshold((Robot.MECANUMDRIVEROTATEINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEROTATE)), 0.0);
+				Threshold.threshold((Robot.MECANUMDRIVEROTATEINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEROTATE)),
+				0.0);
 		SetSolenoids(false, false, false, false);
 
 	}

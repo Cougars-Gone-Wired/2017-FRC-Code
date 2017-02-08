@@ -99,6 +99,7 @@ public class AutonomousMethods {
 
 		drive.robotDrive.tankDrive(0.0, 0.0);
 		drive.encoderReset();
+		robot.wait(100);
 		return encoderAverage;
 
 	}
@@ -166,20 +167,21 @@ public class AutonomousMethods {
 		return average;
 	}
 	
-	public void moveForwardTurnLeftPlaceGear(){
-		   moveStraight("forward", (int)SmartDashboard.getNumber("auto first drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
-   			robot.wait(100);
-			turn("right", SmartDashboard.getNumber("auto turn angle", 0));
-			robot.wait(100);
-			moveStraight("forward", (int)SmartDashboard.getNumber("auto second drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
-			drive.robotDrive.tankDrive(0, 0);
-	}
+	
 	public void stop(){
 		drive.robotDrive.tankDrive(0, 0);
 	}
 	public static void sleep(){
 		try {
 			Thread.sleep(Robot.SLEEPAUTO);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void sleep(int x){
+		try {
+			Thread.sleep(x);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
