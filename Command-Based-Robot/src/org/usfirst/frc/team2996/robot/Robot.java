@@ -39,7 +39,7 @@ public class Robot extends IterativeRobot {
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
 	Command autonomousCommand;
-	SendableChooser<Command> chooser = new SendableChooser<>();
+//	SendableChooser<Command> chooser = new SendableChooser<>();
 
 	RobotDrive robotDrive;
 	Thread visionThread;
@@ -258,10 +258,6 @@ public class Robot extends IterativeRobot {
 		LiveWindow.run();
 	}
 
-	// getters and setters
-	public SendableChooser<Command> getChooser() {
-		return chooser;
-	}
 
 	public void wait(int sleep) {
 		try {
