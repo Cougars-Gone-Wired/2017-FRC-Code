@@ -39,7 +39,6 @@ public class Robot extends IterativeRobot {
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
 	Command autonomousCommand;
-//	SendableChooser<Command> chooser = new SendableChooser<>();
 
 	RobotDrive robotDrive;
 	Thread visionThread;
@@ -95,6 +94,8 @@ public class Robot extends IterativeRobot {
 	Toggle driveToggle;
 	AutonomousPrograms auto;
 	boolean autoFinished; // checks if autonomous is finished
+	Mat visionMat;
+	GripPipeline gp;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -102,11 +103,14 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-
+		gp = new GripPipeline();
+		CameraServer camera = CameraServer.getInstance();
+		UsbCamera usb = camera.startAutomaticCapture("usb", 0);
+		usb.setResolution(1280, 720);
 		// CameraServer camera = CameraServer.getInstance();
-		/*
-		 * camera.addAxisCamera("10.29.96.11");
-		 */
+		
+		 // camera.addAxisCamera("10.29.96.11");
+		 
 		// UsbCamera usb = camera.startAutomaticCapture("usb", 0);
 		// usb.setResolution(1280, 720);
 
@@ -114,9 +118,6 @@ public class Robot extends IterativeRobot {
 			// AxisCamera axisCamera =
 			// CameraServer.getInstance().addAxisCamera("axis", "axis-camera");
 			// axisCamera.setResolution(640, 480);
-			CameraServer camera = CameraServer.getInstance();
-			UsbCamera usb = camera.startAutomaticCapture("usb", 0);
-			usb.setResolution(1280, 720);
 			CvSink cvsink = CameraServer.getInstance().getVideo();
 			CvSource outputStream = CameraServer.getInstance().putVideo("rectangle", 640, 480);
 			Mat mat = new Mat();
@@ -125,8 +126,9 @@ public class Robot extends IterativeRobot {
 					outputStream.notifyError(cvsink.getError());
 					continue;
 				}
-				Imgproc.rectangle(mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
+				//Imgproc.rectangle(mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
 				outputStream.putFrame(mat);
+				//gp.process(mat);
 			}
 		});
 		visionThread.setDaemon(true);
@@ -236,6 +238,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run(); // driverstation stuff
+		gp.process(visionMat);
 		boolean state = driveToggle.toggle();
 		drive.drive(state);
 		// display stuff
