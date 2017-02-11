@@ -209,7 +209,18 @@ public class Robot extends IterativeRobot {
 //            }
 //		}
 //	});
-//	
+		
+		
+//		visionThread = new VisionThread(usbCam, new GripPipeline(), pipeline -> {
+//		pipeline.process(visionMat);
+//		if (!pipeline.filterContoursOutput().isEmpty()) {
+//            Rect rectangle = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+//            synchronized (imageLock) {
+//                //centerX = rectangle.x + (rectangle.width / 2);
+//            }
+//		}
+//	});
+		
 //	visionThread.setDaemon(true);
 //	visionThread.start();
 	}
