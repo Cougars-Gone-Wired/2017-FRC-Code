@@ -16,7 +16,7 @@ public class AutonomousMethods {
 		this.robot = robot;
 		this.gyro = robot.getGyro();
 		this.drive = robot.getDrive();
-		this.wheelDiameter = Robot.WHEELDIAMETER;
+		this.wheelDiameter = Robot.WHEEL_DIAMETER;
 	}
 
 	public double turn(String direction, double angle) {
@@ -55,7 +55,7 @@ public class AutonomousMethods {
 		
 		sleep();
 		
-	double distPerTick = (Math.PI * wheelDiameter) / Robot.TICKSPERREVOLUTION;
+	double distPerTick = (Math.PI * wheelDiameter) / Robot.TICKS_PER_REVOLUTION;
 	double neededEncCounts = distance / distPerTick;
 	neededEncCounts = Math.round(neededEncCounts);
 	SmartDashboard.putNumber("neededEncCounts", neededEncCounts);
@@ -173,7 +173,7 @@ public class AutonomousMethods {
 	}
 	public static void sleep(){
 		try {
-			Thread.sleep(Robot.SLEEPAUTO);
+			Thread.sleep(Robot.SLEEP_AUTO);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

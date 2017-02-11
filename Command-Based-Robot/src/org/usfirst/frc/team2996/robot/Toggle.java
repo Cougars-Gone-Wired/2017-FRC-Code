@@ -27,4 +27,9 @@ public class Toggle {
 		}
 		return state;
 	}
+	
+	public boolean reset(){
+		state = false;
+		return state;
+	}
 }

@@ -73,8 +73,8 @@ public class Drive {
 		driveState = false; // in arcade
 		invertMotors(false, false, false, false);
 		robotDrive.arcadeDrive(
-				Threshold.threshold((Robot.ARCADEDRIVEYAXISINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEYAXIS)),
-				Threshold.threshold((Robot.ARCADEDRIVEROTATEINVERT) * stick.getRawAxis(Robot.ARCADEDRIVEROTATE)));
+				Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)),
+				Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)));
 		SetSolenoids(true, true, true, true);
 
 	}
@@ -83,9 +83,9 @@ public class Drive {
 		driveState = true;// in mechanum
 		invertMotors(true, false, true, false);
 		robotDrive.mecanumDrive_Cartesian(
-				Threshold.threshold((Robot.MECANUMDRIVEXAXISINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEXAXIS)),
-				Threshold.threshold((Robot.MECANUMDRIVEYAXISINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEYAXIS)),
-				Threshold.threshold((Robot.MECANUMDRIVEROTATEINVERT) * stick.getRawAxis(Robot.MECANUMDRIVEROTATE)),
+				Threshold.threshold((Robot.MECANUM_DRIVE_XAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_XAXIS)),
+				Threshold.threshold((Robot.MECANUM_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVEY_AXIS)),
+				Threshold.threshold((Robot.MECANUM_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_ROTATE)),
 				0.0);
 		SetSolenoids(false, false, false, false);
 
@@ -116,18 +116,18 @@ public class Drive {
 	}
 
 	public int getFrontLeftEncoder() {
-		return (Robot.FRONTLEFTMOTORNEGATENCODER) * frontLeftMotor.getEncPosition();
+		return (Robot.FRONT_LEFT_MOTOR_NEGATE_ENCODER) * frontLeftMotor.getEncPosition();
 	}
 
 	public int getFrontRightEncoder() {
-		return (Robot.FRONTRIGHTMOTORNEGATENCODER) * frontRightMotor.getEncPosition();
+		return (Robot.FRONT_RIGHT_MOTOR_NEGATE_ENCODER) * frontRightMotor.getEncPosition();
 	}
 
 	public int getBackLeftEncoder() {
-		return (Robot.BACKLEFTMOTORNEGATENCODER) * backLeftMotor.getEncPosition();
+		return (Robot.BACK_LEFT_MOTOR_NEGATE_ENCODER) * backLeftMotor.getEncPosition();
 	}
 
 	public int getBackRightEncoder() {
-		return (Robot.BACKRIGHTMOTORNEGATENCODER) * backRightMotor.getEncPosition();
+		return (Robot.BACK_RIGHT_MOTOR_NEGATE_ENCODER) * backRightMotor.getEncPosition();
 	}
 }
