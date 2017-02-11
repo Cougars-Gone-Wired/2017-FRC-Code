@@ -181,7 +181,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("auto first drive distance", 0);
 		SmartDashboard.putNumber("auto second drive distance", 0);
 		SmartDashboard.putNumber("auto drive speed", 0);
-		SmartDashboard.putNumber("Autonomous Shooter RPM", 0);
 		
 		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		shooterMotor.configEncoderCodesPerRev(20);

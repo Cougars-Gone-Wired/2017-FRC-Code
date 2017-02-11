@@ -166,7 +166,7 @@ public class AutonomousMethods {
 		
 		while(timer.get() <= shootTime){
 			intakeMotor.set(1);
-			shooterMotor.set(SmartDashboard.getNumber("Autonomous Shooter RPM", 0));
+			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
 		}
 		
 		sleep();
