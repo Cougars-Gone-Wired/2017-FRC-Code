@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SPI;
 
 import org.opencv.core.Core;
@@ -30,6 +31,7 @@ import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
+import com.ctre.CANTalon.VelocityMeasurementPeriod;
 import com.kauailabs.navx.frc.AHRS;
 
 /**
@@ -44,6 +46,7 @@ public class Robot extends IterativeRobot {
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
 	Command autonomousCommand;
+	Timer timer = new Timer();
 
 	public Command getAutonomousCommand() {
 		return autonomousCommand;
@@ -57,6 +60,7 @@ public class Robot extends IterativeRobot {
 	static final int AUGER_MOTOR_ID = 5;
 	static final int DEFLECTOR_MOTOR_ID = 6;
 	static final int CLIMBER_MOTOR_ID = 7;
+	static final int INTAKE_MOTOR_ID = 8;
 	
 	static final int FRONT_LEFT_MOTOR_SOLENOID = 0;
 	static final int FRONT_RIGHT_MOTOR_SOLENOID = 1;
@@ -112,23 +116,26 @@ public class Robot extends IterativeRobot {
 	CANTalon shooterMotor = new CANTalon(SHOOTER_MOTOR_ID);
 	CANTalon augerMotor = new CANTalon(AUGER_MOTOR_ID);
 	CANTalon deflectorMotor = new CANTalon(DEFLECTOR_MOTOR_ID);
-	CANTalon climberMotor = new CANTalon(CLIMBER_MOTOR_ID);  
-	
+	CANTalon climberMotor = new CANTalon(CLIMBER_MOTOR_ID);
+	CANTalon intakeMotor = new CANTalon(INTAKE_MOTOR_ID);
+
 	Compressor compressor = new Compressor();
 	
 	Solenoid solenoid1 = new Solenoid(FRONT_LEFT_MOTOR_SOLENOID);
 	Solenoid solenoid2 = new Solenoid(FRONT_RIGHT_MOTOR_SOLENOID);
 	Solenoid solenoid3 = new Solenoid(BACK_LEFT_MOTOR_SOLENOID);
 	Solenoid solenoid4 = new Solenoid(BACK_RIGHT_MOTOR_SOLENOID);
-//	Solenoid gearSolenoidRight = new Solenoid(GEAR_SOLENOID_RIGHT);
-//	Solenoid gearSolenoidLeft = new Solenoid(GEAR_SOLENOID_LEFT);
+	Solenoid gearSolenoidRight = new Solenoid(GEAR_SOLENOID_RIGHT);
+	Solenoid gearSolenoidLeft = new Solenoid(GEAR_SOLENOID_LEFT);
 
 	Drive drive;
 	Toggle driveToggle;
+	Toggle gearToggle;
 	AutonomousPrograms auto;
 	Climber climber;
 	Shooter PIDShooter;
 	RobotDrive robotDrive;
+	Intake intake;
 	boolean autoFinished; // checks if autonomous is finished
 	
 //	Thread visionThread;
@@ -152,22 +159,34 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		oi = new OI();
+		
 		stickDrive = new Joystick(0);
 		stickManipulator = new Joystick(1);
+		
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
+		driveToggle = new Toggle(stickDrive, DRIVE_TOGGLE_JOYSTICK_BUTTON);
+		
+		gearToggle = new Toggle(stickManipulator, 2);
+		
+		gyro = new AHRS(SPI.Port.kMXP);
+		
 		drive = new Drive(this);
 		PIDShooter = new Shooter(this);
-		driveToggle = new Toggle(stickDrive, DRIVE_TOGGLE_JOYSTICK_BUTTON);
-		gyro = new AHRS(SPI.Port.kMXP);
 		auto = new AutonomousPrograms(this);
+		intake = new Intake(this);
+		
 		SmartDashboard.putNumber("Autonomous Select", 0);
+		SmartDashboard.putString("Field Side", null);
 		SmartDashboard.putNumber("auto turn angle", 0);
 		SmartDashboard.putNumber("auto first drive distance", 0);
 		SmartDashboard.putNumber("auto second drive distance", 0);
 		SmartDashboard.putNumber("auto drive speed", 0);
+		SmartDashboard.putNumber("Autonomous Shooter RPM", 0);
 		
 		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		shooterMotor.configEncoderCodesPerRev(20);
+//		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms);
+//		shooterMotor.SetVelocityMeasurementWindow(0);
 		SmartDashboard.putNumber("P", 1);
 		SmartDashboard.putNumber("I", 1);  
 		SmartDashboard.putNumber("D", 1);
@@ -224,7 +243,6 @@ public class Robot extends IterativeRobot {
 //	visionThread.setDaemon(true);
 //	visionThread.start();
 	}
-
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
 	 * You can use it to reset any subsystem information you want to clear when
@@ -269,7 +287,7 @@ public class Robot extends IterativeRobot {
 
 		Scheduler.getInstance().run();
 
-		if (autoFinished == false) // if autonomous is not finished keep going
+		if (autoFinished == false && SmartDashboard.getString("Field Side", null) == "blue") // if autonomous is not finished keep going
 		{
 			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
 			switch (autonomous) {
@@ -277,7 +295,7 @@ public class Robot extends IterativeRobot {
 				auto.stop();// do nothing
 				break;
 			case 1:
-				auto.moveForwardTurnLeftPlaceGear();
+				auto.moveForwardTurnLeftPlaceGearBlue();
 				break;
 			default:
 				auto.stop();
@@ -288,7 +306,23 @@ public class Robot extends IterativeRobot {
 			auto.stop();
 		}
 		
-
+		if (autoFinished == false && SmartDashboard.getString("Field Side", null) == "red"){
+			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
+			switch (autonomous) {
+			case 0:
+				auto.stop();// do nothing
+				break;
+			case 1:
+				auto.moveForwardTurnLeftPlaceGearRed();
+				break;
+			default:
+				auto.stop();
+				break;
+			}
+			autoFinished = true;
+		} else { // if autonomous has finished
+			auto.stop();
+		}
 	}
 
 	@Override
@@ -308,12 +342,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		boolean state = driveToggle.toggle();
+		drive.drive(state);
+		PIDShooter.shooter();
+		PIDShooter.auger();
+		PIDShooter.deflector();
+		intake.intakeOuttake();
+		intake.gearActivation();
 //		SmartDashboard.putNumber("CenterX", centerX);
 //		SmartDashboard.putNumber("CenterY", centerY);
 		Scheduler.getInstance().run(); // driverstation stuff
-		boolean state = driveToggle.toggle();
-		drive.drive(state);
-		// display stuff
 		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
@@ -390,6 +428,10 @@ public class Robot extends IterativeRobot {
 	public CANTalon getClimberMotor() {
 		return climberMotor;
 	}
+	
+	public CANTalon getIntakeMotor() {
+		return intakeMotor;
+	}
 
 	public Compressor getCompressor() {
 		return compressor;
@@ -410,6 +452,13 @@ public class Robot extends IterativeRobot {
 	public Solenoid getSolenoid4() {
 		return solenoid4;
 	}
+	
+	public Solenoid getGearSolenoidRight() {
+		return gearSolenoidRight;
+	}
+	public Solenoid getGearSolenoidLeft() {
+		return gearSolenoidLeft;
+	}
 
 	public Drive getDrive() {
 		return drive;
@@ -426,4 +475,29 @@ public class Robot extends IterativeRobot {
 	public boolean isAutoFinished() {
 		return autoFinished;
 	}
+	
+	public Timer getTimer() {
+		return timer;
+	}
+	
+//	public DigitalInput getUpperLimit() {
+//		return upperLimit;
+//	}
+//
+//	public DigitalInput getLowerLimit() {
+//		return lowerLimit;
+//	}
+//
+//	public Toggle getToggleUpButton() {
+//		return toggleUpButton;
+//	}
+//
+//	public Toggle getToggleDownButton() {
+//		return toggleDownButton;
+//	}
+	
+	public Toggle getGearToggle() {
+		return gearToggle;
+	}
+
 }

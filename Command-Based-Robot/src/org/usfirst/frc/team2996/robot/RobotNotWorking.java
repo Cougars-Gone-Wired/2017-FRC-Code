@@ -214,26 +214,26 @@ public class RobotNotWorking extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 
-		Scheduler.getInstance().run();
-
-		if (autoFinished == false) // if autonomous is not finished keep going
-		{
-			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
-			switch (autonomous) {
-			case 0:
-				auto.stop();// do nothing
-				break;
-			case 1:
-				auto.moveForwardTurnLeftPlaceGear();
-				break;
-			default:
-				auto.stop();
-				break;
-			}
-			autoFinished = true;
-		} else { // if autonomous has finished
-			auto.stop();
-		}
+//		Scheduler.getInstance().run();
+//
+//		if (autoFinished == false) // if autonomous is not finished keep going
+//		{
+//			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
+//			switch (autonomous) {
+//			case 0:
+//				auto.stop();// do nothing
+//				break;
+//			case 1:
+//				auto.moveForwardTurnLeftPlaceGear();
+//				break;
+//			default:
+//				auto.stop();
+//				break;
+//			}
+//			autoFinished = true;
+//		} else { // if autonomous has finished
+//			auto.stop();
+//		}
 
 	}
 

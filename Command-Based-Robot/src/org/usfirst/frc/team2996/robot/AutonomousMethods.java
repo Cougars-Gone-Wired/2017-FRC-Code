@@ -1,9 +1,13 @@
 package org.usfirst.frc.team2996.robot;
 
+import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
+import com.ctre.CANTalon.TalonControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousMethods {
@@ -11,15 +15,22 @@ public class AutonomousMethods {
 	public AHRS gyro;
 	public Drive drive;
 	public Robot robot;
+	public Timer timer;
+	
+	public CANTalon shooterMotor;
+	public CANTalon intakeMotor;
 
 	public AutonomousMethods(Robot robot) {
 		this.robot = robot;
 		this.gyro = robot.getGyro();
 		this.drive = robot.getDrive();
 		this.wheelDiameter = Robot.WHEEL_DIAMETER;
+		this.shooterMotor = robot.getShooterMotor();
+		this.intakeMotor = robot.getIntakeMotor();
+		this.timer = robot.getTimer();
 	}
 
-	public double turn(String direction, double angle) {
+	public double turn(String direction, double angle, double speed) { //add string parameter for side of field (red or blue)
 		gyro.reset();
 		
 		sleep();
@@ -32,12 +43,12 @@ public class AutonomousMethods {
 		if ((direction.equals("left")) && DriverStation.getInstance().isAutonomous()) {
 			while (gyro.getAngle() > -angle) {
 				SmartDashboard.putNumber("gyro", gyro.getAngle());
-				drive.robotDrive.arcadeDrive(0, 0.6);// rotate speed in voltage
+				drive.robotDrive.tankDrive(-speed, speed);// rotate speed in voltage
 			}
 		} else {
 			while ((gyro.getAngle() < angle) && DriverStation.getInstance().isAutonomous()) {
 				SmartDashboard.putNumber("gyro", gyro.getAngle());
-				drive.robotDrive.arcadeDrive(0, -0.6);
+				drive.robotDrive.tankDrive(speed, -speed);
 			}
 		}
 		double finalAngle = gyro.getAngle();
@@ -45,7 +56,7 @@ public class AutonomousMethods {
 		return finalAngle;
 	}
 
-	public double moveStraight(String direction, int distance, double speed) {
+	public double moveStraight(String direction, int distance, double speed) { // add string parameter for side of field (red or blue)
 		double encoderAverage = 0;
 		int encodersWorking = 0;
 		direction = direction.toLowerCase();
@@ -104,7 +115,7 @@ public class AutonomousMethods {
 
 	}
 
-	public double strafe(String direction, int distance, double speed) {
+	public double strafe(String direction, int distance, double speed) { // add string parameter for the side of field (red or blue)
 		drive.mecanumDrive();
 		gyro.reset();
 		drive.encoderReset();
@@ -136,6 +147,30 @@ public class AutonomousMethods {
 
 		return encoderAverage;
 	}
+	
+	public void shoot(double shootTime){
+		
+		sleep();
+		
+		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		shooterMotor.changeControlMode(TalonControlMode.Speed);
+		intakeMotor.changeControlMode(TalonControlMode.PercentVbus);
+		shooterMotor.reverseSensor(false);
+		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
+		shooterMotor.configPeakOutputVoltage(+12.0f, 0.0f);
+		shooterMotor.configEncoderCodesPerRev(20);
+		shooterMotor.reverseSensor(Robot.SHOOTER_REVERSE_SENSOR);
+		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
+		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
+		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
+		
+		while(timer.get() <= shootTime){
+			intakeMotor.set(1);
+			shooterMotor.set(SmartDashboard.getNumber("Autonomous Shooter RPM", 0));
+		}
+		
+		sleep();
+	}
 
 	public int encodersWorking() { // calculates number of encoders working
 		int encodersWorking = 4;
@@ -152,8 +187,7 @@ public class AutonomousMethods {
 			encodersWorking--;
 		}
 
-		if (encodersWorking == 0) { // starts the encoder counts at 1 so no zero
-									// division
+		if (encodersWorking == 0) { // starts the encoder counts at 1 so no zero division
 			encodersWorking = 1;
 		}
 		return encodersWorking;

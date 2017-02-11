@@ -17,12 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  *
  */
 public class Shooter {
-	private CANTalon auger;
-	private CANTalon shooter;
+	private CANTalon augerMotor;
+	private CANTalon shooterMotor;
 	private CANTalon deflectorMotor;
+	private CANTalon intakeMotor;
 	private Joystick stick;
 	private int shooterForwardButton;
-	private int shooterBackwardButton;
 	private int augerForwardButton;
 	private int augerBackwardButton;
 //	private Toggle toggleUpButton;
@@ -37,48 +37,50 @@ public class Shooter {
 	 * 
 	 */
 	public Shooter(Robot robot) {
-		this.auger = robot.getAugerMotor();
-		this.shooter = robot.getShooterMotor();
+		this.augerMotor = robot.getAugerMotor();
+		this.shooterMotor = robot.getShooterMotor();
 		this.stick = robot.getStickManipulator();
 		this.deflectorMotor = robot.getDeflectorMotor();
+		this.intakeMotor = robot.getIntakeMotor();
 		this.shooterForwardButton = 1;
-		this.shooterBackwardButton = 2;
 		this.augerForwardButton = 3;
 		this.augerBackwardButton = 4;
+		
 		//this.toggleUpButton = robot.getToggleUpButton();
 		//this.toggleDownButton = robot.getToggleDownButton();
 		//this.upperLimit = robot.getUpperLimit();
 		//this.lowerLimit = robot.getLowerLimit();
 		
-		shooter.setProfile(0);
-		shooter.setF(0.1097);
-		shooter.setP(0.22);
-		shooter.setI(0);
-		shooter.setD(0);
-		shooter.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-		shooter.reverseSensor(false);
-		shooter.configNominalOutputVoltage(+0.0f, -0.0f);
-		shooter.configPeakOutputVoltage(+12.0f, 0.0f);
-		shooter.configEncoderCodesPerRev(20);
-		shooter.reverseSensor(robot.SHOOTER_REVERSE_SENSOR);
+		shooterMotor.setProfile(0);
+		shooterMotor.setF(0.1097);
+		shooterMotor.setP(0.22);
+		shooterMotor.setI(0);
+		shooterMotor.setD(0);
+		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		shooterMotor.reverseSensor(false);
+		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
+		shooterMotor.configPeakOutputVoltage(+12.0f, 0.0f);
+		shooterMotor.configEncoderCodesPerRev(20);
+		shooterMotor.reverseSensor(robot.SHOOTER_REVERSE_SENSOR);
 		
-		auger.changeControlMode(TalonControlMode.PercentVbus);
+		augerMotor.changeControlMode(TalonControlMode.PercentVbus);
 	}
 	
 	/**
 	 * Changes the voltage of the shooter CANTalon depending on which button is pressed
 	 */
 	public void shooter() {
-		shooter.setP(SmartDashboard.getNumber("P", 1));
-		shooter.setI(SmartDashboard.getNumber("I", 1));
-		shooter.setD(SmartDashboard.getNumber("D", 1));
+		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
+		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
+		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
 
 		if (stick.getRawButton(shooterForwardButton)) {
-			shooter.changeControlMode(TalonControlMode.Speed);
-			shooter.set(SmartDashboard.getNumber("shooter speed", 0));
+			shooterMotor.changeControlMode(TalonControlMode.Speed);
+			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
+			intakeMotor.set(1);
 		}  else {
-			shooter.changeControlMode(TalonControlMode.PercentVbus);
-			shooter.set(0);
+			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
+			shooterMotor.set(0);
 		}
 
 	}
@@ -88,14 +90,14 @@ public class Shooter {
 	 */
 	public void auger() {
 		if (stick.getRawButton(augerForwardButton)) {
-			auger.changeControlMode(TalonControlMode.PercentVbus);
-			auger.set(SmartDashboard.getNumber("auger voltage", 0));
+			augerMotor.changeControlMode(TalonControlMode.PercentVbus);
+			augerMotor.set(SmartDashboard.getNumber("auger voltage", 0));
 		} else if (stick.getRawButton(augerBackwardButton)) {
-			auger.changeControlMode(TalonControlMode.PercentVbus);
-			auger.set(-(SmartDashboard.getNumber("auger voltage", 0)));
+			augerMotor.changeControlMode(TalonControlMode.PercentVbus);
+			augerMotor.set(-(SmartDashboard.getNumber("auger voltage", 0)));
 		} else {
-			auger.changeControlMode(TalonControlMode.PercentVbus);
-			auger.set(0);
+			augerMotor.changeControlMode(TalonControlMode.PercentVbus);
+			augerMotor.set(0);
 		}			
 	}
 	public void deflector() {
