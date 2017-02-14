@@ -3,8 +3,6 @@ package org.usfirst.frc.team2996.robot;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -51,19 +49,6 @@ public class Shooter {
 		//this.upperLimit = robot.getUpperLimit();
 		//this.lowerLimit = robot.getLowerLimit();
 		
-		shooterMotor.setProfile(0);
-		shooterMotor.setF(0.1097);
-		shooterMotor.setP(0.22);
-		shooterMotor.setI(0);
-		shooterMotor.setD(0);
-		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-		shooterMotor.reverseSensor(false);
-		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
-		shooterMotor.configPeakOutputVoltage(+12.0f, 0.0f);
-		shooterMotor.configEncoderCodesPerRev(20);
-		shooterMotor.reverseSensor(robot.SHOOTER_REVERSE_SENSOR);
-		
-		augerMotor.changeControlMode(TalonControlMode.PercentVbus);
 	}
 	
 	/**
@@ -85,6 +70,21 @@ public class Shooter {
 
 	}
 
+	public void shooter(boolean shoot) {
+		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
+		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
+		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
+
+		if (shoot) {
+			shooterMotor.changeControlMode(TalonControlMode.Speed);
+			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
+			intakeMotor.set(1);
+		}  else {
+			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
+			shooterMotor.set(0);
+		}
+
+	}
 	/**
 	 * Changes the voltage of the auger CANTalon depending on which button is pressed
 	 */
@@ -99,6 +99,10 @@ public class Shooter {
 			augerMotor.changeControlMode(TalonControlMode.PercentVbus);
 			augerMotor.set(0);
 		}			
+	}
+	
+	public void auger(double speed){
+		augerMotor.set(speed);
 	}
 	public void deflector() {
 		deflectorMotor.set(stick.getRawAxis(1));
@@ -116,5 +120,19 @@ public class Shooter {
 		}
 		*/
 		}
+	public void setPID(){
+		shooterMotor.setProfile(0);
+		shooterMotor.setF(0.1097);
+		shooterMotor.setP(0.22);
+		shooterMotor.setI(0);
+		shooterMotor.setD(0);
+		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		shooterMotor.reverseSensor(false);
+		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
+		shooterMotor.configPeakOutputVoltage(+12.0f, 0.0f);
+		shooterMotor.configEncoderCodesPerRev(Robot.ENCODER_CODES_PER_REV);
+		shooterMotor.reverseSensor(Robot.SHOOTER_REVERSE_SENSOR);
+		augerMotor.changeControlMode(TalonControlMode.PercentVbus);
+	}
 	}
 

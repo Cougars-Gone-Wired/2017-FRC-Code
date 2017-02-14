@@ -61,11 +61,12 @@ public class Robot extends IterativeRobot {
 	static final int DEFLECTOR_MOTOR_ID = 6;
 	static final int CLIMBER_MOTOR_ID = 7;
 	static final int INTAKE_MOTOR_ID = 8;
+	static final double AUGER_SPEED = 0.5;
+	
+	static final int ENCODER_CODES_PER_REV = 20;
 	
 	static final int FRONT_LEFT_MOTOR_SOLENOID = 0;
 	static final int FRONT_RIGHT_MOTOR_SOLENOID = 1;
-	static final int BACK_LEFT_MOTOR_SOLENOID = 2;
-	static final int BACK_RIGHT_MOTOR_SOLENOID = 3;
 	static final int GEAR_SOLENOID_RIGHT = 4;
 	static final int GEAR_SOLENOID_LEFT = 5;
 	
@@ -121,10 +122,8 @@ public class Robot extends IterativeRobot {
 
 	Compressor compressor = new Compressor();
 	
-	Solenoid solenoid1 = new Solenoid(FRONT_LEFT_MOTOR_SOLENOID);
-	Solenoid solenoid2 = new Solenoid(FRONT_RIGHT_MOTOR_SOLENOID);
-	Solenoid solenoid3 = new Solenoid(BACK_LEFT_MOTOR_SOLENOID);
-	Solenoid solenoid4 = new Solenoid(BACK_RIGHT_MOTOR_SOLENOID);
+	Solenoid forwardDriveSolenoid = new Solenoid(FRONT_LEFT_MOTOR_SOLENOID);
+	Solenoid backwardDriveSolenoid = new Solenoid(FRONT_RIGHT_MOTOR_SOLENOID);
 	Solenoid gearSolenoidRight = new Solenoid(GEAR_SOLENOID_RIGHT);
 	Solenoid gearSolenoidLeft = new Solenoid(GEAR_SOLENOID_LEFT);
 
@@ -158,6 +157,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
+		SmartDashboard.putNumber("Velocity Measurement Window", 0);
+		
 		oi = new OI();
 		
 		stickDrive = new Joystick(0);
@@ -166,7 +168,7 @@ public class Robot extends IterativeRobot {
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
 		driveToggle = new Toggle(stickDrive, DRIVE_TOGGLE_JOYSTICK_BUTTON);
 		
-		gearToggle = new Toggle(stickManipulator, 2);
+		gearToggle = new Toggle(stickManipulator, 2); // this toggles the gear intake
 		
 		gyro = new AHRS(SPI.Port.kMXP);
 		
@@ -175,8 +177,8 @@ public class Robot extends IterativeRobot {
 		auto = new AutonomousPrograms(this);
 		intake = new Intake(this);
 		
-		SmartDashboard.putNumber("Autonomous Select", 0);
-		SmartDashboard.putString("Field Side", null);
+		SmartDashboard.putNumber("Autonomous Select", 0); // the number put in the dashboard corresponds to an autonomous program
+		SmartDashboard.putString("Field Side", null); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 0);
 		SmartDashboard.putNumber("auto first drive distance", 0);
 		SmartDashboard.putNumber("auto second drive distance", 0);
@@ -184,14 +186,14 @@ public class Robot extends IterativeRobot {
 		
 		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		shooterMotor.configEncoderCodesPerRev(20);
-//		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms);
-//		shooterMotor.SetVelocityMeasurementWindow(0);
+		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
+		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
 		SmartDashboard.putNumber("P", 1);
-		SmartDashboard.putNumber("I", 1);  
+		SmartDashboard.putNumber("I", 1); //PID Stuff 
 		SmartDashboard.putNumber("D", 1);
 		SmartDashboard.putNumber("shooter speed", 0);
 		SmartDashboard.putNumber("auger voltage", 0);
-		SmartDashboard.putNumber("climber full speed", 0);
+		SmartDashboard.putNumber("climber full speed", 0);  //Dashboard variables that control motor speeds (mainly for testing)
 		SmartDashboard.putNumber("climber steady", 0);
 		SmartDashboard.putNumber("shooter test rpm", 0);
 		SmartDashboard.putNumber("shooter test velocity", 0);
@@ -270,12 +272,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		// Resets stuff
 		autoFinished = false;
 		compressor.setClosedLoopControl(true);
 		compressor.start();
 		gyro.reset();
 		drive.arcadeDrive();
-// 		drive.encoderReset();
+ 		drive.encoderReset();
 	}
 
 	/**
@@ -285,7 +288,8 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 
 		Scheduler.getInstance().run();
-
+		
+		//Runs the autonomous programs depending on the field side string (will make boolean)
 		if (autoFinished == false && SmartDashboard.getString("Field Side", null) == "blue") // if autonomous is not finished keep going
 		{
 			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
@@ -294,7 +298,7 @@ public class Robot extends IterativeRobot {
 				auto.stop();// do nothing
 				break;
 			case 1:
-				auto.moveForwardTurnLeftPlaceGearBlue();
+				auto.moveForwardTurnRightPlaceGearBlue();
 				break;
 			default:
 				auto.stop();
@@ -312,7 +316,7 @@ public class Robot extends IterativeRobot {
 				auto.stop();// do nothing
 				break;
 			case 1:
-				auto.moveForwardTurnLeftPlaceGearRed();
+				auto.moveForwardTurnRightPlaceGearRed();
 				break;
 			default:
 				auto.stop();
@@ -341,6 +345,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		//Runs the functions for teleop in the other classes
 		boolean state = driveToggle.toggle();
 		drive.drive(state);
 		PIDShooter.shooter();
@@ -348,10 +353,9 @@ public class Robot extends IterativeRobot {
 		PIDShooter.deflector();
 		intake.intakeOuttake();
 		intake.gearActivation();
-//		SmartDashboard.putNumber("CenterX", centerX);
-//		SmartDashboard.putNumber("CenterY", centerY);
 		Scheduler.getInstance().run(); // driverstation stuff
 		SmartDashboard.putNumber("gyro", gyro.getAngle());
+		//Displays the encoder for each motor (for debugging)
 		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
@@ -376,6 +380,7 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
+	//SO MANY GETTERS
 	public RobotDrive getRobotDrive() {
 		return robotDrive;
 	}
@@ -436,20 +441,12 @@ public class Robot extends IterativeRobot {
 		return compressor;
 	}
 
-	public Solenoid getSolenoid1() {
-		return solenoid1;
+	public Solenoid getForwardDriveSolenoid() {
+		return forwardDriveSolenoid;
 	}
 
-	public Solenoid getSolenoid2() {
-		return solenoid2;
-	}
-
-	public Solenoid getSolenoid3() {
-		return solenoid3;
-	}
-
-	public Solenoid getSolenoid4() {
-		return solenoid4;
+	public Solenoid getBackwardDriveSolenoid() {
+		return backwardDriveSolenoid;
 	}
 	
 	public Solenoid getGearSolenoidRight() {

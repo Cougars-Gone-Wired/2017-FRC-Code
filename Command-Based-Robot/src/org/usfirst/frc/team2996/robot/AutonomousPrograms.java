@@ -8,7 +8,7 @@ public class AutonomousPrograms extends AutonomousMethods {
 		super(robot);
 	}
 
-	public void moveForwardTurnLeftPlaceGearBlue() {
+	public void moveForwardTurnRightPlaceGearBlue() {
 		moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0),
 				SmartDashboard.getNumber("auto drive speed", 0));
 		
@@ -24,13 +24,13 @@ public class AutonomousPrograms extends AutonomousMethods {
 		stop();
 	}
 	
-	public void moveForwardTurnLeftPlaceGearRed() {
+	public void moveForwardTurnRightPlaceGearRed() {
 		moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0),
 				SmartDashboard.getNumber("auto drive speed", 0));
 		
 		sleep();
 		
-		turn("right", -(SmartDashboard.getNumber("auto turn angle", 0)), 0.5);
+		turn("right", SmartDashboard.getNumber("auto turn angle", 0), 0.5);
 		
 		sleep();
 		

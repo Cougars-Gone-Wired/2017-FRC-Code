@@ -2,10 +2,7 @@ package org.usfirst.frc.team2996.robot;
 
 import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 
@@ -18,10 +15,8 @@ public class Drive {
 	CANTalon backLeftMotor;
 	CANTalon backRightMotor;
 
-	Solenoid solenoid1;
-	Solenoid solenoid2;
-	Solenoid solenoid3;
-	Solenoid solenoid4;
+	Solenoid forwardDriveSolenoid;
+	Solenoid backwardDriveSolenoid;
 
 	int wheelDiameter;
 	AHRS gyro;
@@ -38,10 +33,8 @@ public class Drive {
 	Drive(Robot robot) {
 		this.stick = robot.getStickDrive();
 		this.robotDrive = robot.getRobotDrive();
-		this.solenoid1 = robot.getSolenoid1();
-		this.solenoid2 = robot.getSolenoid2();
-		this.solenoid3 = robot.getSolenoid3();
-		this.solenoid4 = robot.getSolenoid4();
+		this.forwardDriveSolenoid = robot.getForwardDriveSolenoid();
+		this.backwardDriveSolenoid = robot.getBackwardDriveSolenoid();
 		this.frontLeftMotor = robot.getFrontLeftMotor();
 		this.frontRightMotor = robot.getFrontRightMotor();
 		this.backLeftMotor = robot.getBackLeftMotor();
@@ -54,11 +47,9 @@ public class Drive {
 		backRightMotor.configEncoderCodesPerRev(20);
 	}
 
-	public void SetSolenoids(boolean solenoid1, boolean solenoid2, boolean solenoid3, boolean solenoid4) {
-		this.solenoid1.set(solenoid1);
-		this.solenoid2.set(solenoid2);
-		this.solenoid3.set(solenoid3);
-		this.solenoid4.set(solenoid4);
+	public void SetSolenoids(boolean forwardDriveSolenoid, boolean backwardDriveSolenoid) {
+		this.forwardDriveSolenoid.set(forwardDriveSolenoid);
+		this.backwardDriveSolenoid.set(backwardDriveSolenoid);
 	}
 
 	public void invertMotors(boolean frontLeftMotorInvert, boolean frontRightMotorInvert, boolean backLeftMotorInvert,
@@ -75,7 +66,7 @@ public class Drive {
 		robotDrive.arcadeDrive(
 				Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)),
 				Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)));
-		SetSolenoids(true, true, true, true);
+		SetSolenoids(true, true);
 
 	}
 
@@ -87,7 +78,7 @@ public class Drive {
 				Threshold.threshold((Robot.MECANUM_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVEY_AXIS)),
 				Threshold.threshold((Robot.MECANUM_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_ROTATE)),
 				0.0);
-		SetSolenoids(false, false, false, false);
+		SetSolenoids(false, false);
 
 	}
 
