@@ -139,7 +139,7 @@ public class AutonomousMethods {
 		robot.PIDShooter.setPID();
 		
 		timer.start();
-		while(timer.get() <= shootTime){
+		while(timer.get() <= shootTime && DriverStation.getInstance().isAutonomous()){
 			robot.PIDShooter.auger(Robot.AUGER_SPEED);
 			robot.PIDShooter.shooter(true);
 		}
@@ -147,6 +147,15 @@ public class AutonomousMethods {
 			robot.PIDShooter.shooter(false);
 		
 		sleep();
+	}
+	
+	public void gearDrop(){
+		sleep();
+		timer.start();
+		while(timer.get() <= Robot.GEAR_DROP_TIME && DriverStation.getInstance().isAutonomous()){
+			robot.intake.intakeOuttake(true, false);
+			robot.intake.gearActivation(true);
+		}
 	}
 
 	public int encodersWorking() { // calculates number of encoders working

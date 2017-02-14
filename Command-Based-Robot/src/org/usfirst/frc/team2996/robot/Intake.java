@@ -49,6 +49,17 @@ public class Intake {
 			intakeMotor.set(0);
 		}
 	}
+	
+	public void intakeOuttake(boolean outtake, boolean stop) {
+		if(stop == true){
+			intakeMotor.set(0);
+		}else if(outtake == true){
+			intakeMotor.set(1);
+		}else{
+			intakeMotor.set(-1);
+		}
+		
+	}
 
 	/**
 	 * activates/deactivates the gear solenoid depending on button presses
@@ -57,6 +68,16 @@ public class Intake {
 	
 	public void gearActivation(){
 		if(gearActivateButton.toggle() == true){
+			gearSolenoidRight.set(true);
+			gearSolenoidLeft.set(true);
+		}else{
+			gearSolenoidRight.set(false);
+			gearSolenoidLeft.set(false);
+		}
+	}
+	
+	public void gearActivation(boolean down){
+		if(down == true){
 			gearSolenoidRight.set(true);
 			gearSolenoidLeft.set(true);
 		}else{
