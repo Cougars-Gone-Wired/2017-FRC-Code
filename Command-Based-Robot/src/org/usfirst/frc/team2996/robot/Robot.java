@@ -83,8 +83,14 @@ public class Robot extends IterativeRobot {
 	static final int MECANUM_DRIVE_XAXIS = 0;
 	static final int MECANUM_DRIVEY_AXIS = 1;
 	static final int MECANUM_DRIVE_ROTATE = 4;
-	static final int ARCADE_DRIVE_YAXIS_INVERT = -1;// IF -1 INVERT JOYSTICK, IF 1
-													// DONT
+	static final int ARCADE_DRIVE_YAXIS_INVERT = -1;// IF -1 INVERT JOYSTICK, IF 1 Dont
+	static final int INTAKE_AXIS = 3;
+	static final int OUTAKE_AXIS = 2;
+	static final int SHOOTER_BUTTON = 1;
+	static final int AUGER_FORWARD_BUTTON = 3;
+	static final int AUGER_BACKWARD_BUTTON = 4;
+	
+	
 	static final int ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 	static final int MECANUM_DRIVE_XAXIS_INVERT = 1;
 	static final int MECANUM_DRIVE_YAXIS_INVERT = -1;
@@ -188,6 +194,7 @@ public class Robot extends IterativeRobot {
 		shooterMotor.configEncoderCodesPerRev(20);
 		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
+		SmartDashboard.putNumber("F", 1);
 		SmartDashboard.putNumber("P", 1);
 		SmartDashboard.putNumber("I", 1); //PID Stuff 
 		SmartDashboard.putNumber("D", 1);

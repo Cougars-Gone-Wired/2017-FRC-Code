@@ -20,7 +20,7 @@ public class Shooter {
 	private CANTalon deflectorMotor;
 	private CANTalon intakeMotor;
 	private Joystick stick;
-	private int shooterForwardButton;
+	private int shooterButton;
 	private int augerForwardButton;
 	private int augerBackwardButton;
 //	private Toggle toggleUpButton;
@@ -40,9 +40,9 @@ public class Shooter {
 		this.stick = robot.getStickManipulator();
 		this.deflectorMotor = robot.getDeflectorMotor();
 		this.intakeMotor = robot.getIntakeMotor();
-		this.shooterForwardButton = 1;
-		this.augerForwardButton = 3;
-		this.augerBackwardButton = 4;
+		this.shooterButton = Robot.SHOOTER_BUTTON;
+		this.augerForwardButton = Robot.AUGER_FORWARD_BUTTON;
+		this.augerBackwardButton = Robot.AUGER_BACKWARD_BUTTON;
 		
 		//this.toggleUpButton = robot.getToggleUpButton();
 		//this.toggleDownButton = robot.getToggleDownButton();
@@ -55,11 +55,12 @@ public class Shooter {
 	 * Changes the voltage of the shooter CANTalon depending on which button is pressed
 	 */
 	public void shooter() {
+		shooterMotor.setF(SmartDashboard.getNumber("F", 0.1097));
 		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
 		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
 		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
 
-		if (stick.getRawButton(shooterForwardButton)) {
+		if (stick.getRawButton(shooterButton)) {
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
 			intakeMotor.set(1);
@@ -71,10 +72,6 @@ public class Shooter {
 	}
 
 	public void shooter(boolean shoot) {
-		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
-		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
-		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
-
 		if (shoot) {
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
@@ -120,12 +117,12 @@ public class Shooter {
 		}
 		*/
 		}
-	public void setPID(){
+	public void setPID(){ // This method sets all PID settings for the shooter
 		shooterMotor.setProfile(0);
-		shooterMotor.setF(0.1097);
-		shooterMotor.setP(0.22);
-		shooterMotor.setI(0);
-		shooterMotor.setD(0);
+		shooterMotor.setF(SmartDashboard.getNumber("F", 0.1097));
+		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
+		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
+		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
 		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		shooterMotor.reverseSensor(false);
 		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);

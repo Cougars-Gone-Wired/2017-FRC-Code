@@ -32,8 +32,8 @@ public class Intake {
 		this.gearSolenoidRight = robot.getGearSolenoidRight();
 		this.gearSolenoidLeft = robot.getGearSolenoidLeft();
 		this.stick = robot.getStickManipulator();
-		this.intakeAxis = 3;
-		this.outtakeAxis = 2;
+		this.intakeAxis = Robot.INTAKE_AXIS;
+		this.outtakeAxis = Robot.OUTAKE_AXIS;
 		this.gearActivateButton = robot.getGearToggle();
 	}
 
