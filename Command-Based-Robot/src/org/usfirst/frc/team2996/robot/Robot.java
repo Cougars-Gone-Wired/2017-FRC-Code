@@ -51,61 +51,64 @@ public class Robot extends IterativeRobot {
 	public Command getAutonomousCommand() {
 		return autonomousCommand;
 	}
+	public static final boolean isCompBot = false;
+	static int FRONT_LEFT_MOTOR_ID;
+	static int FRONT_RIGHT_MOTOR_ID;
+	static int BACL_LEFT_MOTOR_ID;
+	static int BACK_RIGHT_MOTOR_ID;
+	static int SHOOTER_MOTOR_ID;
+	static int AUGER_MOTOR_ID;
+	static int DEFLECTOR_MOTOR_ID;
+	static int CLIMBER_MOTOR_ID;
+	static int INTAKE_MOTOR_ID;
+	static double AUGER_SPEED;
+	
+	static int ENCODER_CODES_PER_REV;
+	
+	static int FRONT_LEFT_MOTOR_SOLENOID;
+	static int FRONT_RIGHT_MOTOR_SOLENOID;
+	static int BACK_LEFT_MOTOR_SOLENOID;
+	static int BACK_RIGHT_MOTOR_SOLENOID;
+	static int GEAR_SOLENOID_RIGHT;
+	static int GEAR_SOLENOID_LEFT;
+	
+	static int STICK_DRIVE;
+	
+	static boolean SHOOTER_REVERSE_SENSOR;
+	
+	static int TICKS_PER_REVOLUTION;
+	
+	static int WHEEL_DIAMETER;
+	
+	static int ARCADE_DRIVE_YAXIS;
 
-	static final int FRONT_LEFT_MOTOR_ID = 1;
-	static final int FRONT_RIGHT_MOTOR_ID = 2;
-	static final int BACL_LEFT_MOTOR_ID = 0;
-	static final int BACK_RIGHT_MOTOR_ID = 3;
-	static final int SHOOTER_MOTOR_ID = 4;
-	static final int AUGER_MOTOR_ID = 5;
-	static final int DEFLECTOR_MOTOR_ID = 6;
-	static final int CLIMBER_MOTOR_ID = 7;
-	static final int INTAKE_MOTOR_ID = 8;
-	static final double AUGER_SPEED = 0.5;
+	static int ARCADE_DRIVE_ROTATE;
+	static int MECANUM_DRIVE_XAXIS;
+	static int MECANUM_DRIVEY_AXIS;
+	static int MECANUM_DRIVE_ROTATE;
+	static int ARCADE_DRIVE_YAXIS_INVERT;// IF -1 INVERT JOYSTICK, IF 1 Dont
+	static int INTAKE_AXIS;
+	static int OUTAKE_AXIS;
+	static int SHOOTER_BUTTON;
+	static int AUGER_FORWARD_BUTTON;
+	static int AUGER_BACKWARD_BUTTON;
+	static int CLIMB_UP_BUTTON;
+	static int CLIMB_DOWN_BUTTON;
 	
-	static final int ENCODER_CODES_PER_REV = 20;
+	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
+	static int MECANUM_DRIVE_XAXIS_INVERT;
+	static int MECANUM_DRIVE_YAXIS_INVERT;
+	static int MECANUM_DRIVE_ROTATE_INVERT;
 	
-	static final int FRONT_LEFT_MOTOR_SOLENOID = 0;
-	static final int FRONT_RIGHT_MOTOR_SOLENOID = 1;
-	static final int GEAR_SOLENOID_RIGHT = 4;
-	static final int GEAR_SOLENOID_LEFT = 5;
+	static int DRIVE_TOGGLE_JOYSTICK_BUTTON;
 	
-	static final int STICK_DRIVE = 0;
-	
-	static final boolean SHOOTER_REVERSE_SENSOR = true;
-	
-	static final int TICKS_PER_REVOLUTION = 20;
-	
-	static final int WHEEL_DIAMETER = 5;
-	
-	static final int ARCADE_DRIVE_YAXIS = 1;
+	static int FRONT_LEFT_MOTOR_NEGATE_ENCODER; // negates encoder counts
+	static int FRONT_RIGHT_MOTOR_NEGATE_ENCODER;
+	static int BACK_LEFT_MOTOR_NEGATE_ENCODER;
+	static int BACK_RIGHT_MOTOR_NEGATE_ENCODER;
+	static int SLEEP_AUTO;	// how long it waits before going to next .....step in auto //minimum = 100
+	static int GEAR_DROP_TIME;//how long it takes to drop a gear
 
-	static final int ARCADE_DRIVE_ROTATE = 4;
-	static final int MECANUM_DRIVE_XAXIS = 0;
-	static final int MECANUM_DRIVEY_AXIS = 1;
-	static final int MECANUM_DRIVE_ROTATE = 4;
-	static final int ARCADE_DRIVE_YAXIS_INVERT = -1;// IF -1 INVERT JOYSTICK, IF 1 Dont
-	static final int INTAKE_AXIS = 3;
-	static final int OUTAKE_AXIS = 2;
-	static final int SHOOTER_BUTTON = 1;
-	static final int AUGER_FORWARD_BUTTON = 3;
-	static final int AUGER_BACKWARD_BUTTON = 4;
-	static final int CLIMB_UP_BUTTON = 6;
-	static final int CLIMB_DOWN_BUTTON = 5;
-	
-	static final int ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
-	static final int MECANUM_DRIVE_XAXIS_INVERT = 1;
-	static final int MECANUM_DRIVE_YAXIS_INVERT = -1;
-	static final int MECANUM_DRIVE_ROTATE_INVERT = -1;
-	
-	static final int DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
-	
-	static final int FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
-	static final int FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
-	static final int BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
-	static final int BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
-	static final int SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
-	static final int GEAR_DROP_TIME = 3;//how long it takes to drop a gear
 //	public double centerX;
 //	public double centerY;
 	
@@ -128,8 +131,10 @@ public class Robot extends IterativeRobot {
 
 	Compressor compressor = new Compressor();
 	
-	Solenoid forwardDriveSolenoid = new Solenoid(FRONT_LEFT_MOTOR_SOLENOID);
-	Solenoid backwardDriveSolenoid = new Solenoid(FRONT_RIGHT_MOTOR_SOLENOID);
+	Solenoid frontLeftSolenoid = new Solenoid(FRONT_LEFT_MOTOR_SOLENOID);
+	Solenoid frontRightSolenoid = new Solenoid(FRONT_RIGHT_MOTOR_SOLENOID);
+	Solenoid backLeftSolenoid = new Solenoid(BACK_LEFT_MOTOR_SOLENOID);
+	Solenoid backRightSolenoid = new Solenoid(BACK_RIGHT_MOTOR_SOLENOID);
 	Solenoid gearSolenoidRight = new Solenoid(GEAR_SOLENOID_RIGHT);
 	Solenoid gearSolenoidLeft = new Solenoid(GEAR_SOLENOID_LEFT);
 
@@ -163,7 +168,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		
+		setConstants(Robot.isCompBot);
 		SmartDashboard.putNumber("Velocity Measurement Window", 0);
 		
 		oi = new OI();
@@ -368,7 +373,127 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
 	}
+	
+	public static void setConstants(boolean compBot){//practiceBot is false, compBot is true
+		//IF ROBOT IS COMPBOT
+		if(compBot){
+			 FRONT_LEFT_MOTOR_ID = 1;
+			 FRONT_RIGHT_MOTOR_ID = 2;
+			 BACL_LEFT_MOTOR_ID = 0;
+			 BACK_RIGHT_MOTOR_ID = 3;
+			 SHOOTER_MOTOR_ID = 4;
+			 AUGER_MOTOR_ID = 5;
+			 DEFLECTOR_MOTOR_ID = 6;
+			 CLIMBER_MOTOR_ID = 7;
+			 INTAKE_MOTOR_ID = 8;
+			AUGER_SPEED = 0.5;
+			
+			 ENCODER_CODES_PER_REV = 20;
+			
+			 FRONT_LEFT_MOTOR_SOLENOID = 0;
+			 FRONT_RIGHT_MOTOR_SOLENOID = 1;
+			 BACK_LEFT_MOTOR_SOLENOID = 2;
+			 BACK_RIGHT_MOTOR_SOLENOID = 3;
+			 GEAR_SOLENOID_RIGHT = 4;
+			 GEAR_SOLENOID_LEFT = 5;
+			
+			 STICK_DRIVE = 0;
+			
+			SHOOTER_REVERSE_SENSOR = true;
+			
+			 TICKS_PER_REVOLUTION = 20;
+			
+			 WHEEL_DIAMETER = 5;
+			
+			 ARCADE_DRIVE_YAXIS = 1;
 
+			 ARCADE_DRIVE_ROTATE = 4;
+			 MECANUM_DRIVE_XAXIS = 0;
+			 MECANUM_DRIVEY_AXIS = 1;
+			 MECANUM_DRIVE_ROTATE = 4;
+			 ARCADE_DRIVE_YAXIS_INVERT = -1;// IF -1 INVERT JOYSTICK, IF 1 Dont
+			 INTAKE_AXIS = 3;
+			 OUTAKE_AXIS = 2;
+			 SHOOTER_BUTTON = 1;
+			 AUGER_FORWARD_BUTTON = 3;
+			 AUGER_BACKWARD_BUTTON = 4;
+			 CLIMB_UP_BUTTON = 6;
+			 CLIMB_DOWN_BUTTON = 5;
+			
+			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
+			 MECANUM_DRIVE_XAXIS_INVERT = 1;
+			 MECANUM_DRIVE_YAXIS_INVERT = -1;
+			 MECANUM_DRIVE_ROTATE_INVERT = -1;
+			
+			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
+			
+			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
+			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
+			GEAR_DROP_TIME = 3;//how long it takes to drop a gear
+		}
+		//IF ROBOT IS PRACTICE BOT
+		else{
+			 FRONT_LEFT_MOTOR_ID = 1;
+			 FRONT_RIGHT_MOTOR_ID = 2;
+			 BACL_LEFT_MOTOR_ID = 0;
+			 BACK_RIGHT_MOTOR_ID = 3;
+			 SHOOTER_MOTOR_ID = 4;
+			 AUGER_MOTOR_ID = 5;
+			 DEFLECTOR_MOTOR_ID = 6;
+			 CLIMBER_MOTOR_ID = 7;
+			 INTAKE_MOTOR_ID = 8;
+			 AUGER_SPEED = 0.5;
+			
+			 ENCODER_CODES_PER_REV = 20;
+			
+			 FRONT_LEFT_MOTOR_SOLENOID = 0;
+			 FRONT_RIGHT_MOTOR_SOLENOID = 1;
+			 BACK_LEFT_MOTOR_SOLENOID = 2;
+			 BACK_RIGHT_MOTOR_SOLENOID = 3;
+			 GEAR_SOLENOID_RIGHT = 4;
+			 GEAR_SOLENOID_LEFT = 5;
+			
+			 STICK_DRIVE = 0;
+			
+			SHOOTER_REVERSE_SENSOR = true;
+			
+			 TICKS_PER_REVOLUTION = 20;
+			
+			 WHEEL_DIAMETER = 5;
+			
+			 ARCADE_DRIVE_YAXIS = 1;
+
+			 ARCADE_DRIVE_ROTATE = 4;
+			 MECANUM_DRIVE_XAXIS = 0;
+			 MECANUM_DRIVEY_AXIS = 1;
+			 MECANUM_DRIVE_ROTATE = 4;
+			 ARCADE_DRIVE_YAXIS_INVERT = -1;// IF -1 INVERT JOYSTICK, IF 1 Dont
+			 INTAKE_AXIS = 3;
+			 OUTAKE_AXIS = 2;
+			 SHOOTER_BUTTON = 1;
+			 AUGER_FORWARD_BUTTON = 3;
+			 AUGER_BACKWARD_BUTTON = 4;
+			 CLIMB_UP_BUTTON = 6;
+			 CLIMB_DOWN_BUTTON = 5;
+			
+			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
+			 MECANUM_DRIVE_XAXIS_INVERT = 1;
+			 MECANUM_DRIVE_YAXIS_INVERT = -1;
+			 MECANUM_DRIVE_ROTATE_INVERT = -1;
+			
+			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
+			
+			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
+			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
+			 GEAR_DROP_TIME = 3;//how long it takes to drop a gear
+		}
+	}
 	/**
 	 * This function is called periodically during test mode
 	 */
@@ -448,14 +573,20 @@ public class Robot extends IterativeRobot {
 		return compressor;
 	}
 
-	public Solenoid getForwardDriveSolenoid() {
-		return forwardDriveSolenoid;
+	public Solenoid getFrontLeftSolenoid() {
+		return frontLeftSolenoid;
 	}
 
-	public Solenoid getBackwardDriveSolenoid() {
-		return backwardDriveSolenoid;
+	public Solenoid getFrontRightSolenoid() {
+		return frontRightSolenoid;
 	}
 	
+	public Solenoid getBackLeftSolenoid() {
+		return backLeftSolenoid;
+	}
+	public Solenoid getBackRightSolenoid() {
+		return backRightSolenoid;
+	}
 	public Solenoid getGearSolenoidRight() {
 		return gearSolenoidRight;
 	}
