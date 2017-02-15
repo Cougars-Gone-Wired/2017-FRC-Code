@@ -386,7 +386,7 @@ public class Robot extends IterativeRobot {
 			 DEFLECTOR_MOTOR_ID = 6;
 			 CLIMBER_MOTOR_ID = 7;
 			 INTAKE_MOTOR_ID = 8;
-			AUGER_SPEED = 0.5;
+			 AUGER_SPEED = 0.5;
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -399,7 +399,7 @@ public class Robot extends IterativeRobot {
 			
 			 STICK_DRIVE = 0;
 			
-			SHOOTER_REVERSE_SENSOR = true;
+			 SHOOTER_REVERSE_SENSOR = true;
 			
 			 TICKS_PER_REVOLUTION = 20;
 			
