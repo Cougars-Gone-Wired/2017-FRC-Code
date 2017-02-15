@@ -15,8 +15,8 @@ public class Climber {
 	Climber(Robot robot){
 		this.climber = robot.getClimberMotor();
 		this.stick = robot.getStickDrive();
-		this.climbUpButton = 6;
-		this.climbDownButton = 5;
+		this.climbUpButton = Robot.CLIMB_UP_BUTTON;
+		this.climbDownButton = Robot.CLIMB_DOWN_BUTTON;
 	}
 	public void climb(){
 		if(stick.getRawButton(climbUpButton)){

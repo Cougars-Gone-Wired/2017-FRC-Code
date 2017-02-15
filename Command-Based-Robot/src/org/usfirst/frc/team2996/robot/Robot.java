@@ -79,6 +79,7 @@ public class Robot extends IterativeRobot {
 	static final int WHEEL_DIAMETER = 5;
 	
 	static final int ARCADE_DRIVE_YAXIS = 1;
+
 	static final int ARCADE_DRIVE_ROTATE = 4;
 	static final int MECANUM_DRIVE_XAXIS = 0;
 	static final int MECANUM_DRIVEY_AXIS = 1;
@@ -89,7 +90,8 @@ public class Robot extends IterativeRobot {
 	static final int SHOOTER_BUTTON = 1;
 	static final int AUGER_FORWARD_BUTTON = 3;
 	static final int AUGER_BACKWARD_BUTTON = 4;
-	
+	static final int CLIMB_UP_BUTTON = 6;
+	static final int CLIMB_DOWN_BUTTON = 5;
 	
 	static final int ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 	static final int MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -102,12 +104,10 @@ public class Robot extends IterativeRobot {
 	static final int FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 	static final int BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
 	static final int BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
-	static final int SLEEP_AUTO = 100;	// how long it waits before going to next
-										// step in auto //minimum = 100
+	static final int SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
+	static final int GEAR_DROP_TIME = 3;//how long it takes to drop a gear
 //	public double centerX;
 //	public double centerY;
-	
-	double P, I, D;
 	
 	Joystick stickDrive;
 	Joystick stickManipulator;
@@ -144,10 +144,10 @@ public class Robot extends IterativeRobot {
 	boolean autoFinished; // checks if autonomous is finished
 	
 //	Thread visionThread;
-//	DigitalInput upperLimit;
-//	DigitalInput lowerLimit;
-//	Toggle toggleUpButton;
-//	Toggle toggleDownButton;
+	DigitalInput upperLimit;
+	DigitalInput lowerLimit;
+	Toggle toggleUpButton;
+	Toggle toggleDownButton;
 	
 //	Mat visionMat;
 //	GripPipeline gripPipeline;
@@ -483,24 +483,33 @@ public class Robot extends IterativeRobot {
 		return timer;
 	}
 	
-//	public DigitalInput getUpperLimit() {
-//		return upperLimit;
-//	}
-//
-//	public DigitalInput getLowerLimit() {
-//		return lowerLimit;
-//	}
-//
-//	public Toggle getToggleUpButton() {
-//		return toggleUpButton;
-//	}
-//
-//	public Toggle getToggleDownButton() {
-//		return toggleDownButton;
-//	}
+	public DigitalInput getUpperLimit() {
+		return upperLimit;
+	}
+
+	public DigitalInput getLowerLimit() {
+		return lowerLimit;
+	}
+
+	public Toggle getToggleUpButton() {
+		return toggleUpButton;
+	}
+
+	public Toggle getToggleDownButton() {
+		return toggleDownButton;
+	}
 	
 	public Toggle getGearToggle() {
 		return gearToggle;
 	}
+	
+	public Shooter getPIDShooter() {
+		return PIDShooter;
+	}
+	public Intake getIntake() {
+		return intake;
+	}
+	
+	
 
 }

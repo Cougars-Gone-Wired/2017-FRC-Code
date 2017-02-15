@@ -3,6 +3,8 @@ package org.usfirst.frc.team2996.robot;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,10 +25,10 @@ public class Shooter {
 	private int shooterButton;
 	private int augerForwardButton;
 	private int augerBackwardButton;
-//	private Toggle toggleUpButton;
-//	private Toggle toggleDownButton;
-//	private DigitalInput upperLimit;
-//	private DigitalInput lowerLimit;
+	private Toggle toggleUpButton;
+	private Toggle toggleDownButton;
+	private DigitalInput upperLimit;
+	private DigitalInput lowerLimit;
 
 	/**
 	 * 
@@ -44,11 +46,10 @@ public class Shooter {
 		this.augerForwardButton = Robot.AUGER_FORWARD_BUTTON;
 		this.augerBackwardButton = Robot.AUGER_BACKWARD_BUTTON;
 		
-		//this.toggleUpButton = robot.getToggleUpButton();
-		//this.toggleDownButton = robot.getToggleDownButton();
-		//this.upperLimit = robot.getUpperLimit();
-		//this.lowerLimit = robot.getLowerLimit();
-		
+		this.toggleUpButton = robot.getToggleUpButton();
+		this.toggleDownButton = robot.getToggleDownButton();
+		this.upperLimit = robot.getUpperLimit();
+		this.lowerLimit = robot.getLowerLimit();
 	}
 	
 	/**

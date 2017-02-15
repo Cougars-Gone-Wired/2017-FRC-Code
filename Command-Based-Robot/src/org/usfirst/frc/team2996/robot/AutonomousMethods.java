@@ -1,43 +1,55 @@
 package org.usfirst.frc.team2996.robot;
 
+import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousMethods {
 	int wheelDiameter;
-	public Robot robot;
-	public Timer timer;
+	Robot robot;
+	Timer timer;
+	AHRS gyro;
+	CANTalon frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+	Drive drive;
+	Shooter PIDShooter;
+	Intake intake;
 	
 	public AutonomousMethods(Robot robot) {
 		this.robot = robot;
+		this.gyro = robot.getGyro();
+		this.drive = robot.getDrive();
 		this.wheelDiameter = Robot.WHEEL_DIAMETER;
 		this.timer = robot.getTimer();
+		this.PIDShooter = robot.getPIDShooter();
+		this.intake = robot.getIntake();
 	}
 
 	public double turn(String direction, double angle, double speed) { //add string parameter for side of field (red or blue)
-		robot.gyro.reset();
+		gyro.reset();
 		
 		sleep();
 		
-		if (robot.drive.isMechanum()) {
-			robot.drive.arcadeDrive();
+		if (drive.isMechanum()) {
+			drive.arcadeDrive();
 		}
 		
 		direction = direction.toLowerCase();
 		if ((direction.equals("left")) && DriverStation.getInstance().isAutonomous()) {
-			while (robot.gyro.getAngle() > -angle) {
-				SmartDashboard.putNumber("gyro", robot.gyro.getAngle());
-				robot.drive.robotDrive.tankDrive(-speed, speed);// rotate speed in voltage
+			while (gyro.getAngle() > -angle) {
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
+				drive.robotDrive.tankDrive(-speed, speed);// rotate speed in voltage
 			}
 		} else {
-			while ((robot.gyro.getAngle() < angle) && DriverStation.getInstance().isAutonomous()) {
-				SmartDashboard.putNumber("gyro", robot.gyro.getAngle());
-				robot.drive.robotDrive.tankDrive(speed, -speed);
+			while ((gyro.getAngle() < angle) && DriverStation.getInstance().isAutonomous()) {
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
+				drive.robotDrive.tankDrive(speed, -speed);
 			}
 		}
-		double finalAngle = robot.gyro.getAngle();
-		robot.gyro.reset();
+		double finalAngle = gyro.getAngle();
+		gyro.reset();
 		return finalAngle;
 	}
 
@@ -45,14 +57,15 @@ public class AutonomousMethods {
 		double encoderAverage = 0;
 		int encodersWorking = 0;
 		direction = direction.toLowerCase();
-		robot.gyro.reset();
-		robot.drive.encoderReset();
-		robot.drive.arcadeDrive();
+		gyro.reset();
+		drive.encoderReset();
+		drive.arcadeDrive();
 		
 		sleep();
 		
-	double distPerTick = (Math.PI * wheelDiameter) / Robot.TICKS_PER_REVOLUTION;
-	double neededEncCounts = distance / distPerTick;
+	double distPerTick = (Math.PI * wheelDiameter);
+	double circumference = distPerTick / Robot.TICKS_PER_REVOLUTION;
+	double neededEncCounts = distance / circumference;
 	neededEncCounts = Math.round(neededEncCounts);
 	SmartDashboard.putNumber("neededEncCounts", neededEncCounts);
 
@@ -62,15 +75,15 @@ public class AutonomousMethods {
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
 				SmartDashboard.putNumber("encodersWorking", encodersWorking);
-				SmartDashboard.putNumber("frontLeft", robot.drive.frontLeftMotor.getEncPosition());
-				SmartDashboard.putNumber("backLeft", robot.drive.backLeftMotor.getEncPosition());
-				// robot.gyro.correction while driving
-				if (robot.gyro.getAngle() < -1) {
-					robot.drive.robotDrive.tankDrive(speed + 0.05, speed);
-				} else if (robot.gyro.getAngle() > 1) {
-					robot.drive.robotDrive.tankDrive(speed, speed + 0.05);
+				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
+				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
+				// gyro.correction while driving
+				if (gyro.getAngle() < -1) {
+					drive.robotDrive.tankDrive(speed + 0.05, speed);
+				} else if (gyro.getAngle() > 1) {
+					drive.robotDrive.tankDrive(speed, speed + 0.05);
 				} else {
-					robot.drive.robotDrive.tankDrive(speed, speed);
+					drive.robotDrive.tankDrive(speed, speed);
 				}
 			}
 		} else {
@@ -81,29 +94,29 @@ public class AutonomousMethods {
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
 				SmartDashboard.putNumber("encodersWorking", encodersWorking);
-				SmartDashboard.putNumber("frontLeft", robot.drive.frontLeftMotor.getEncPosition());
-				SmartDashboard.putNumber("backLeft", robot.drive.backLeftMotor.getEncPosition());
-				if (robot.gyro.getAngle() < -1) {
-					robot.drive.robotDrive.tankDrive(-speed, -speed - 0.1);
-				} else if (robot.gyro.getAngle() > 1) {
-					robot.drive.robotDrive.tankDrive(-speed - 0.1, -speed);
+				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
+				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
+				if (gyro.getAngle() < -1) {
+					drive.robotDrive.tankDrive(-speed, -speed - 0.1);
+				} else if (gyro.getAngle() > 1) {
+					drive.robotDrive.tankDrive(-speed - 0.1, -speed);
 				} else {
-					robot.drive.robotDrive.tankDrive(-speed, -speed);
+					drive.robotDrive.tankDrive(-speed, -speed);
 				}
 			}
 		}
 
-		robot.drive.robotDrive.tankDrive(0.0, 0.0);
-		robot.drive.encoderReset();
+		drive.robotDrive.tankDrive(0.0, 0.0);
+		drive.encoderReset();
 		robot.wait(100);
 		return encoderAverage;
 
 	}
 
 	public double strafe(String direction, int distance, double speed) { // add string parameter for the side of field (red or blue)
-		robot.drive.mecanumDrive();
-		robot.gyro.reset();
-		robot.drive.encoderReset();
+		drive.mecanumDrive();
+		gyro.reset();
+		drive.encoderReset();
 		
 		sleep();
 		
@@ -116,19 +129,19 @@ public class AutonomousMethods {
 			while ((-encoderAverage > -distance) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking();
                 encoderAverage = encoderAverage(encodersWorking);
-				robot.drive.robotDrive.mecanumDrive_Cartesian(speed, 0, 0, 0);
+				drive.robotDrive.mecanumDrive_Cartesian(speed, 0, 0, 0);
 			}
 
 		} else {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
-				robot.drive.robotDrive.mecanumDrive_Cartesian(-speed, 0, 0, 0);
+				drive.robotDrive.mecanumDrive_Cartesian(-speed, 0, 0, 0);
 			}
 		}
-		robot.drive.robotDrive.tankDrive(0.0, 0.0);
-		robot.gyro.reset();
-		robot.drive.encoderReset();
+		drive.robotDrive.tankDrive(0.0, 0.0);
+		gyro.reset();
+		drive.encoderReset();
 
 		return encoderAverage;
 	}
@@ -136,15 +149,15 @@ public class AutonomousMethods {
 	public void shoot(double shootTime){
 		
 		sleep();
-		robot.PIDShooter.setPID();
+		PIDShooter.setPID();
 		
 		timer.start();
 		while(timer.get() <= shootTime && DriverStation.getInstance().isAutonomous()){
-			robot.PIDShooter.auger(Robot.AUGER_SPEED);
-			robot.PIDShooter.shooter(true);
+			PIDShooter.auger(Robot.AUGER_SPEED);
+			PIDShooter.shooter(true);
 		}
-			robot.PIDShooter.auger(0);
-			robot.PIDShooter.shooter(false);
+			PIDShooter.auger(0);
+			PIDShooter.shooter(false);
 		
 		sleep();
 	}
@@ -153,23 +166,23 @@ public class AutonomousMethods {
 		sleep();
 		timer.start();
 		while(timer.get() <= Robot.GEAR_DROP_TIME && DriverStation.getInstance().isAutonomous()){
-			robot.intake.intakeOuttake(true, false);
-			robot.intake.gearActivation(true);
+			intake.intakeOuttake(true, false);
+			intake.gearActivation(true);
 		}
 	}
 
 	public int encodersWorking() { // calculates number of encoders working
 		int encodersWorking = 4;
-		if (Math.abs(robot.drive.frontLeftMotor.getEncPosition()) <= 1) {
+		if (Math.abs(drive.frontLeftMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
-		if (Math.abs(robot.drive.frontRightMotor.getEncPosition()) <= 1) {
+		if (Math.abs(drive.frontRightMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
-		if (Math.abs(robot.drive.backLeftMotor.getEncPosition()) <= 1) {
+		if (Math.abs(drive.backLeftMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
-		if (Math.abs(robot.drive.backRightMotor.getEncPosition()) <= 1) {
+		if (Math.abs(drive.backRightMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
 
@@ -181,17 +194,17 @@ public class AutonomousMethods {
 
 	public int encoderAverage(int encodersWorking) { // calculates average
 														// encoder counts
-		int average = (Math.abs(robot.drive.getFrontLeftEncoder()) + Math.abs(robot.drive.getFrontRightEncoder()) + Math.abs(robot.drive.getBackLeftEncoder())
-		+ Math.abs(robot.drive.getBackRightEncoder()) / encodersWorking);
+		int average = (Math.abs(drive.getFrontLeftEncoder()) + Math.abs(drive.getFrontRightEncoder()) + Math.abs(drive.getBackLeftEncoder())
+		+ Math.abs(drive.getBackRightEncoder()) / encodersWorking);
 
 		return average;
 	}
 	
 	
 	public void stop(){
-		robot.drive.robotDrive.tankDrive(0, 0);
-		robot.PIDShooter.auger(0);
-		robot.PIDShooter.shooter(false);
+		drive.robotDrive.tankDrive(0, 0);
+		PIDShooter.auger(0);
+		PIDShooter.shooter(false);
 	}
 	public static void sleep(){
 		try {
