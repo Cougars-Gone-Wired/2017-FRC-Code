@@ -19,15 +19,14 @@ public class Climber {
 		this.climbDownButton = Robot.CLIMB_DOWN_BUTTON;
 	}
 	public void climb(){
-		if(stick.getRawButton(climbUpButton)){
+		if(stick.getRawButton(climbUpButton) && stick.getRawButton(climbDownButton)){
+			climber.set(SmartDashboard.getNumber("climber steady", 0));
+		}else if(stick.getRawButton(climbUpButton)){
 			climber.set(SmartDashboard.getNumber("climber full speed", 0));
 		}else if(stick.getRawButton(climbDownButton)){
 			climber.set(-(SmartDashboard.getNumber("climber full speed", 0)));
-		}else if(stick.getRawButton(climbUpButton) && stick.getRawButton(climbDownButton)){
-			climber.set(SmartDashboard.getNumber("climber steady", 0));
 		}else{
 			climber.set(0);
 		}
 	}
-
 }

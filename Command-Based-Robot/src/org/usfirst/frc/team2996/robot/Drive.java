@@ -24,7 +24,7 @@ public class Drive {
 	AHRS gyro;
 	boolean driveState = false; // state = true means Mechanum , false is arcade
 
-	public boolean isMechanum() {
+	public boolean isMecanum() {
 		return driveState;
 	}
 
@@ -58,8 +58,7 @@ public class Drive {
 		this.backLeftSolenoid.set(backLeftSolenoid);
 	}
 
-	public void invertMotors(boolean frontLeftMotorInvert, boolean frontRightMotorInvert, boolean backLeftMotorInvert,
-			boolean backRightMotorInvert) {
+	public void invertMotors(boolean frontLeftMotorInvert, boolean frontRightMotorInvert, boolean backLeftMotorInvert, boolean backRightMotorInvert) {
 		frontLeftMotor.setInverted(frontLeftMotorInvert);
 		frontRightMotor.setInverted(frontRightMotorInvert);
 		backLeftMotor.setInverted(backLeftMotorInvert);
@@ -87,6 +86,14 @@ public class Drive {
 		SetSolenoids(false, false, false, false);
 
 	}
+	
+	public void halfActivation(){
+		invertMotors(false, false, false, false);
+		robotDrive.arcadeDrive(
+				Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)),
+				Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)));
+		SetSolenoids(true, true, false, false); 
+	}
 
 	public void drive(boolean driveToggle) {
 
@@ -98,6 +105,16 @@ public class Drive {
 
 			mecanumDrive();
 
+		}
+	}
+	
+	public void drive(boolean driveToggle, boolean halfActivationToggle){
+		if(halfActivationToggle){
+			halfActivation();
+		}else if(driveToggle){
+			arcadeDrive();
+		}else{
+			mecanumDrive();
 		}
 	}
 

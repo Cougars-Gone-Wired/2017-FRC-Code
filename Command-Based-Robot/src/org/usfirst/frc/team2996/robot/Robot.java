@@ -51,6 +51,7 @@ public class Robot extends IterativeRobot {
 	public Command getAutonomousCommand() {
 		return autonomousCommand;
 	}
+	
 	public static final boolean isCompBot = false;
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -61,8 +62,8 @@ public class Robot extends IterativeRobot {
 	static int DEFLECTOR_MOTOR_ID;
 	static int CLIMBER_MOTOR_ID;
 	static int INTAKE_MOTOR_ID;
-	static double AUGER_SPEED;
 	
+	static double AUGER_SPEED;
 	static int ENCODER_CODES_PER_REV;
 	
 	static int FRONT_LEFT_MOTOR_SOLENOID;
@@ -94,13 +95,14 @@ public class Robot extends IterativeRobot {
 	static int AUGER_BACKWARD_BUTTON;
 	static int CLIMB_UP_BUTTON;
 	static int CLIMB_DOWN_BUTTON;
+	static int DRIVE_TOGGLE_JOYSTICK_BUTTON;
+	static int GEAR_TOGGLE_BUTTON;
+	static int HALF_ACTIVATION_TOGGLE;
 	
 	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
 	static int MECANUM_DRIVE_XAXIS_INVERT;
 	static int MECANUM_DRIVE_YAXIS_INVERT;
 	static int MECANUM_DRIVE_ROTATE_INVERT;
-	
-	static int DRIVE_TOGGLE_JOYSTICK_BUTTON;
 	
 	static int FRONT_LEFT_MOTOR_NEGATE_ENCODER; // negates encoder counts
 	static int FRONT_RIGHT_MOTOR_NEGATE_ENCODER;
@@ -141,6 +143,7 @@ public class Robot extends IterativeRobot {
 	Drive drive;
 	Toggle driveToggle;
 	Toggle gearToggle;
+	Toggle halfActivation;
 	AutonomousPrograms auto;
 	Climber climber;
 	Shooter PIDShooter;
@@ -177,9 +180,10 @@ public class Robot extends IterativeRobot {
 		stickManipulator = new Joystick(1);
 		
 		robotDrive = new RobotDrive(backLeftMotor, frontLeftMotor, backRightMotor, frontRightMotor);
-		driveToggle = new Toggle(stickDrive, DRIVE_TOGGLE_JOYSTICK_BUTTON);
 		
-		gearToggle = new Toggle(stickManipulator, 2); // this toggles the gear intake
+		driveToggle = new Toggle(stickDrive, DRIVE_TOGGLE_JOYSTICK_BUTTON);
+		gearToggle = new Toggle(stickManipulator, GEAR_TOGGLE_BUTTON); // this toggles the gear intake
+		halfActivation = new Toggle(stickDrive, HALF_ACTIVATION_TOGGLE);
 		
 		gyro = new AHRS(SPI.Port.kMXP);
 		
@@ -419,20 +423,21 @@ public class Robot extends IterativeRobot {
 			 AUGER_BACKWARD_BUTTON = 4;
 			 CLIMB_UP_BUTTON = 6;
 			 CLIMB_DOWN_BUTTON = 5;
+			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
+			 GEAR_TOGGLE_BUTTON = 2;
+			 HALF_ACTIVATION_TOGGLE = 2;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
 			 MECANUM_DRIVE_YAXIS_INVERT = -1;
 			 MECANUM_DRIVE_ROTATE_INVERT = -1;
 			
-			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
-			
 			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
 			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
-			GEAR_DROP_TIME = 3;//how long it takes to drop a gear
+			 GEAR_DROP_TIME = 3;//how long it takes to drop a gear
 		}
 		//IF ROBOT IS PRACTICE BOT
 		else{
@@ -458,7 +463,7 @@ public class Robot extends IterativeRobot {
 			
 			 STICK_DRIVE = 0;
 			
-			SHOOTER_REVERSE_SENSOR = true;
+			 SHOOTER_REVERSE_SENSOR = true;
 			
 			 TICKS_PER_REVOLUTION = 20;
 			
@@ -478,13 +483,14 @@ public class Robot extends IterativeRobot {
 			 AUGER_BACKWARD_BUTTON = 4;
 			 CLIMB_UP_BUTTON = 6;
 			 CLIMB_DOWN_BUTTON = 5;
+			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
+			 GEAR_TOGGLE_BUTTON = 2;
+			 HALF_ACTIVATION_TOGGLE = 2;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
 			 MECANUM_DRIVE_YAXIS_INVERT = -1;
 			 MECANUM_DRIVE_ROTATE_INVERT = -1;
-			
-			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
 			
 			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
 			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
@@ -602,7 +608,7 @@ public class Robot extends IterativeRobot {
 		return driveToggle;
 	}
 
-	public AutonomousMethods getAuto() {
+	public AutonomousPrograms getAuto() {
 		return auto;
 	}
 

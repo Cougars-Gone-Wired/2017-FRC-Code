@@ -32,7 +32,7 @@ public class AutonomousMethods {
 		
 		sleep();
 		
-		if (drive.isMechanum()) {
+		if (drive.isMecanum()) {
 			drive.arcadeDrive();
 		}
 		
@@ -220,6 +220,41 @@ public class AutonomousMethods {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+
+	public double saisTurn(String direction, double angle, double speed) { //add string parameter for side of field (red or blue)
+		gyro.reset();
+		
+		sleep();
+		
+		if (drive.isMecanum()) {
+			drive.arcadeDrive();
+		}
+		
+		direction = direction.toLowerCase();
+		if ((direction.equals("left"))) {
+			if (gyro.getAngle() > -angle) {
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
+				drive.robotDrive.tankDrive(-speed, speed);// rotate speed in voltage
+			}
+		} else {
+			if ((gyro.getAngle() < angle)) {
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
+				drive.robotDrive.tankDrive(speed, -speed);
+			}
+		}
+		double finalAngle = gyro.getAngle();
+		return finalAngle;
+	}
+	
+	public boolean isTurnFinished(String direction, int angle){
+		direction = direction.toLowerCase();
+		if(direction.equals("left")){
+			return gyro.getAngle() < -angle;
+		} else{
+			return gyro.getAngle() > angle;
 		}
 	}
 }

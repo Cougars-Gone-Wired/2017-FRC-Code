@@ -64,7 +64,6 @@ public class Shooter {
 		if (stick.getRawButton(shooterButton)) {
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
-			intakeMotor.set(1);
 		}  else {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);
@@ -76,7 +75,6 @@ public class Shooter {
 		if (shoot) {
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
-			intakeMotor.set(1);
 		}  else {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);
