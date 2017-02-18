@@ -14,8 +14,7 @@ import edu.wpi.first.wpilibj.Solenoid;
  */
 public class Intake {
 	private CANTalon intakeMotor;
-	private Solenoid gearSolenoidRight;
-	private Solenoid gearSolenoidLeft;
+	private Solenoid gearSolenoid;
 	private Joystick stick;
 	private int intakeAxis;
 	private int outtakeAxis;
@@ -29,8 +28,7 @@ public class Intake {
 	 */
 	public Intake(Robot robot) {
 		this.intakeMotor = robot.getIntakeMotor();
-		this.gearSolenoidRight = robot.getGearSolenoidRight();
-		this.gearSolenoidLeft = robot.getGearSolenoidLeft();
+		this.gearSolenoid = robot.getGearSolenoid();
 		this.stick = robot.getStickManipulator();
 		this.intakeAxis = Robot.INTAKE_AXIS;
 		this.outtakeAxis = Robot.OUTAKE_AXIS;
@@ -68,21 +66,17 @@ public class Intake {
 	
 	public void gearActivation(){
 		if(gearActivateButton.toggle() == true){
-			gearSolenoidRight.set(true);
-			gearSolenoidLeft.set(true);
+			gearSolenoid.set(true);
 		}else{
-			gearSolenoidRight.set(false);
-			gearSolenoidLeft.set(false);
+			gearSolenoid.set(false);
 		}
 	}
 	
 	public void gearActivation(boolean down){
 		if(down == true){
-			gearSolenoidRight.set(true);
-			gearSolenoidLeft.set(true);
+			gearSolenoid.set(true);
 		}else{
-			gearSolenoidRight.set(false);
-			gearSolenoidLeft.set(false);
+			gearSolenoid.set(false);
 		}
 	}
 }

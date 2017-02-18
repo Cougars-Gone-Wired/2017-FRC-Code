@@ -154,10 +154,10 @@ public class AutonomousMethods {
 		timer.start();
 		while(timer.get() <= shootTime && DriverStation.getInstance().isAutonomous()){
 			PIDShooter.auger(Robot.AUGER_SPEED);
-			PIDShooter.shooter(true);
+			PIDShooter.pidShooter(true);
 		}
 			PIDShooter.auger(0);
-			PIDShooter.shooter(false);
+			PIDShooter.pidShooter(false);
 		
 		sleep();
 	}
@@ -204,7 +204,7 @@ public class AutonomousMethods {
 	public void stop(){
 		drive.robotDrive.tankDrive(0, 0);
 		PIDShooter.auger(0);
-		PIDShooter.shooter(false);
+		PIDShooter.pidShooter(false);
 	}
 	public static void sleep(){
 		try {
