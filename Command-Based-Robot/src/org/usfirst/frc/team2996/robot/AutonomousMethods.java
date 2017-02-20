@@ -162,10 +162,10 @@ public class AutonomousMethods {
 		sleep();
 	}
 	
-	public void gearDrop(){
+	public void gearDrop(double dropTime){
 		sleep();
 		timer.start();
-		while(timer.get() <= Robot.GEAR_DROP_TIME && DriverStation.getInstance().isAutonomous()){
+		while(timer.get() <= dropTime && DriverStation.getInstance().isAutonomous()){
 			intake.intakeOuttake(true, false);
 			intake.gearActivation(true);
 		}

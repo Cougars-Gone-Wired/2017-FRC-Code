@@ -65,6 +65,10 @@ public class Robot extends IterativeRobot {
 	static int DEFLECTOR_MOTOR_ID;
 	static int CLIMBER_MOTOR_ID;
 	static int INTAKE_MOTOR_ID;
+	static int LIMIT_PORT;
+	
+	static int BOILER_DEFLECTOR_ANGLE;
+	static int SHIP_DEFLECTOR_ANGLE;
 	
 	static double AUGER_SPEED;
 	static int ENCODER_CODES_PER_REV;
@@ -93,8 +97,6 @@ public class Robot extends IterativeRobot {
 	static int SHOOTER_BUTTON;
 	static int AUGER_FORWARD_BUTTON;
 	static int AUGER_BACKWARD_BUTTON;
-	static int CLIMB_UP_BUTTON;
-	static int CLIMB_DOWN_BUTTON;
 	static int DRIVE_TOGGLE_JOYSTICK_BUTTON;
 	static int GEAR_TOGGLE_BUTTON;
 	static int HALF_ACTIVATION_TOGGLE;
@@ -102,6 +104,9 @@ public class Robot extends IterativeRobot {
 	static int RIGHT_PID_TOGGLE;
 	static int SHOOTER_UP_TOGGLE;
 	static int SHOOTER_DOWN_TOGGLE;
+	static int CLIMB_AXIS;
+	static int THUMPER_TRICKS_ENABLE;
+	static int THUMP_BUTTON;
 	
 	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
 	static int MECANUM_DRIVE_XAXIS_INVERT;
@@ -113,9 +118,9 @@ public class Robot extends IterativeRobot {
 	static int BACK_LEFT_MOTOR_NEGATE_ENCODER;
 	static int BACK_RIGHT_MOTOR_NEGATE_ENCODER;
 	static boolean SHOOTER_REVERSE_SENSOR;
+	static int DEFLECTOR_REVERSE_ENCODER;
 	
 	static int SLEEP_AUTO;	// how long it waits before going to next .....step in auto //minimum = 100
-	static int GEAR_DROP_TIME;//how long it takes to drop a gear
 
 //	public double centerX;
 //	public double centerY;
@@ -150,16 +155,16 @@ public class Robot extends IterativeRobot {
 	Toggle gearToggle;
 	TwoButtonToggle PIDToggle;
 	Toggle halfActivation;
+	Toggle thumperTricksToggle;
 	AutonomousPrograms auto;
 	Climber climber;
 	Shooter PIDShooter;
 	RobotDrive robotDrive;
 	Intake intake;
+	ThumperTricks thumperTricks;
 	boolean autoFinished; // checks if autonomous is finished
 	boolean shooterState;
-	
 //	Thread visionThread;
-	DigitalInput lowerLimit;
 	Toggle toggleUpButton;
 	Toggle toggleDownButton;
 	
@@ -208,6 +213,7 @@ public class Robot extends IterativeRobot {
 		gearToggle = new Toggle(stickManipulator, GEAR_TOGGLE_BUTTON); // this toggles the gear intake
 		halfActivation = new Toggle(stickDrive, HALF_ACTIVATION_TOGGLE);
 		PIDToggle = new TwoButtonToggle(stickManipulator, LEFT_PID_TOGGLE, RIGHT_PID_TOGGLE);
+		thumperTricksToggle = new Toggle(stickDrive, THUMPER_TRICKS_ENABLE);
 		
 		gyro = new AHRS(SPI.Port.kMXP);
 		
@@ -216,10 +222,10 @@ public class Robot extends IterativeRobot {
 		auto = new AutonomousPrograms(this);
 		intake = new Intake(this);
 		climber = new Climber(this);
+		thumperTricks = new ThumperTricks(this);
 		
 		toggleUpButton = new Toggle(stickManipulator, SHOOTER_UP_TOGGLE);
 		toggleDownButton = new Toggle(stickManipulator, SHOOTER_DOWN_TOGGLE);
-		lowerLimit = new DigitalInput(0);
 		
 		displaySettings();
 		
@@ -317,7 +323,7 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		
 		//Runs the autonomous programs depending on the field side string (will make boolean)
-		if (autoFinished == false && SmartDashboard.getString("Field Side", "") == "blue") // if autonomous is not finished keep going
+		if (autoFinished == false && SmartDashboard.getNumber("Field Side Number", 0) == 0) // if autonomous is not finished keep going
 		{
 			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
 			switch (autonomous) {
@@ -325,7 +331,10 @@ public class Robot extends IterativeRobot {
 				auto.stop();// do nothing
 				break;
 			case 1:
-				auto.moveForwardTurnRightPlaceGearBlue();
+				auto.placeGearLeftPeg(); // drive forward, turn, place gear
+				break;
+			case 2:
+				auto.moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), 0.6);
 				break;
 			default:
 				auto.stop();
@@ -334,24 +343,7 @@ public class Robot extends IterativeRobot {
 			autoFinished = true;
 		} else { // if autonomous has finished
 			auto.stop();
-		}
-		
-		if (autoFinished == false && SmartDashboard.getString("Field Side", "") == "red"){
-			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
-			switch (autonomous) {
-			case 0:
-				auto.stop();// do nothing
-				break;
-			case 1:
-				auto.moveForwardTurnRightPlaceGearRed();
-				break;
-			default:
-				auto.stop();
-				break;
-			}
 			autoFinished = true;
-		} else { // if autonomous has finished
-			auto.stop();
 		}
 	}
 
@@ -365,16 +357,22 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		}
 		drive.arcadeDrive();
+		PIDToggle.set(); // THIS BASICALLY SETS THE SHOOTER TO VOLTAGE FOR PID USE .RESET()
 	}
 
 	/**
 	 * This function is called periodically during operator control
 	 */
 	@Override
-	public void teleopPeriodic() {
-		//Runs the functions for teleop in the other classes
+	public void teleopPeriodic() { //Runs the functions for teleop in the other classes
 		boolean state = driveToggle.toggle();
 		drive.drive(state);
+//		if(thumperTricksToggle.toggle() == true){
+//			thumperTricks.rocking();
+//		}else{
+//			boolean state = driveToggle.toggle();
+//			drive.drive(state);
+//		}
 		PIDShooter.shoot(PIDToggle.toggle());
 		PIDShooter.auger();
 		PIDShooter.deflector();
@@ -389,7 +387,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
-		SmartDashboard.putBoolean("Limit Switch", lowerLimit.get());
+		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
 	}
 	/**
 	 * This function is called periodically during test mode
@@ -416,7 +414,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("auto turn angle", 0);
 		SmartDashboard.putNumber("auto first drive distance", 0);
 		SmartDashboard.putNumber("auto second drive distance", 0);
+		SmartDashboard.putNumber("Gear Drop Time", 0);
 		SmartDashboard.putNumber("auto drive speed", 0);
+		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
 		SmartDashboard.putNumber("F", 1);
@@ -424,13 +424,14 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("I", 1); //PID Stuff 
 		SmartDashboard.putNumber("D", 1);
 		SmartDashboard.putNumber("shooter speed", 0);
-		SmartDashboard.putNumber("auger voltage", 0);
-		SmartDashboard.putNumber("climber full speed", 0);  //Dashboard variables that control motor speeds (mainly for testing)
-		SmartDashboard.putNumber("climber steady", 0);
+		SmartDashboard.putNumber("auger voltage", 0.5);
+		SmartDashboard.putNumber("climber full speed", 1.0);  //Dashboard variables that control motor speeds (mainly for testing)
+		SmartDashboard.putNumber("climber steady", 0.6);
 		SmartDashboard.putNumber("shooter test rpm", 0);
 		SmartDashboard.putNumber("shooter test velocity", 0);
-		SmartDashboard.putNumber("shooter voltage", 0);
+		SmartDashboard.putNumber("shooter voltage", -0.6);
 		SmartDashboard.putNumber("Deflector Angle", 0);
+		SmartDashboard.putNumber("Field Side Number", 0);
 		
 	}
 
@@ -533,10 +534,6 @@ public class Robot extends IterativeRobot {
 		return timer;
 	}
 
-	public DigitalInput getLimit() {
-		return lowerLimit;
-	}
-
 	public Toggle getToggleDownButton() {
 		return toggleDownButton;
 	}
@@ -564,16 +561,21 @@ public class Robot extends IterativeRobot {
 	public static void setConstants(boolean compBot){//practiceBot is false, compBot is true
 		//IF ROBOT IS COMPBOT
 		if(compBot){
-			FRONT_LEFT_MOTOR_ID = 0;
-			 FRONT_RIGHT_MOTOR_ID = 1;
-			 BACK_LEFT_MOTOR_ID = 2;
+			 FRONT_LEFT_MOTOR_ID = 5;
+			 FRONT_RIGHT_MOTOR_ID = 8;
+			 BACK_LEFT_MOTOR_ID = 0;
 			 BACK_RIGHT_MOTOR_ID = 3;
-			 SHOOTER_MOTOR_ID = 4;
-			 AUGER_MOTOR_ID = 5;
-			 DEFLECTOR_MOTOR_ID = 7;
-			 CLIMBER_MOTOR_ID = 6;
-			 INTAKE_MOTOR_ID = 8;
+			 SHOOTER_MOTOR_ID = 7;
+			 AUGER_MOTOR_ID = 2;
+			 DEFLECTOR_MOTOR_ID = 6;
+			 CLIMBER_MOTOR_ID = 1;
+			 INTAKE_MOTOR_ID = 4;
+			 
 			 AUGER_SPEED = 0.5;
+			 LIMIT_PORT = 0;
+			 
+			 BOILER_DEFLECTOR_ANGLE = 80;
+			 SHIP_DEFLECTOR_ANGLE = 60;
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -601,8 +603,6 @@ public class Robot extends IterativeRobot {
 			 AUGER_FORWARD_BUTTON = 6;
 			 AUGER_BACKWARD_BUTTON = 5;
 			 AUGER_INVERT = -1;
-			 CLIMB_UP_BUTTON = 6;
-			 CLIMB_DOWN_BUTTON = 5;
 			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
 			 GEAR_TOGGLE_BUTTON = 2;
 			 HALF_ACTIVATION_TOGGLE = 2;
@@ -610,6 +610,9 @@ public class Robot extends IterativeRobot {
 			 RIGHT_PID_TOGGLE = 8;
 			 SHOOTER_UP_TOGGLE = 4;
 			 SHOOTER_DOWN_TOGGLE = 3;
+			 CLIMB_AXIS = 3;
+			 THUMPER_TRICKS_ENABLE = 4;
+			 THUMP_BUTTON = 3;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -620,9 +623,9 @@ public class Robot extends IterativeRobot {
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 			 SHOOTER_REVERSE_SENSOR = true;
+			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
-			 GEAR_DROP_TIME = 3;//how long it takes to drop a gear
 		}
 		//IF ROBOT IS PRACTICE BOT
 		else{
@@ -635,7 +638,12 @@ public class Robot extends IterativeRobot {
 			 DEFLECTOR_MOTOR_ID = 7;
 			 CLIMBER_MOTOR_ID = 6;
 			 INTAKE_MOTOR_ID = 8;
+			 
 			 AUGER_SPEED = 0.5;
+			 LIMIT_PORT = 0;
+			 
+			 BOILER_DEFLECTOR_ANGLE = 80;
+			 SHIP_DEFLECTOR_ANGLE = 60;
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -663,8 +671,6 @@ public class Robot extends IterativeRobot {
 			 AUGER_FORWARD_BUTTON = 6;
 			 AUGER_BACKWARD_BUTTON = 5;
 			 AUGER_INVERT = -1;
-			 CLIMB_UP_BUTTON = 6;
-			 CLIMB_DOWN_BUTTON = 5;
 			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
 			 GEAR_TOGGLE_BUTTON = 2;
 			 HALF_ACTIVATION_TOGGLE = 2;
@@ -672,6 +678,9 @@ public class Robot extends IterativeRobot {
 			 RIGHT_PID_TOGGLE = 8;
 			 SHOOTER_UP_TOGGLE = 4;
 			 SHOOTER_DOWN_TOGGLE = 3;
+			 CLIMB_AXIS = 3;
+			 THUMPER_TRICKS_ENABLE = 4;
+			 THUMP_BUTTON = 3;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -682,9 +691,9 @@ public class Robot extends IterativeRobot {
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 			 SHOOTER_REVERSE_SENSOR = true;
+			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
-			 GEAR_DROP_TIME = 3;//how long it takes to drop a gear
 		}
 	}
 }

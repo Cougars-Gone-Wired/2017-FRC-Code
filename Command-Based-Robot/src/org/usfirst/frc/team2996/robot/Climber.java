@@ -9,24 +9,12 @@ public class Climber {
 	
 	CANTalon climber;
 	Joystick stick;
-	int climbUpButton;
-	int climbDownButton;
 	
 	Climber(Robot robot){
 		this.climber = robot.getClimberMotor();
 		this.stick = robot.getStickDrive();
-		this.climbUpButton = Robot.CLIMB_UP_BUTTON;
-		this.climbDownButton = Robot.CLIMB_DOWN_BUTTON;
 	}
 	public void climb(){
-		if(stick.getRawButton(climbUpButton) && stick.getRawButton(climbDownButton)){
-			climber.set(SmartDashboard.getNumber("climber steady", 0));
-		}else if(stick.getRawButton(climbUpButton)){
-			climber.set(SmartDashboard.getNumber("climber full speed", 0));
-		}else if(stick.getRawButton(climbDownButton)){
-			climber.set(-(SmartDashboard.getNumber("climber full speed", 0)));
-		}else{
-			climber.set(0);
-		}
+		climber.set(Threshold.threshold(stick.getRawAxis(Robot.CLIMB_AXIS)));
 	}
 }
