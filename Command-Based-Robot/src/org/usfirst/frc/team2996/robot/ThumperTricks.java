@@ -38,7 +38,28 @@ public class ThumperTricks {
 		}
 	}
 	
-	public void rockAround(){
-		timer.start();
-	}
+//	public void rockAround(){
+//		timer.start();
+//		if(timer.get() % 4 == 0){
+//			backLeftSolenoid.set(false);
+//			backRightSolenoid.set(false);
+//			frontRightSolenoid.set(true);
+//			frontLeftSolenoid.set(true);
+//		} else if(timer.get() % 3 == 0){
+//			backLeftSolenoid.set(true);
+//			backRightSolenoid.set(false);
+//			frontRightSolenoid.set(false);
+//			frontLeftSolenoid.set(true);
+//		} else if(timer.get() % 2 == 0){
+//			backLeftSolenoid.set(true);
+//			backRightSolenoid.set(true);
+//			frontRightSolenoid.set(false);
+//			frontLeftSolenoid.set(false);
+//		} else if(timer.get() % 1 == 0){
+//			backLeftSolenoid.set(true);
+//			backRightSolenoid.set(true);
+//			frontRightSolenoid.set(false);
+//			frontLeftSolenoid.set(false);
+//		}
+//	}
 }

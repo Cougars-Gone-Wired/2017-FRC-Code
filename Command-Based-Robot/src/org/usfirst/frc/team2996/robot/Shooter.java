@@ -118,7 +118,7 @@ public class Shooter {
 		deflectorMotor.configEncoderCodesPerRev(2048);
 		deflectorMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		
-		deflectorMotor.set(Threshold.threshold(stick.getRawAxis(1)) / 5);
+		deflectorMotor.set(Threshold.threshold(stick.getRawAxis(1)) / 10);
 		
 //		if(deflectorMotor.isFwdLimitSwitchClosed() == true){
 //			deflectorMotor.setEncPosition(0);

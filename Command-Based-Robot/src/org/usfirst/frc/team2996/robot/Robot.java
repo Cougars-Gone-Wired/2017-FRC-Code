@@ -231,7 +231,7 @@ public class Robot extends IterativeRobot {
 		
 		CameraServer camera = CameraServer.getInstance();
 		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
-		usbCam.setResolution(1280, 720);
+		usbCam.setResolution(600, 480);
 		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
 		
 //		gripPipeline = new GripPipeline();
@@ -365,14 +365,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() { //Runs the functions for teleop in the other classes
-		boolean state = driveToggle.toggle();
-		drive.drive(state);
-//		if(thumperTricksToggle.toggle() == true){
-//			thumperTricks.rocking();
-//		}else{
-//			boolean state = driveToggle.toggle();
-//			drive.drive(state);
-//		}
+		
+		if(thumperTricksToggle.toggle() == true){
+			thumperTricks.rocking();
+		}else{
+			boolean state = driveToggle.toggle();
+			drive.drive(state);
+		}
 		PIDShooter.shoot(PIDToggle.toggle());
 		PIDShooter.auger();
 		PIDShooter.deflector();
