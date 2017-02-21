@@ -6,6 +6,7 @@ import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -24,6 +25,10 @@ public class Shooter {
 	private int shooterButton;
 	private int augerForwardButton;
 	private int augerBackwardButton;
+	Solenoid frontLeft;
+	Solenoid frontRight;
+	Solenoid backLeft;
+	Solenoid backRight;
 	private Toggle toggleUpButton;
 	private Toggle toggleDownButton;
 
@@ -41,6 +46,10 @@ public class Shooter {
 		this.shooterButton = Robot.SHOOTER_BUTTON;
 		this.augerForwardButton = Robot.AUGER_FORWARD_BUTTON;
 		this.augerBackwardButton = Robot.AUGER_BACKWARD_BUTTON;
+		this.frontLeft = robot.getFrontLeftSolenoid();
+		this.frontRight = robot.getFrontRightSolenoid();
+		this.backLeft = robot.getBackLeftSolenoid();
+		this.backRight = robot.getBackRightSolenoid();
 		
 		this.toggleUpButton = robot.getToggleUpButton();
 		this.toggleDownButton = robot.getToggleDownButton();
@@ -70,6 +79,7 @@ public class Shooter {
 		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
 
 		if (stick.getRawButton(shooterButton)) {
+			
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
 		}  else {

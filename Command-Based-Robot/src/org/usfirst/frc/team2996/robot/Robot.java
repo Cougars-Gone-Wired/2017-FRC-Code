@@ -106,7 +106,8 @@ public class Robot extends IterativeRobot {
 	static int SHOOTER_DOWN_TOGGLE;
 	static int CLIMB_AXIS;
 	static int THUMPER_TRICKS_ENABLE;
-	static int THUMP_BUTTON;
+	static int THUMP_FRONT_BUTTON;
+	static int THUMP_BACK_BUTTON;
 	
 	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
 	static int MECANUM_DRIVE_XAXIS_INVERT;
@@ -365,14 +366,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() { //Runs the functions for teleop in the other classes
-		boolean state = driveToggle.toggle();
-		drive.drive(state);
-//		if(thumperTricksToggle.toggle() == true){
-//			thumperTricks.rocking();
-//		}else{
-//			boolean state = driveToggle.toggle();
-//			drive.drive(state);
-//		}
+		if(thumperTricksToggle.toggle() == true){
+			thumperTricks.rockingArcadeDrive();
+		}else{
+			boolean state = driveToggle.toggle();
+			drive.drive(state);
+		}
 		PIDShooter.shoot(PIDToggle.toggle());
 		PIDShooter.auger();
 		PIDShooter.deflector();
@@ -612,7 +611,8 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_DOWN_TOGGLE = 3;
 			 CLIMB_AXIS = 3;
 			 THUMPER_TRICKS_ENABLE = 4;
-			 THUMP_BUTTON = 3;
+			 THUMP_FRONT_BUTTON = 5;
+			 THUMP_BACK_BUTTON = 6;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -680,7 +680,8 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_DOWN_TOGGLE = 3;
 			 CLIMB_AXIS = 3;
 			 THUMPER_TRICKS_ENABLE = 4;
-			 THUMP_BUTTON = 3;
+			 THUMP_FRONT_BUTTON = 5;
+			 THUMP_BACK_BUTTON = 5;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
