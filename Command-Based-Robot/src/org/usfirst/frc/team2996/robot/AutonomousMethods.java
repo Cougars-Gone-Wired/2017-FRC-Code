@@ -29,7 +29,6 @@ public class AutonomousMethods {
 
 	public double turn(String direction, double angle, double speed) { //add string parameter for side of field (red or blue)
 		gyro.reset();
-		
 		sleep();
 		
 		if (drive.isMecanum()) {

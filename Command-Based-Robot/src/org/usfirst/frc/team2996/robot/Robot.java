@@ -54,7 +54,7 @@ public class Robot extends IterativeRobot {
 		return autonomousCommand;
 	}
 	
-	public static final boolean isCompBot = false;
+	public static final boolean isCompBot = true;
 	
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -65,7 +65,6 @@ public class Robot extends IterativeRobot {
 	static int DEFLECTOR_MOTOR_ID;
 	static int CLIMBER_MOTOR_ID;
 	static int INTAKE_MOTOR_ID;
-	static int LIMIT_PORT;
 	
 	static int BOILER_DEFLECTOR_ANGLE;
 	static int SHIP_DEFLECTOR_ANGLE;
@@ -106,7 +105,8 @@ public class Robot extends IterativeRobot {
 	static int SHOOTER_DOWN_TOGGLE;
 	static int CLIMB_AXIS;
 	static int THUMPER_TRICKS_ENABLE;
-	static int THUMP_BUTTON;
+	static int THUMP_FRONT_BACK_BUTTON;
+	static int THUMP_SIDE_SIDE_BUTTON;
 	
 	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
 	static int MECANUM_DRIVE_XAXIS_INVERT;
@@ -161,7 +161,7 @@ public class Robot extends IterativeRobot {
 	Shooter PIDShooter;
 	RobotDrive robotDrive;
 	Intake intake;
-	ThumperTricks thumperTricks;
+//	ThumperTricks thumperTricks;
 	boolean autoFinished; // checks if autonomous is finished
 	boolean shooterState;
 //	Thread visionThread;
@@ -222,18 +222,18 @@ public class Robot extends IterativeRobot {
 		auto = new AutonomousPrograms(this);
 		intake = new Intake(this);
 		climber = new Climber(this);
-		thumperTricks = new ThumperTricks(this);
+//		thumperTricks = new ThumperTricks(this);
 		
 		toggleUpButton = new Toggle(stickManipulator, SHOOTER_UP_TOGGLE);
 		toggleDownButton = new Toggle(stickManipulator, SHOOTER_DOWN_TOGGLE);
 		
 		displaySettings();
 		
-		CameraServer camera = CameraServer.getInstance();
-		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
-		usbCam.setResolution(600, 480);
-		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
-		
+//		CameraServer camera = CameraServer.getInstance();
+//		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
+//		usbCam.setResolution(600, 480);
+//		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
+//		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
 //              UsbCamera camera = CameraServer.getInstance().startAutomaticCapture("usb", 0);
@@ -365,13 +365,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() { //Runs the functions for teleop in the other classes
-		
-		if(thumperTricksToggle.toggle() == true){
-			thumperTricks.rocking();
-		}else{
-			boolean state = driveToggle.toggle();
-			drive.drive(state);
-		}
+
+		boolean state = driveToggle.toggle();
+		drive.drive(state);
 		PIDShooter.shoot(PIDToggle.toggle());
 		PIDShooter.auger();
 		PIDShooter.deflector();
@@ -387,7 +383,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
 		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
-	}
+		}
 	/**
 	 * This function is called periodically during test mode
 	 */
@@ -571,7 +567,6 @@ public class Robot extends IterativeRobot {
 			 INTAKE_MOTOR_ID = 4;
 			 
 			 AUGER_SPEED = 0.5;
-			 LIMIT_PORT = 0;
 			 
 			 BOILER_DEFLECTOR_ANGLE = 80;
 			 SHIP_DEFLECTOR_ANGLE = 60;
@@ -611,7 +606,8 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_DOWN_TOGGLE = 3;
 			 CLIMB_AXIS = 3;
 			 THUMPER_TRICKS_ENABLE = 4;
-			 THUMP_BUTTON = 3;
+			 THUMP_FRONT_BACK_BUTTON = 5;
+			 THUMP_SIDE_SIDE_BUTTON = 6;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -639,7 +635,6 @@ public class Robot extends IterativeRobot {
 			 INTAKE_MOTOR_ID = 8;
 			 
 			 AUGER_SPEED = 0.5;
-			 LIMIT_PORT = 0;
 			 
 			 BOILER_DEFLECTOR_ANGLE = 80;
 			 SHIP_DEFLECTOR_ANGLE = 60;
@@ -679,7 +674,8 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_DOWN_TOGGLE = 3;
 			 CLIMB_AXIS = 3;
 			 THUMPER_TRICKS_ENABLE = 4;
-			 THUMP_BUTTON = 3;
+			 THUMP_FRONT_BACK_BUTTON = 5;
+			 THUMP_SIDE_SIDE_BUTTON = 6;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;

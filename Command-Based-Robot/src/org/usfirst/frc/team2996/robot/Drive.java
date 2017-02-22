@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2996.robot;
+					package org.usfirst.frc.team2996.robot;
 
 import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
@@ -51,7 +51,7 @@ public class Drive {
 		backRightMotor.configEncoderCodesPerRev(20);
 	}
 
-	public void SetSolenoids(boolean frontRightSolenoid, boolean frontLeftSolenoid, boolean backRightSolenoid, boolean backLeftSolenoid) {
+	public void setSolenoids(boolean frontRightSolenoid, boolean frontLeftSolenoid, boolean backRightSolenoid, boolean backLeftSolenoid) {
 		this.frontRightSolenoid.set(frontRightSolenoid);
 		this.frontLeftSolenoid.set(frontLeftSolenoid);
 		this.backRightSolenoid.set(backRightSolenoid);
@@ -71,7 +71,7 @@ public class Drive {
 		robotDrive.arcadeDrive(
 				Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)),
 				Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)));
-		SetSolenoids(true, true, true, true);
+		setSolenoids(true, true, true, true);
 
 	}
 
@@ -83,7 +83,7 @@ public class Drive {
 				Threshold.threshold((Robot.MECANUM_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVEY_AXIS)),
 				Threshold.threshold((Robot.MECANUM_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_ROTATE)),
 				0.0);
-		SetSolenoids(false, false, false, false);
+		setSolenoids(false, false, false, false);
 
 	}
 	
@@ -92,7 +92,7 @@ public class Drive {
 		robotDrive.arcadeDrive(
 				Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)),
 				Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)));
-		SetSolenoids(true, true, false, false); 
+		setSolenoids(true, true, false, false); 
 	}
 
 	public void drive(boolean driveToggle) {
