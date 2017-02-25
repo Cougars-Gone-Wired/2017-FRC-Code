@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Solenoid;
  */
 public class Intake {
 	private CANTalon intakeMotor;
+	private CANTalon deflectorMotor;
 	private Solenoid gearSolenoid;
 	private Joystick stick;
 	private int intakeAxis;
@@ -27,6 +28,7 @@ public class Intake {
 	 * 
 	 */
 	public Intake(Robot robot) {
+		this.deflectorMotor = robot.getDeflectorMotor();
 		this.intakeMotor = robot.getIntakeMotor();
 		this.gearSolenoid = robot.getGearSolenoid();
 		this.stick = robot.getStickManipulator();
@@ -41,6 +43,7 @@ public class Intake {
 	public void intakeOuttake() {
 		if (Threshold.threshold(stick.getRawAxis(intakeAxis)) > 0.2) {
 			intakeMotor.set(1);
+			deflectorMotor.set(1);
 		} else if (Threshold.threshold(stick.getRawAxis(outtakeAxis)) > 0.2) {
 			intakeMotor.set(-1);
 		} else {
@@ -52,9 +55,9 @@ public class Intake {
 		if(stop == true){
 			intakeMotor.set(0);
 		}else if(outtake == true){
-			intakeMotor.set(1);
+			intakeMotor.set(Robot.AUTO_INTAKE_MOTOR_REVERSE*1);
 		}else{
-			intakeMotor.set(-1);
+			intakeMotor.set(Robot.AUTO_INTAKE_MOTOR_REVERSE*-1);
 		}
 		
 	}

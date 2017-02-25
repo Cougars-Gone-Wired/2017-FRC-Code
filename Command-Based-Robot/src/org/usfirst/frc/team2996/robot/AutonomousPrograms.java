@@ -15,7 +15,7 @@ public class AutonomousPrograms extends AutonomousMethods {
 		sleep();
 		moveStraight("forward", (int) SmartDashboard.getNumber("auto second drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
 		sleep();
-		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0));
+		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0), SmartDashboard.getNumber("auto drive speed", 0));
 		stop();
 	}
 	
@@ -26,7 +26,13 @@ public class AutonomousPrograms extends AutonomousMethods {
 		sleep();
 		moveStraight("forward", (int) SmartDashboard.getNumber("auto second drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
 		sleep();
-		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0));
+		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0), SmartDashboard.getNumber("auto drive speed", 0));
+		stop();
+	}
+	public void placeGearCenterPeg(){
+		moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
+		sleep();
+		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0), SmartDashboard.getNumber("auto drive speed", 0));
 		stop();
 	}
 }

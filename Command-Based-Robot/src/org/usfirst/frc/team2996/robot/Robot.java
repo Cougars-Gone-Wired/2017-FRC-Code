@@ -48,13 +48,13 @@ public class Robot extends IterativeRobot {
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
 	Command autonomousCommand;
-	Timer timer = new Timer();
+	Timer robotTimer = new Timer();
 
 	public Command getAutonomousCommand() {
 		return autonomousCommand;
 	}
 	
-	public static final boolean isCompBot = true;
+	public static final boolean isCompBot = false;
 	
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -120,6 +120,8 @@ public class Robot extends IterativeRobot {
 	static boolean SHOOTER_REVERSE_SENSOR;
 	static int DEFLECTOR_REVERSE_ENCODER;
 	
+	static int AUTO_INTAKE_MOTOR_REVERSE;
+	
 	static int SLEEP_AUTO;	// how long it waits before going to next .....step in auto //minimum = 100
 
 //	public double centerX;
@@ -161,7 +163,7 @@ public class Robot extends IterativeRobot {
 	Shooter PIDShooter;
 	RobotDrive robotDrive;
 	Intake intake;
-//	ThumperTricks thumperTricks;
+	ThumperTricks thumperTricks;
 	boolean autoFinished; // checks if autonomous is finished
 	boolean shooterState;
 //	Thread visionThread;
@@ -182,6 +184,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		robotTimer.reset();
 		setConstants(Robot.isCompBot);
 		
 		frontLeftMotor = new CANTalon(FRONT_LEFT_MOTOR_ID);
@@ -219,20 +222,21 @@ public class Robot extends IterativeRobot {
 		
 		drive = new Drive(this);
 		PIDShooter = new Shooter(this);
-		auto = new AutonomousPrograms(this);
 		intake = new Intake(this);
 		climber = new Climber(this);
-//		thumperTricks = new ThumperTricks(this);
+		thumperTricks = new ThumperTricks(this);
 		
 		toggleUpButton = new Toggle(stickManipulator, SHOOTER_UP_TOGGLE);
 		toggleDownButton = new Toggle(stickManipulator, SHOOTER_DOWN_TOGGLE);
 		
 		displaySettings();
 		
-//		CameraServer camera = CameraServer.getInstance();
-//		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
-//		usbCam.setResolution(600, 480);
-//		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
+		CameraServer camera = CameraServer.getInstance();
+		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
+		usbCam.setResolution(600, 480);
+		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
+		
+		auto = new AutonomousPrograms(this);
 //		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
@@ -322,8 +326,9 @@ public class Robot extends IterativeRobot {
 
 		Scheduler.getInstance().run();
 		
-		//Runs the autonomous programs depending on the field side string (will make boolean)
-		if (autoFinished == false && SmartDashboard.getNumber("Field Side Number", 0) == 0) // if autonomous is not finished keep going
+		//Runs the autonomous programs depending on the field side string (0 for blue , 1 for red)
+		//blue
+		if (autoFinished == false && (SmartDashboard.getNumber("Field Side Number", 0) == 0)) // if autonomous is not finished keep going
 		{
 			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
 			switch (autonomous) {
@@ -331,10 +336,16 @@ public class Robot extends IterativeRobot {
 				auto.stop();// do nothing
 				break;
 			case 1:
-				auto.placeGearLeftPeg(); // drive forward, turn, place gear
+				auto.moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), 0.6);
 				break;
 			case 2:
-				auto.moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), 0.6);
+				auto.placeGearLeftPeg(); // drive forward, turn, place gear
+				break;
+			case 3:
+				auto.placeGearCenterPeg(); // drive forward, place gear
+				break;
+			case 4:
+				auto.placeGearRightPeg(); // drive forward, turn, place gear
 				break;
 			default:
 				auto.stop();
@@ -349,6 +360,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
+		robotTimer.reset();
 		drive.encoderReset(); // reset all encoders
 		gyro.reset();
 		compressor.setClosedLoopControl(true);
@@ -357,6 +369,7 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		}
 		drive.arcadeDrive();
+		robotTimer.start();
 		PIDToggle.set(); // THIS BASICALLY SETS THE SHOOTER TO VOLTAGE FOR PID USE .RESET()
 	}
 
@@ -365,9 +378,20 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() { //Runs the functions for teleop in the other classes
-
 		boolean state = driveToggle.toggle();
 		drive.drive(state);
+//		if(thumperTricksToggle.toggle()){
+//			thumperTricks.rockingArcadeDrive();
+//		} else {
+//			boolean state = driveToggle.toggle();
+//			drive.drive(state);
+//		}
+		
+		SmartDashboard.putNumber("Boiler Deflector Angle", 0);
+		SmartDashboard.putNumber("Ship Deflector Angle", 0);
+	
+		SmartDashboard.putNumber("Timer", robotTimer.get());
+		
 		PIDShooter.shoot(PIDToggle.toggle());
 		PIDShooter.auger();
 		PIDShooter.deflector();
@@ -375,14 +399,17 @@ public class Robot extends IterativeRobot {
 		intake.gearActivation();
 		climber.climb();
 		Scheduler.getInstance().run(); // driverstation stuff
-		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		//Displays the encoder for each motor (for debugging)
-		SmartDashboard.putNumber("shooter", shooterMotor.getSpeed());
+		SmartDashboard.putNumber("shooter test rpm", shooterMotor.getSpeed());
 		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
 		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
+		
+		SmartDashboard.putNumber("gyro", gyro.getAngle());
+		SmartDashboard.putString("Gyro Firware Version", gyro.getFirmwareVersion());
+		
 		}
 	/**
 	 * This function is called periodically during test mode
@@ -427,6 +454,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("shooter voltage", -0.6);
 		SmartDashboard.putNumber("Deflector Angle", 0);
 		SmartDashboard.putNumber("Field Side Number", 0);
+		SmartDashboard.putNumber("Distance From Line (inches)", 0);
 		
 	}
 
@@ -524,10 +552,6 @@ public class Robot extends IterativeRobot {
 	public boolean isAutoFinished() {
 		return autoFinished;
 	}
-	
-	public Timer getTimer() {
-		return timer;
-	}
 
 	public Toggle getToggleDownButton() {
 		return toggleDownButton;
@@ -568,8 +592,8 @@ public class Robot extends IterativeRobot {
 			 
 			 AUGER_SPEED = 0.5;
 			 
-			 BOILER_DEFLECTOR_ANGLE = 80;
-			 SHIP_DEFLECTOR_ANGLE = 60;
+			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Angle", 0);
+			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Angle", 0);
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -619,6 +643,8 @@ public class Robot extends IterativeRobot {
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 			 SHOOTER_REVERSE_SENSOR = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
+			 AUTO_INTAKE_MOTOR_REVERSE = -1;
+			 
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}
@@ -636,8 +662,8 @@ public class Robot extends IterativeRobot {
 			 
 			 AUGER_SPEED = 0.5;
 			 
-			 BOILER_DEFLECTOR_ANGLE = 80;
-			 SHIP_DEFLECTOR_ANGLE = 60;
+			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Angle", 0);
+			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Angle", 0);
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -681,12 +707,15 @@ public class Robot extends IterativeRobot {
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
 			 MECANUM_DRIVE_YAXIS_INVERT = -1;
 			 MECANUM_DRIVE_ROTATE_INVERT = -1;
-			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
-			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 
+			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = 1; // negates encoder counts
+			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = -1;
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
-			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = -1;
+			 
 			 SHOOTER_REVERSE_SENSOR = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
+			 AUTO_INTAKE_MOTOR_REVERSE = -1;
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}

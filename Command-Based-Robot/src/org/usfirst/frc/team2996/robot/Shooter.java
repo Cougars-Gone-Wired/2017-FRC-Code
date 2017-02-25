@@ -7,6 +7,7 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  *
  */
 public class Shooter {
+	Timer shooterTimer = new Timer();
 	private CANTalon augerMotor;
 	private CANTalon shooterMotor;
 	private CANTalon deflectorMotor;
@@ -53,6 +55,8 @@ public class Shooter {
 		
 		this.toggleUpButton = robot.getToggleUpButton();
 		this.toggleDownButton = robot.getToggleDownButton();
+		
+		shooterTimer.start();
 	}
 	
 	public int getDeflectorEncoder(){
@@ -73,15 +77,18 @@ public class Shooter {
 		}
 	}
 	public void pidShooter() {
-		shooterMotor.setF(SmartDashboard.getNumber("F", 0.1097));
-		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
-		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
-		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
-
+		setPID();
 		if (stick.getRawButton(shooterButton)) {
-			
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
+			
+			/*if(shooterTimer.get() % 5 <=2){
+				backRight.set(true);
+			} else {
+				backRight.set(false);
+			}
+			*/
+			
 		}  else {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);
@@ -128,32 +135,30 @@ public class Shooter {
 		deflectorMotor.configEncoderCodesPerRev(2048);
 		deflectorMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		
-		deflectorMotor.set(Threshold.threshold(stick.getRawAxis(1)) / 10);
+		deflectorMotor.set(-(Threshold.threshold(stick.getRawAxis(1)) / 5));
 		
 //		if(deflectorMotor.isFwdLimitSwitchClosed() == true){
 //			deflectorMotor.setEncPosition(0);
 //			toggleDownButton.reset();
 //			toggleUpButton.reset();
-//		}
-//		
-//		} else if(toggleUpButton.toggle() == true){
+//		} else if(deflectorMotor.getEncPosition() > boilerEncoder -5 && deflectorMotor.getEncPosition() < boilerEncoder + 5){
+//			toggleUpButton.reset();
 //			toggleDownButton.reset();
-//		} else if(toggleDownButton.toggle() == true){
+//		} else if(deflectorMotor.getEncPosition() > shipEncoder -5 && deflectorMotor.getEncPosition() < shipEncoder + 5){
 //			toggleUpButton.reset();
-//		} else if(toggleUpButton.toggle() == true && getDeflectorEncoder() <= shipEncoder){
-//			deflectorMotor.set(0.1);
-//		} else if((getDeflectorEncoder() >= shipEncoder - 5) || (getDeflectorEncoder() <= shipEncoder + 5)){
-//			toggleUpButton.reset();
-//		} else if(toggleUpButton.toggle() == true && getDeflectorEncoder() <= boilerEncoder){
-//			deflectorMotor.set(0.1);
-//		} else if((getDeflectorEncoder() >= boilerEncoder - 5) || (getDeflectorEncoder() <= boilerEncoder + 5)){
-//			toggleUpButton.reset();
-//		} else if(toggleDownButton.toggle() == true && getDeflectorEncoder() >= shipEncoder){
-//			deflectorMotor.set(-0.1);
-//		} else if((getDeflectorEncoder() >= shipEncoder - 5) || (getDeflectorEncoder() <= shipEncoder + 5)){
 //			toggleDownButton.reset();
-//		} else if(toggleDownButton.toggle() == true && deflectorMotor.isFwdLimitSwitchClosed() == false){
-//			deflectorMotor.set(-0.1);
+//		} else if (toggleUpButton.toggle() == true){
+//			toggleDownButton.reset();
+//		} else if (toggleDownButton.toggle() == true){
+//			toggleUpButton.reset();
+//		} else if (deflectorMotor.getEncPosition() < boilerEncoder && toggleUpButton.toggle() == true){
+//			deflectorMotor.set(1);
+//		} else if (deflectorMotor.getEncPosition() < shipEncoder && toggleUpButton.toggle() == true){
+//			deflectorMotor.set(1);
+//		} else if(deflectorMotor.getEncPosition() > boilerEncoder && toggleDownButton.toggle() == true){
+//			deflectorMotor.set(-1);
+//		} else if(deflectorMotor.isFwdLimitSwitchClosed() == false && toggleDownButton.toggle() == true){
+//			deflectorMotor.set(-1);
 //		} else {
 //			deflectorMotor.set(0);
 //		}
@@ -181,6 +186,13 @@ public class Shooter {
 		if (stick.getRawButton(shooterButton)) {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(SmartDashboard.getNumber("shooter voltage", 0));
+			
+			if(shooterTimer.get() % 5 == 0){
+				backRight.set(true);
+			} else {
+				backRight.set(false);
+			}
+			
 		}  else {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);
