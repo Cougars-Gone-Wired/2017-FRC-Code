@@ -15,6 +15,12 @@ public class Climber {
 		this.stick = robot.getStickDrive();
 	}
 	public void climb(){
+		if(stick.getRawAxis(Robot.CLIMB_AXIS)>0.5){
 		climber.set(Threshold.threshold(stick.getRawAxis(Robot.CLIMB_AXIS)));
+		} else if(Threshold.threshold(stick.getRawAxis(2))>0){
+		climber.set(-Threshold.threshold(stick.getRawAxis(2)));
+		} else{
+			climber.set(0);
+		}
 	}
 }

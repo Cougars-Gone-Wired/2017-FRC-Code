@@ -56,6 +56,7 @@ public class Shooter {
 		this.toggleUpButton = robot.getToggleUpButton();
 		this.toggleDownButton = robot.getToggleDownButton();
 		
+		setPID();
 		shooterTimer.start();
 	}
 	
@@ -67,8 +68,8 @@ public class Shooter {
 	 * Changes the voltage of the shooter CANTalon depending on which button is pressed
 	 */
 	
-	public void shoot(boolean toggle){
-		if(toggle ==  false){
+	public void shootingMode(boolean toggle){
+		if(toggle ==  true){
 			pidShooter();
 			SmartDashboard.putString("Shooting Mode", "PID");
 		}else{
@@ -77,7 +78,8 @@ public class Shooter {
 		}
 	}
 	public void pidShooter() {
-		setPID();
+	setPID();
+	if(deflectorMotor.isFwdLimitSwitchClosed() == false){
 		if (stick.getRawButton(shooterButton)) {
 			shooterMotor.changeControlMode(TalonControlMode.Speed);
 			shooterMotor.set(SmartDashboard.getNumber("shooter speed", 0));
@@ -88,12 +90,14 @@ public class Shooter {
 				backRight.set(false);
 			}
 			*/
-			
-		}  else {
+		} else {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);
-		}
-
+			
+	} } else {
+			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
+			shooterMotor.set(0);
+			}
 	}
 
 	public void pidShooter(boolean shoot) {
@@ -110,6 +114,7 @@ public class Shooter {
 	 * Changes the voltage of the auger CANTalon depending on which button is pressed
 	 */
 	public void auger() {
+		if(deflectorMotor.isFwdLimitSwitchClosed() == false){
 		if (stick.getRawButton(augerForwardButton)) {
 			augerMotor.changeControlMode(TalonControlMode.PercentVbus);
 			augerMotor.set(Robot.AUGER_INVERT*SmartDashboard.getNumber("auger voltage", 0));
@@ -120,6 +125,10 @@ public class Shooter {
 			augerMotor.changeControlMode(TalonControlMode.PercentVbus);
 			augerMotor.set(0);
 		}			
+	}else {
+		augerMotor.changeControlMode(TalonControlMode.PercentVbus);
+		augerMotor.set(0);
+	}
 	}
 	
 	public void auger(double speed){
@@ -128,41 +137,43 @@ public class Shooter {
 	
 	
 	public void deflector() {
-		double boilerEncoder = 5.7 * Robot.BOILER_DEFLECTOR_ANGLE;
-		double shipEncoder = 5.7 * Robot.SHIP_DEFLECTOR_ANGLE;
+		double boilerEncoder =  SmartDashboard.getNumber("Boiler Deflector Position", 0);
+		double shipEncoder = SmartDashboard.getNumber("Ship Deflector Position", 0);
 		
 		deflectorMotor.changeControlMode(TalonControlMode.PercentVbus);
 		deflectorMotor.configEncoderCodesPerRev(2048);
 		deflectorMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		
-		deflectorMotor.set(-(Threshold.threshold(stick.getRawAxis(1)) / 5));
+		SmartDashboard.putBoolean("Toggle Up Button", toggleUpButton.toggle());
+		SmartDashboard.putBoolean("Toggle Down Button", toggleDownButton.toggle());
 		
-//		if(deflectorMotor.isFwdLimitSwitchClosed() == true){
-//			deflectorMotor.setEncPosition(0);
-//			toggleDownButton.reset();
-//			toggleUpButton.reset();
-//		} else if(deflectorMotor.getEncPosition() > boilerEncoder -5 && deflectorMotor.getEncPosition() < boilerEncoder + 5){
-//			toggleUpButton.reset();
-//			toggleDownButton.reset();
-//		} else if(deflectorMotor.getEncPosition() > shipEncoder -5 && deflectorMotor.getEncPosition() < shipEncoder + 5){
-//			toggleUpButton.reset();
-//			toggleDownButton.reset();
-//		} else if (toggleUpButton.toggle() == true){
-//			toggleDownButton.reset();
-//		} else if (toggleDownButton.toggle() == true){
-//			toggleUpButton.reset();
-//		} else if (deflectorMotor.getEncPosition() < boilerEncoder && toggleUpButton.toggle() == true){
-//			deflectorMotor.set(1);
-//		} else if (deflectorMotor.getEncPosition() < shipEncoder && toggleUpButton.toggle() == true){
-//			deflectorMotor.set(1);
-//		} else if(deflectorMotor.getEncPosition() > boilerEncoder && toggleDownButton.toggle() == true){
-//			deflectorMotor.set(-1);
-//		} else if(deflectorMotor.isFwdLimitSwitchClosed() == false && toggleDownButton.toggle() == true){
-//			deflectorMotor.set(-1);
-//		} else {
-//			deflectorMotor.set(0);
-//		}
+//		deflectorMotor.set(-(Threshold.threshold(stick.getRawAxis(1)) / 5));
 		
+		int deflectorEncoder = getDeflectorEncoder();
+		 if (toggleUpButton.toggle() == true && toggleDownButton.toggle() == true){
+			toggleDownButton.reset();
+			toggleUpButton.reset(); 
+		} else if (getDeflectorEncoder() < boilerEncoder && toggleUpButton.toggle() == true){
+			deflectorMotor.set(-0.2);
+		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
+			deflectorMotor.set(-0.2);
+		} else if(getDeflectorEncoder()> boilerEncoder && toggleDownButton.toggle() == true){
+			deflectorMotor.set(0.2);
+		} else if(getDeflectorEncoder()> shipEncoder && toggleDownButton.toggle() == true){
+			deflectorMotor.set(0.2);
+		}else if(deflectorMotor.isFwdLimitSwitchClosed() == true){
+			deflectorMotor.setEncPosition(0);
+				toggleDownButton.reset();
+				toggleUpButton.reset();
+			} else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
+				toggleUpButton.reset();
+				toggleDownButton.reset();
+			} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
+				toggleUpButton.reset();
+				toggleDownButton.reset();
+			}else{
+				deflectorMotor.set(0);
+			}
 		SmartDashboard.putNumber("Deflector Encoder", getDeflectorEncoder());
 		SmartDashboard.putBoolean("Deflector Limit", deflectorMotor.isFwdLimitSwitchClosed());
 	}
@@ -170,29 +181,32 @@ public class Shooter {
 	public void setPID(){ // This method sets all PID settings for the shooter
 		shooterMotor.setProfile(0);
 		shooterMotor.setF(SmartDashboard.getNumber("F", 0.1097));
-		shooterMotor.setP(SmartDashboard.getNumber("P", 1));
-		shooterMotor.setI(SmartDashboard.getNumber("I", 1));
-		shooterMotor.setD(SmartDashboard.getNumber("D", 1));
+		shooterMotor.setP(SmartDashboard.getNumber("P", 5));
+		shooterMotor.setI(SmartDashboard.getNumber("I", 0.011));
+		shooterMotor.setD(SmartDashboard.getNumber("D", 0.05));
 		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-		shooterMotor.reverseSensor(false);
 		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
-		shooterMotor.configPeakOutputVoltage(+12.0f, 0.0f);
+		shooterMotor.configPeakOutputVoltage(+12.0f, -12.0f);
 		shooterMotor.configEncoderCodesPerRev(Robot.ENCODER_CODES_PER_REV);
-		shooterMotor.reverseSensor(Robot.SHOOTER_REVERSE_SENSOR);
-		
+		shooterMotor.reverseOutput(Robot.SHOOTER_REVERSE_OUTPUT);
 		}
 	
 	public void voltageShoot(){
+		shooterMotor.configEncoderCodesPerRev(Robot.ENCODER_CODES_PER_REV);
+		if(deflectorMotor.isFwdLimitSwitchClosed() == false){
 		if (stick.getRawButton(shooterButton)) {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(SmartDashboard.getNumber("shooter voltage", 0));
 			
-			if(shooterTimer.get() % 5 == 0){
-				backRight.set(true);
-			} else {
-				backRight.set(false);
+//			if(shooterTimer.get() % 5 == 0){
+//				backRight.set(true);
+//			} else {
+//				backRight.set(false);
+//			}
+		}	else {
+			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
+			shooterMotor.set(0);
 			}
-			
 		}  else {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);

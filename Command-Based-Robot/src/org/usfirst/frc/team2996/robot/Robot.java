@@ -33,7 +33,6 @@ import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.VelocityMeasurementPeriod;
 import com.kauailabs.navx.frc.AHRS;
 
 /**
@@ -117,7 +116,7 @@ public class Robot extends IterativeRobot {
 	static int FRONT_RIGHT_MOTOR_NEGATE_ENCODER;
 	static int BACK_LEFT_MOTOR_NEGATE_ENCODER;
 	static int BACK_RIGHT_MOTOR_NEGATE_ENCODER;
-	static boolean SHOOTER_REVERSE_SENSOR;
+	static boolean SHOOTER_REVERSE_OUTPUT;
 	static int DEFLECTOR_REVERSE_ENCODER;
 	
 	static int AUTO_INTAKE_MOTOR_REVERSE;
@@ -220,10 +219,7 @@ public class Robot extends IterativeRobot {
 		
 		gyro = new AHRS(SPI.Port.kMXP);
 		
-		drive = new Drive(this);
-		PIDShooter = new Shooter(this);
-		intake = new Intake(this);
-		climber = new Climber(this);
+
 		thumperTricks = new ThumperTricks(this);
 		
 		toggleUpButton = new Toggle(stickManipulator, SHOOTER_UP_TOGGLE);
@@ -236,7 +232,7 @@ public class Robot extends IterativeRobot {
 		usbCam.setResolution(600, 480);
 		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
 		
-		auto = new AutonomousPrograms(this);
+
 //		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
@@ -280,6 +276,13 @@ public class Robot extends IterativeRobot {
 		
 //	visionThread.setDaemon(true);
 //	visionThread.start();
+		
+		//THIS NEEDS TO BE AT BOTTOM AND AUTO IS LAST
+		drive = new Drive(this);
+		PIDShooter = new Shooter(this);
+		intake = new Intake(this);
+		climber = new Climber(this);
+		auto = new AutonomousPrograms(this);
 	}
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
@@ -330,7 +333,7 @@ public class Robot extends IterativeRobot {
 		//blue
 		if (autoFinished == false && (SmartDashboard.getNumber("Field Side Number", 0) == 0)) // if autonomous is not finished keep going
 		{
-			int autonomous = (int) SmartDashboard.getNumber("Autonomous Select", 0);
+			int autonomous = SmartDashboard.getInt("Autonomous Select", 0);
 			switch (autonomous) {
 			case 0:
 				auto.stop();// do nothing
@@ -378,6 +381,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() { //Runs the functions for teleop in the other classes
+		displayLive();
 		boolean state = driveToggle.toggle();
 		drive.drive(state);
 //		if(thumperTricksToggle.toggle()){
@@ -386,29 +390,16 @@ public class Robot extends IterativeRobot {
 //			boolean state = driveToggle.toggle();
 //			drive.drive(state);
 //		}
-		
-		SmartDashboard.putNumber("Boiler Deflector Angle", 0);
-		SmartDashboard.putNumber("Ship Deflector Angle", 0);
 	
-		SmartDashboard.putNumber("Timer", robotTimer.get());
 		
-		PIDShooter.shoot(PIDToggle.toggle());
+		PIDShooter.shootingMode(PIDToggle.toggle());
 		PIDShooter.auger();
 		PIDShooter.deflector();
 		intake.intakeOuttake();
 		intake.gearActivation();
 		climber.climb();
 		Scheduler.getInstance().run(); // driverstation stuff
-		//Displays the encoder for each motor (for debugging)
-		SmartDashboard.putNumber("shooter test rpm", shooterMotor.getSpeed());
-		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
-		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
-		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
-		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
-		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
-		
-		SmartDashboard.putNumber("gyro", gyro.getAngle());
-		SmartDashboard.putString("Gyro Firware Version", gyro.getFirmwareVersion());
+	
 		
 		}
 	/**
@@ -429,9 +420,24 @@ public class Robot extends IterativeRobot {
 		}
 	}
 	
+	public void displayLive(){
+
+		SmartDashboard.putNumber("Timer", robotTimer.get());
+		//Displays the encoder for each motor (for debugging)
+		SmartDashboard.putNumber("shooter test rpm", shooterMotor.getSpeed());
+		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
+		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
+		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
+		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
+		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
+		
+		SmartDashboard.putNumber("gyro", gyro.getAngle());
+		SmartDashboard.putString("Gyro Firware Version", gyro.getFirmwareVersion());
+	}
+	
 	public void displaySettings(){
 		
-		SmartDashboard.putNumber("Autonomous Select", 0); // the number put in the dashboard corresponds to an autonomous program
+		SmartDashboard.putInt("Autonomous Select", 0); // the number put in the dashboard corresponds to an autonomous program
 		SmartDashboard.putString("Field Side", ""); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 0);
 		SmartDashboard.putNumber("auto first drive distance", 0);
@@ -441,6 +447,9 @@ public class Robot extends IterativeRobot {
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
+		
+		SmartDashboard.putNumber("Boiler Deflector Position", 0);
+		SmartDashboard.putNumber("Ship Deflector Position", 0);
 		SmartDashboard.putNumber("F", 1);
 		SmartDashboard.putNumber("P", 1);
 		SmartDashboard.putNumber("I", 1); //PID Stuff 
@@ -592,8 +601,8 @@ public class Robot extends IterativeRobot {
 			 
 			 AUGER_SPEED = 0.5;
 			 
-			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Angle", 0);
-			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Angle", 0);
+//			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Position", 0);
+//			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Position", 0);
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -641,7 +650,7 @@ public class Robot extends IterativeRobot {
 			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
-			 SHOOTER_REVERSE_SENSOR = true;
+			 SHOOTER_REVERSE_OUTPUT = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 AUTO_INTAKE_MOTOR_REVERSE = -1;
 			 
@@ -662,8 +671,8 @@ public class Robot extends IterativeRobot {
 			 
 			 AUGER_SPEED = 0.5;
 			 
-			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Angle", 0);
-			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Angle", 0);
+//			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Angle", 0);
+//			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Angle", 0);
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -713,7 +722,7 @@ public class Robot extends IterativeRobot {
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = -1;
 			 
-			 SHOOTER_REVERSE_SENSOR = true;
+			 SHOOTER_REVERSE_OUTPUT = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 AUTO_INTAKE_MOTOR_REVERSE = -1;
 			 
