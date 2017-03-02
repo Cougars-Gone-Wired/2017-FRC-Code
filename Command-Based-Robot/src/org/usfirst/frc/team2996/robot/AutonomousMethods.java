@@ -11,7 +11,6 @@ public class AutonomousMethods {
 	int wheelDiameter;
 	Robot robot;
 	AHRS gyro;
-	CANTalon frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
 	Drive drive;
 	Shooter PIDShooter;
 	Intake intake;
@@ -132,6 +131,7 @@ public class AutonomousMethods {
 
 		if (direction.equals("forward")) {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
+			//	if(drive.frontLeftMotor.getOutputCurrent()>SmartDashboard.getNumber(key,0))
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);

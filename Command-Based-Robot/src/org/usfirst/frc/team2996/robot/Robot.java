@@ -42,6 +42,13 @@ import com.kauailabs.navx.frc.AHRS;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
+
+/*
+ * 
+ * 
+ * 
+ * 
+ */
 public class Robot extends IterativeRobot {
 
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
@@ -431,7 +438,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
+		SmartDashboard.putNumber("CurrentFrontLeft", frontLeftMotor.getOutputCurrent());
+		SmartDashboard.putNumber("CurrentFrontRight", frontRightMotor.getOutputCurrent());
 		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
+		SmartDashboard.putNumber("Gyro Accel X", gyro.getRawAccelX());
+		SmartDashboard.putNumber("Gyro Y Accel", gyro.getRawAccelY());
 		
 		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		SmartDashboard.putString("Gyro Firware Version", gyro.getFirmwareVersion());
