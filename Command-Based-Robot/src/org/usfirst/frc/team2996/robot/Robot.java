@@ -120,6 +120,7 @@ public class Robot extends IterativeRobot {
 	static int DEFLECTOR_REVERSE_ENCODER;
 	
 	static int AUTO_INTAKE_MOTOR_REVERSE;
+	static int DEFLECTOR_AUTO_INVERT = 1;
 	
 	static int SLEEP_AUTO;	// how long it waits before going to next .....step in auto //minimum = 100
 
@@ -319,6 +320,7 @@ public class Robot extends IterativeRobot {
 		gyro.reset();
 		drive.arcadeDrive();
  		drive.encoderReset();
+ 		deflectorMotor.setEncPosition(0);//resets deflector encoder to 0
 	}
 
 	/**
@@ -654,6 +656,8 @@ public class Robot extends IterativeRobot {
 			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 AUTO_INTAKE_MOTOR_REVERSE = -1;
 			 
+			 DEFLECTOR_AUTO_INVERT = 1;
+			 
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}
@@ -725,6 +729,8 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_REVERSE_OUTPUT = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 AUTO_INTAKE_MOTOR_REVERSE = -1;
+			 
+			 DEFLECTOR_AUTO_INVERT = 1;
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}

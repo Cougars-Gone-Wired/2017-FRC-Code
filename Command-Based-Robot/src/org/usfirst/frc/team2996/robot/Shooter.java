@@ -153,27 +153,27 @@ public class Shooter {
 		 if (toggleUpButton.toggle() == true && toggleDownButton.toggle() == true){
 			toggleDownButton.reset();
 			toggleUpButton.reset(); 
-		} else if (getDeflectorEncoder() < boilerEncoder && toggleUpButton.toggle() == true){
-			deflectorMotor.set(-0.2);
-		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
-			deflectorMotor.set(-0.2);
-		} else if(getDeflectorEncoder()> boilerEncoder && toggleDownButton.toggle() == true){
-			deflectorMotor.set(0.2);
 		} else if(getDeflectorEncoder()> shipEncoder && toggleDownButton.toggle() == true){
-			deflectorMotor.set(0.2);
-		}else if(deflectorMotor.isFwdLimitSwitchClosed() == true){
+			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
+		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
+			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
+		} else if (getDeflectorEncoder() < boilerEncoder && toggleUpButton.toggle() == true){
+			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
+		} else if(getDeflectorEncoder()> boilerEncoder && toggleDownButton.toggle() == true){
+			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
+		}/*else if(deflectorMotor.isFwdLimitSwitchClosed() == true){
 			deflectorMotor.setEncPosition(0);
-				toggleDownButton.reset();
-				toggleUpButton.reset();
-			} else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
-				toggleUpButton.reset();
-				toggleDownButton.reset();
-			} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
-				toggleUpButton.reset();
-				toggleDownButton.reset();
-			}else{
-				deflectorMotor.set(0);
-			}
+			toggleDownButton.reset();
+			toggleUpButton.reset();
+		}*/ else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
+			toggleUpButton.reset();
+			toggleDownButton.reset();
+		} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
+			toggleUpButton.reset();
+			toggleDownButton.reset();
+		}else{
+			deflectorMotor.set(0);
+		}
 		SmartDashboard.putNumber("Deflector Encoder", getDeflectorEncoder());
 		SmartDashboard.putBoolean("Deflector Limit", deflectorMotor.isFwdLimitSwitchClosed());
 	}
