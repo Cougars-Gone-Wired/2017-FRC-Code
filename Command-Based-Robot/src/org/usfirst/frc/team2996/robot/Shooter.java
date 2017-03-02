@@ -108,6 +108,12 @@ public class Shooter {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(0);
 		}
+		
+//		if(shooterTimer.get() % 5 <=0.25){
+//		backRight.set(true);
+//	} else {
+//		backRight.set(false);
+//	}
 
 	}
 	/**
@@ -153,24 +159,23 @@ public class Shooter {
 		 if (toggleUpButton.toggle() == true && toggleDownButton.toggle() == true){
 			toggleDownButton.reset();
 			toggleUpButton.reset(); 
-		} else if(getDeflectorEncoder()> shipEncoder && toggleDownButton.toggle() == true){
-			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
-		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
-			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
+//		} else if(getDeflectorEncoder()> shipEncoder && toggleDownButton.toggle() == true){
+//			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
+//		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
+//			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
 		} else if (getDeflectorEncoder() < boilerEncoder && toggleUpButton.toggle() == true){
 			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
 		} else if(getDeflectorEncoder()> boilerEncoder && toggleDownButton.toggle() == true){
 			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
-		}/*else if(deflectorMotor.isFwdLimitSwitchClosed() == true){
-			deflectorMotor.setEncPosition(0);
+		}else if(deflectorMotor.isFwdLimitSwitchClosed() == true){
 			toggleDownButton.reset();
 			toggleUpButton.reset();
-		}*/ else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
+		} else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
 			toggleUpButton.reset();
 			toggleDownButton.reset();
-		} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
-			toggleUpButton.reset();
-			toggleDownButton.reset();
+//		} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
+//			toggleUpButton.reset();
+//			toggleDownButton.reset();
 		}else{
 			deflectorMotor.set(0);
 		}
@@ -198,7 +203,7 @@ public class Shooter {
 			shooterMotor.changeControlMode(TalonControlMode.PercentVbus);
 			shooterMotor.set(SmartDashboard.getNumber("shooter voltage", 0));
 			
-//			if(shooterTimer.get() % 5 == 0){
+//			if(shooterTimer.get() % 5 <=0.25){
 //				backRight.set(true);
 //			} else {
 //				backRight.set(false);
