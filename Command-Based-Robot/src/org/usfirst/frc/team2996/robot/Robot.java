@@ -348,7 +348,7 @@ public class Robot extends IterativeRobot {
 		
 		Scheduler.getInstance().run();
 		
-		//Runs the autonomous programs depending on the field side string (0 for blue , 1 for red)
+		//Runs the autonomous programs depending on the field side string (0 for red , 1 for blue)
 		//blue
 		if (autoFinished == false && (SmartDashboard.getNumber("Field Side Number", 0) == 0)) // if autonomous is not finished keep going
 		{
@@ -469,6 +469,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("auto drive speed", 0.6);
 		SmartDashboard.putNumber("current auto gear" , 100);
 		SmartDashboard.putNumber("Gear Drive", 750);
+		SmartDashboard.putNumber("Auto Turn Speed", 0.7);
+		SmartDashboard.putNumber("Auto Second Drive Speed", 0.6);
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
