@@ -33,6 +33,7 @@ public class Shooter {
 	Solenoid backRight;
 	private Toggle toggleUpButton;
 	private Toggle toggleDownButton;
+	private TwoButtonToggle defEncReset;
 
 	/**
 	 * 
@@ -55,6 +56,8 @@ public class Shooter {
 		
 		this.toggleUpButton = robot.getToggleUpButton();
 		this.toggleDownButton = robot.getToggleDownButton();
+		
+		this.defEncReset = robot.getDefEncReset();
 		
 		setPID();
 		shooterTimer.start();
@@ -156,6 +159,11 @@ public class Shooter {
 //		deflectorMotor.set(-(Threshold.threshold(stick.getRawAxis(1)) / 5));
 		
 		int deflectorEncoder = getDeflectorEncoder();
+		
+		if(defEncReset.toggle() == true){
+			deflectorMotor.setEncPosition(0);
+			defEncReset.reset();
+		}
 		 if (toggleUpButton.toggle() == true && toggleDownButton.toggle() == true){
 			toggleDownButton.reset();
 			toggleUpButton.reset(); 
@@ -163,20 +171,25 @@ public class Shooter {
 //			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
 //		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
 //			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
-		} else if (getDeflectorEncoder() < boilerEncoder && toggleUpButton.toggle() == true){
-			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
-		} else if(getDeflectorEncoder()> boilerEncoder && toggleDownButton.toggle() == true){
-			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
-		}else if(deflectorMotor.isFwdLimitSwitchClosed() == true){
-			toggleDownButton.reset();
-			toggleUpButton.reset();
 		} else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
 			toggleUpButton.reset();
 			toggleDownButton.reset();
+		}else if (deflectorEncoder < boilerEncoder && toggleUpButton.toggle() == true){
+
+			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
+			
+		}/* else if(deflectorEncoder> boilerEncoder && toggleDownButton.toggle() == true){
+	
+			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
+		} */
+		else if(toggleDownButton.toggle() == true){
+			
+			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
+		}
 //		} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
 //			toggleUpButton.reset();
 //			toggleDownButton.reset();
-		}else{
+		else{
 			deflectorMotor.set(0);
 		}
 		SmartDashboard.putNumber("Deflector Encoder", getDeflectorEncoder());

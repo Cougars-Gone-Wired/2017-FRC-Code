@@ -34,7 +34,7 @@ public class AutonomousMethods {
 		
 		direction = direction.toLowerCase();
 		if ((direction.equals("left")) && DriverStation.getInstance().isAutonomous()) {
-			while (gyro.getAngle() > -angle) {
+			while (gyro.getAngle() > -angle && DriverStation.getInstance().isAutonomous()) {
 				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				drive.robotDrive.tankDrive(-speed, speed);// rotate speed in voltage
 			}
@@ -76,9 +76,9 @@ public class AutonomousMethods {
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
 				// gyro.correction while driving
-				if (gyro.getAngle() < -0.5) {
+				if (gyro.getAngle() < -1) {
 					drive.robotDrive.tankDrive(speed + 0.05, speed);
-				} else if (gyro.getAngle() > 0.5) {
+				} else if (gyro.getAngle() > 1) {
 					drive.robotDrive.tankDrive(speed, speed + 0.05);
 				} else {
 					drive.robotDrive.tankDrive(speed, speed);
@@ -131,7 +131,10 @@ public class AutonomousMethods {
 
 		if (direction.equals("forward")) {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
-			//	if(drive.frontLeftMotor.getOutputCurrent()>SmartDashboard.getNumber(key,0))
+				SmartDashboard.putNumber("CurrentFrontRight", drive.frontRightMotor.getOutputCurrent());
+				if(drive.frontLeftMotor.getOutputCurrent()>SmartDashboard.getNumber("current auto gear" ,0)){
+					turn("left",4,0.6);
+				}
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
@@ -152,6 +155,9 @@ public class AutonomousMethods {
 			while ((-encoderAverage >= -distance) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking(); // amount of encoders
 														// working
+				if(drive.frontLeftMotor.getOutputCurrent()>SmartDashboard.getNumber("current auto gear" ,0)){
+					turn("left",4,0.6);
+				}
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
 				SmartDashboard.putNumber("encodersWorking", encodersWorking);
@@ -308,12 +314,12 @@ public class AutonomousMethods {
 		
 		direction = direction.toLowerCase();
 		if ((direction.equals("left"))) {
-			if (gyro.getAngle() > -angle) {
+			if (gyro.getAngle() > -angle && DriverStation.getInstance().isAutonomous()) {
 				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				drive.robotDrive.tankDrive(-speed, speed);// rotate speed in voltage
 			}
 		} else {
-			if ((gyro.getAngle() < angle)) {
+			if ((gyro.getAngle() < angle && DriverStation.getInstance().isAutonomous())) {
 				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				drive.robotDrive.tankDrive(speed, -speed);
 			}

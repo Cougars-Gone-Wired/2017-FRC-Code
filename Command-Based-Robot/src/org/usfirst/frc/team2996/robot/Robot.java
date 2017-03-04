@@ -43,11 +43,15 @@ import com.kauailabs.navx.frc.AHRS;
  * directory.
  */
 
-/*
- * 
- * 
- * 
- * 
+/*1.Update Talons/PDP/PCM
+ *2.Configure Gyro Direction
+ *3.Make sure limit switch is proper(fwd)
+ *4.Read gyro and drive encoder correctly
+ *5.Set up Dashboard
+ *6.Deflector Encoder reading correct way
+ *7.Run a test autonomous
+ *8.Make sure shooter encoder is going right way. (ReverseSensor(boolean))
+ *9.
  */
 public class Robot extends IterativeRobot {
 
@@ -113,6 +117,8 @@ public class Robot extends IterativeRobot {
 	static int THUMPER_TRICKS_ENABLE;
 	static int THUMP_FRONT_BACK_BUTTON;
 	static int THUMP_SIDE_SIDE_BUTTON;
+	static int DEFLECTOR_ENCODER_RESET_BUTTON_1;
+	static int DEFLECTOR_ENCODER_RESET_BUTTON_2;
 	
 	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
 	static int MECANUM_DRIVE_XAXIS_INVERT;
@@ -176,6 +182,7 @@ public class Robot extends IterativeRobot {
 //	Thread visionThread;
 	Toggle toggleUpButton;
 	Toggle toggleDownButton;
+	TwoButtonToggle defEncReset;
 	
 //	Mat visionMat;
 //	GripPipeline gripPipeline;
@@ -232,6 +239,7 @@ public class Robot extends IterativeRobot {
 		
 		toggleUpButton = new Toggle(stickManipulator, SHOOTER_UP_TOGGLE);
 		toggleDownButton = new Toggle(stickManipulator, SHOOTER_DOWN_TOGGLE);
+		defEncReset = new TwoButtonToggle(stickManipulator, DEFLECTOR_ENCODER_RESET_BUTTON_1, DEFLECTOR_ENCODER_RESET_BUTTON_2);
 		
 		displaySettings();
 		
@@ -450,23 +458,24 @@ public class Robot extends IterativeRobot {
 	
 	public void displaySettings(){
 		
-		SmartDashboard.putInt("Autonomous Select", 0); // the number put in the dashboard corresponds to an autonomous program
+		SmartDashboard.putInt("Autonomous Select", 0); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
 		SmartDashboard.putString("Field Side", ""); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 0);
 		SmartDashboard.putNumber("auto first drive distance", 0);
 		SmartDashboard.putNumber("auto second drive distance", 0);
 		SmartDashboard.putNumber("Gear Drop Time", 0);
 		SmartDashboard.putNumber("auto drive speed", 0);
+		SmartDashboard.putNumber("current auto gear" ,0);
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
 		
 		SmartDashboard.putNumber("Boiler Deflector Position", 0);
 		SmartDashboard.putNumber("Ship Deflector Position", 0);
-		SmartDashboard.putNumber("F", 1);
-		SmartDashboard.putNumber("P", 1);
-		SmartDashboard.putNumber("I", 1); //PID Stuff 
-		SmartDashboard.putNumber("D", 1);
+		SmartDashboard.putNumber("F", 0.1097);
+		SmartDashboard.putNumber("P", 5);
+		SmartDashboard.putNumber("I", 0.01); //PID Stuff 
+		SmartDashboard.putNumber("D", 0.05);
 		SmartDashboard.putNumber("shooter speed", 0);
 		SmartDashboard.putNumber("auger voltage", 0.5);
 		SmartDashboard.putNumber("climber full speed", 1.0);  //Dashboard variables that control motor speeds (mainly for testing)
@@ -595,6 +604,10 @@ public class Robot extends IterativeRobot {
 		return PIDShooter;
 	}
 	
+	public TwoButtonToggle getDefEncReset() {
+		return defEncReset;
+	}
+	
 	public Intake getIntake() {
 		return intake;
 	}
@@ -654,6 +667,8 @@ public class Robot extends IterativeRobot {
 			 THUMPER_TRICKS_ENABLE = 4;
 			 THUMP_FRONT_BACK_BUTTON = 5;
 			 THUMP_SIDE_SIDE_BUTTON = 6;
+			 DEFLECTOR_ENCODER_RESET_BUTTON_1 = 9;
+			 DEFLECTOR_ENCODER_RESET_BUTTON_2 = 10;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -726,6 +741,8 @@ public class Robot extends IterativeRobot {
 			 THUMPER_TRICKS_ENABLE = 4;
 			 THUMP_FRONT_BACK_BUTTON = 5;
 			 THUMP_SIDE_SIDE_BUTTON = 6;
+			 DEFLECTOR_ENCODER_RESET_BUTTON_1 = 9;
+			 DEFLECTOR_ENCODER_RESET_BUTTON_2 = 10;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
