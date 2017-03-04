@@ -69,17 +69,19 @@ public class AutonomousMethods {
 
 		if (direction.equals("forward")) {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
+				robot.displayLive();
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
 				SmartDashboard.putNumber("encodersWorking", encodersWorking);
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
+				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				// gyro.correction while driving
-				if (gyro.getAngle() < -1) {
-					drive.robotDrive.tankDrive(speed + 0.05, speed);
-				} else if (gyro.getAngle() > 1) {
-					drive.robotDrive.tankDrive(speed, speed + 0.05);
+				if (gyro.getAngle() < -0.5) {
+					drive.robotDrive.tankDrive(speed + 0.1, speed);
+				} else if (gyro.getAngle() > 0.5) {
+					drive.robotDrive.tankDrive(speed, speed + 0.1);
 				} else {
 					drive.robotDrive.tankDrive(speed, speed);
 				}
@@ -94,9 +96,9 @@ public class AutonomousMethods {
 				SmartDashboard.putNumber("encodersWorking", encodersWorking);
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
-				if (gyro.getAngle() < -1) {
+				if (gyro.getAngle() < -0.5) {
 					drive.robotDrive.tankDrive(-speed, -speed - 0.1);
-				} else if (gyro.getAngle() > 1) {
+				} else if (gyro.getAngle() > 0.5) {
 					drive.robotDrive.tankDrive(-speed - 0.1, -speed);
 				} else {
 					drive.robotDrive.tankDrive(-speed, -speed);
@@ -142,10 +144,10 @@ public class AutonomousMethods {
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
 				// gyro.correction while driving
-				if (gyro.getAngle() < -1) {
-					drive.robotDrive.tankDrive(-(speed + 0.05), speed);
-				} else if (gyro.getAngle() > 1) {
-					drive.robotDrive.tankDrive(-speed, speed + 0.05);
+				if (gyro.getAngle() < -0.5) {
+					drive.robotDrive.tankDrive(-(speed + 0.1), speed);
+				} else if (gyro.getAngle() > 0.5) {
+					drive.robotDrive.tankDrive(-speed, speed + 0.1);
 				} else {
 					drive.robotDrive.tankDrive(-speed, speed);
 				}
@@ -163,9 +165,9 @@ public class AutonomousMethods {
 				SmartDashboard.putNumber("encodersWorking", encodersWorking);
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
-				if (gyro.getAngle() < -1) {
+				if (gyro.getAngle() < -0.5) {
 					drive.robotDrive.tankDrive(-(-speed), -speed - 0.1);
-				} else if (gyro.getAngle() > 1) {
+				} else if (gyro.getAngle() > 0.5) {
 					drive.robotDrive.tankDrive(-(-speed - 0.1), -speed);
 				} else {
 					drive.robotDrive.tankDrive(-(-speed), -speed);
@@ -238,11 +240,11 @@ public class AutonomousMethods {
 			intake.intakeOuttake(false, false);
 			intake.gearActivation(false);
 		}
-		moveStraightMecanum("forward",500,driveSpeed);
+		moveStraightMecanum("forward", (int) SmartDashboard.getNumber("Gear Drive", 750), driveSpeed);
 		while(gearTimer.get() <= dropTime && DriverStation.getInstance().isAutonomous()){
 			intake.intakeOuttake(true, false);
 			intake.gearActivation(true);
-			moveStraightMecanum("backward",1000,driveSpeed);
+			moveStraightMecanum("backward", 1000 , driveSpeed);
 		}
 		
 		intake.intakeOuttake(false, true);

@@ -171,12 +171,12 @@ public class Shooter {
 //			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
 //		} else if (getDeflectorEncoder() < shipEncoder && toggleUpButton.toggle() == true){
 //			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
-		} else if((deflectorEncoder >  (boilerEncoder - 20)) && (deflectorEncoder < (boilerEncoder + 20))){
+		} else if(deflectorEncoder >= boilerEncoder){
 			toggleUpButton.reset();
 			toggleDownButton.reset();
 		}else if (deflectorEncoder < boilerEncoder && toggleUpButton.toggle() == true){
 
-			deflectorMotor.set(-0.2* Robot.DEFLECTOR_AUTO_INVERT);
+			deflectorMotor.set(-0.2 * Robot.DEFLECTOR_AUTO_INVERT);
 			
 		}/* else if(deflectorEncoder> boilerEncoder && toggleDownButton.toggle() == true){
 	
@@ -184,7 +184,7 @@ public class Shooter {
 		} */
 		else if(toggleDownButton.toggle() == true){
 			
-			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
+			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
 		}
 //		} else if((deflectorEncoder > (shipEncoder -20)) && (deflectorEncoder < (shipEncoder + 20))){
 //			toggleUpButton.reset();

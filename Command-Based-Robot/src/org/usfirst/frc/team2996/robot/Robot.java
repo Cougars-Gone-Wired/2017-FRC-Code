@@ -336,6 +336,8 @@ public class Robot extends IterativeRobot {
 		drive.arcadeDrive();
  		drive.encoderReset();
  		deflectorMotor.setEncPosition(0);//resets deflector encoder to 0
+ 		displayLive();
+ 		AutonomousMethods.sleep();
 	}
 
 	/**
@@ -343,7 +345,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-
+		
 		Scheduler.getInstance().run();
 		
 		//Runs the autonomous programs depending on the field side string (0 for blue , 1 for red)
@@ -458,14 +460,15 @@ public class Robot extends IterativeRobot {
 	
 	public void displaySettings(){
 		
-		SmartDashboard.putInt("Autonomous Select", 0); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
-		SmartDashboard.putString("Field Side", ""); // red or blue
-		SmartDashboard.putNumber("auto turn angle", 0);
-		SmartDashboard.putNumber("auto first drive distance", 0);
-		SmartDashboard.putNumber("auto second drive distance", 0);
-		SmartDashboard.putNumber("Gear Drop Time", 0);
-		SmartDashboard.putNumber("auto drive speed", 0);
-		SmartDashboard.putNumber("current auto gear" ,0);
+		SmartDashboard.putInt("Autonomous Select", 3); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
+		SmartDashboard.putNumber("Field Side", 0); // red or blue
+		SmartDashboard.putNumber("auto turn angle", 50);
+		SmartDashboard.putNumber("auto first drive distance", 17000);
+		SmartDashboard.putNumber("auto second drive distance", 5000);
+		SmartDashboard.putNumber("Gear Drop Time", 2);
+		SmartDashboard.putNumber("auto drive speed", 0.6);
+		SmartDashboard.putNumber("current auto gear" , 100);
+		SmartDashboard.putNumber("Gear Drive", 750);
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
