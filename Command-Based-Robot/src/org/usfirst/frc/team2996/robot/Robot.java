@@ -50,8 +50,10 @@ import com.kauailabs.navx.frc.AHRS;
  *5.Set up Dashboard
  *6.Deflector Encoder reading correct way
  *7.Run a test autonomous
- *8.Make sure shooter encoder is going right way. (ReverseSensor(boolean))
- *9.
+ *8. Set autonomous middle(practice field)
+ *9.Set autonomous right and left
+ *10.Make sure shooter encoder is going right way. (ReverseSensor(boolean))
+ *11. Make gear toggle display boolean work
  */
 public class Robot extends IterativeRobot {
 
@@ -350,8 +352,31 @@ public class Robot extends IterativeRobot {
 		
 		//Runs the autonomous programs depending on the field side string (0 for red , 1 for blue)
 		//blue
-		if (autoFinished == false && (SmartDashboard.getNumber("Field Side Number", 0) == 0)) // if autonomous is not finished keep going
+		if (autoFinished == false && (SmartDashboard.getNumber("Field Side Number", 0) == 0))// RED // if autonomous is not finished keep going
 		{
+			int autonomous = SmartDashboard.getInt("Autonomous Select", 0);
+			switch (autonomous) {
+			case 0:
+				auto.stop();// do nothing
+				break;
+			case 1:
+				auto.moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), 0.6);
+				break;
+			case 2:
+				auto.placeGearLeftPeg(); // drive forward, turn, place gear
+				break;
+			case 3:
+				auto.placeGearCenterPeg(); // drive forward, place gear
+				break;
+			case 4:
+				auto.placeGearRightPeg(); // drive forward, turn, place gear
+				break;
+			default:
+				auto.stop();
+				break;
+			}
+			autoFinished = true;
+		} else if (autoFinished == false && (SmartDashboard.getNumber("Field Side Number", 0) == 1)){ // BLUE
 			int autonomous = SmartDashboard.getInt("Autonomous Select", 0);
 			switch (autonomous) {
 			case 0:
@@ -453,7 +478,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
 		SmartDashboard.putNumber("Gyro Accel X", gyro.getRawAccelX());
 		SmartDashboard.putNumber("Gyro Y Accel", gyro.getRawAccelY());
-		
+		SmartDashboard.putBoolean("Gear Pan Down", gearToggle.toggle());
 		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		SmartDashboard.putString("Gyro Firware Version", gyro.getFirmwareVersion());
 	}
