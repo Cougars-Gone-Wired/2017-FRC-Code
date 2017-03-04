@@ -632,8 +632,8 @@ public class Robot extends IterativeRobot {
 			 
 			 AUGER_SPEED = 0.5;
 			 
-//			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Position", 0);
-//			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Position", 0);
+//			 BOILER_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Boiler Deflector Angle", 0);
+//			 SHIP_DEFLECTOR_ANGLE = (int) SmartDashboard.getNumber("Ship Deflector Angle", 0);
 			
 			 ENCODER_CODES_PER_REV = 20;
 			
@@ -679,16 +679,17 @@ public class Robot extends IterativeRobot {
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
 			 MECANUM_DRIVE_YAXIS_INVERT = -1;
 			 MECANUM_DRIVE_ROTATE_INVERT = -1;
-			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = -1; // negates encoder counts
-			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 
+			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = 1; // negates encoder counts
+			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = -1;
 			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
-			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = -1;
+			 
 			 SHOOTER_REVERSE_OUTPUT = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
 			 AUTO_INTAKE_MOTOR_REVERSE = -1;
 			 
 			 DEFLECTOR_AUTO_INVERT = 1;
-			 
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}

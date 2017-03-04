@@ -13,7 +13,7 @@ public class AutonomousPrograms extends AutonomousMethods {
 		sleep();
 		turn("right", SmartDashboard.getNumber("auto turn angle", 0), SmartDashboard.getNumber("Auto Turn Speed", 0));
 		sleep();
-		moveStraight("forward", (int) SmartDashboard.getNumber("auto second drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
+		moveStraight("forward", (int) SmartDashboard.getNumber("auto second drive distance", 0), SmartDashboard.getNumber("Auto Second Drive Speed", 0));
 		sleep();
 		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0), SmartDashboard.getNumber("auto drive speed", 0));
 		stop();

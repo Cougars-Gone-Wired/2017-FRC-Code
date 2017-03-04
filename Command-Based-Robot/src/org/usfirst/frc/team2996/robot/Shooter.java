@@ -72,7 +72,7 @@ public class Shooter {
 	 */
 	
 	public void shootingMode(boolean toggle){
-		if(toggle ==  true){
+		if(toggle ==  false){
 			pidShooter();
 			SmartDashboard.putString("Shooting Mode", "PID");
 		}else{
