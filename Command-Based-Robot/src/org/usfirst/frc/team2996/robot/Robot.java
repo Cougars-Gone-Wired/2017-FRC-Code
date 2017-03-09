@@ -43,10 +43,10 @@ import com.kauailabs.navx.frc.AHRS;
  * directory.
  */
 
-/*1.Update Talons/PDP/PCM
- *2.Configure Gyro Direction
+/*1.Update Talons/PDP/PCM - firmware
+ *2.Configure Gyro yaw
  *3.Make sure limit switch is proper(fwd)
- *4.Read gyro and drive encoder correctly
+ *4.Read gyro and drive encoder correctly(direction) (if not change reverse constants)
  *5.Set up Dashboard
  *6.Deflector Encoder reading correct way
  *7.Run a test autonomous
@@ -54,6 +54,13 @@ import com.kauailabs.navx.frc.AHRS;
  *9.Set autonomous right and left
  *10.Make sure shooter encoder is going right way. (ReverseSensor(boolean))
  *11. Make gear toggle display boolean work
+ *12. Make sure both cameras are working properly
+ *13.Ethernet tether is 10.29.96.2 default mask and gateway
+ *14. Make sure to set IP for ethernet to default for FMS
+ *15. On pracice field to get IP camera, you must use ethernet -> follow documentation
+ *16. Firewall must be disabled
+ *17.Flash radio at kiosk
+ *18. To change the smartdashboard type (diagnostics or NewSave), you need to change the save file, close WITHOUT SAVING, and reopen the dashboard from the driverstation
  */
 public class Robot extends IterativeRobot {
 
@@ -248,10 +255,8 @@ public class Robot extends IterativeRobot {
 		CameraServer camera = CameraServer.getInstance();
 		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
 		usbCam.setResolution(600, 480);
-		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11");
+		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
 		
-
-//		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
 //              UsbCamera camera = CameraServer.getInstance().startAutomaticCapture("usb", 0);
