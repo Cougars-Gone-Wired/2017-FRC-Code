@@ -231,7 +231,7 @@ public class AutonomousMethods {
 	}
 	
 	public void gearDrop(double dropTime, double driveSpeed){
-		sleep();
+		sleep(200);
 		Timer gearTimer = new Timer();
 		gearTimer.reset();
 		gearTimer.start();
@@ -240,7 +240,7 @@ public class AutonomousMethods {
 			intake.intakeOuttake(false, false);
 			intake.gearActivation(false);
 		}
-		moveStraightMecanum("forward", (int) SmartDashboard.getNumber("Gear Drive", 750), driveSpeed);
+		moveStraightMecanum("forward", (int) SmartDashboard.getNumber("Gear Drive", 0), driveSpeed);
 		while(gearTimer.get() <= dropTime && DriverStation.getInstance().isAutonomous()){
 			intake.intakeOuttake(true, false);
 			intake.gearActivation(true);
@@ -253,16 +253,15 @@ public class AutonomousMethods {
 	}
 
 	public int encodersWorking() { // calculates number of encoders working
-		int encodersWorking = 4;
+		int encodersWorking = 3;
 		if (Math.abs(drive.frontLeftMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
-		if (Math.abs(drive.frontRightMotor.getEncPosition()) <= 1) {
-			encodersWorking--;
-		}
+		
 		if (Math.abs(drive.backLeftMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
+		
 		if (Math.abs(drive.backRightMotor.getEncPosition()) <= 1) {
 			encodersWorking--;
 		}
@@ -275,7 +274,7 @@ public class AutonomousMethods {
 
 	public int encoderAverage(int encodersWorking) { // calculates average
 														// encoder counts
-		int average = (Math.abs(drive.getFrontLeftEncoder()) + Math.abs(drive.getFrontRightEncoder()) + Math.abs(drive.getBackLeftEncoder())
+		int average = (Math.abs(drive.getFrontLeftEncoder()) + Math.abs(drive.getBackLeftEncoder())
 		+ Math.abs(drive.getBackRightEncoder()) / encodersWorking);
 
 		return average;

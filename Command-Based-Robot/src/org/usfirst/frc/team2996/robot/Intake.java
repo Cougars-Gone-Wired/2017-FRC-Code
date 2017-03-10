@@ -40,12 +40,12 @@ public class Intake {
 	/**
 	 * Changes the direction of the ball and gear intakes depending on an axis diraction
 	 */
-	public void intakeOuttake() {
+	public void intakeOuttake() { //make inverts in Robot
 		if (Threshold.threshold(stick.getRawAxis(intakeAxis)) > 0.2) {
-			intakeMotor.set(1);
-			deflectorMotor.set(1);
+			intakeMotor.set(Robot.INTAKE_INVERT);
+//			deflectorMotor.set(1);
 		} else if (Threshold.threshold(stick.getRawAxis(outtakeAxis)) > 0.2) {
-			intakeMotor.set(-1);
+			intakeMotor.set(Robot.INTAKE_INVERT * (-1));
 		} else {
 			intakeMotor.set(0);
 		}
@@ -55,9 +55,9 @@ public class Intake {
 		if(stop == true){
 			intakeMotor.set(0);
 		}else if(outtake == true){
-			intakeMotor.set(Robot.AUTO_INTAKE_MOTOR_REVERSE*1);
+			intakeMotor.set(Robot.AUTO_INTAKE_MOTOR_REVERSE * 1);
 		}else{
-			intakeMotor.set(Robot.AUTO_INTAKE_MOTOR_REVERSE*-1);
+			intakeMotor.set(Robot.AUTO_INTAKE_MOTOR_REVERSE * -1);
 		}
 		
 	}

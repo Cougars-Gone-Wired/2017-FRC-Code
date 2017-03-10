@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot {
 		return autonomousCommand;
 	}
 	
-	public static final boolean isCompBot = false;
+	public static final boolean isCompBot = true;
 	
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -128,6 +128,8 @@ public class Robot extends IterativeRobot {
 	static int THUMP_SIDE_SIDE_BUTTON;
 	static int DEFLECTOR_ENCODER_RESET_BUTTON_1;
 	static int DEFLECTOR_ENCODER_RESET_BUTTON_2;
+	static int CLIMB_UP_BUTTON;
+	static int CLIMB_DOWN_BUTTON;
 	
 	static int ARCADE_DRIVE_ROTATE_INVERT;// INVERT JOYSTICK
 	static int MECANUM_DRIVE_XAXIS_INVERT;
@@ -143,6 +145,9 @@ public class Robot extends IterativeRobot {
 	
 	static int AUTO_INTAKE_MOTOR_REVERSE;
 	static int DEFLECTOR_AUTO_INVERT = 1;
+	
+	static int CLIMBER_INVERT;
+	static int INTAKE_INVERT;
 	
 	static int SLEEP_AUTO;	// how long it waits before going to next .....step in auto //minimum = 100
 
@@ -401,7 +406,7 @@ public class Robot extends IterativeRobot {
 				break;
 			default:
 				auto.stop();
-				break;
+				break; 
 			}
 			autoFinished = true;
 		} else { // if autonomous has finished
@@ -478,6 +483,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
+		SmartDashboard.putNumber("Deflector Encoder", PIDShooter.getDeflectorEncoder());
 		SmartDashboard.putNumber("CurrentFrontLeft", frontLeftMotor.getOutputCurrent());
 		SmartDashboard.putNumber("CurrentFrontRight", frontRightMotor.getOutputCurrent());
 		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
@@ -493,10 +499,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putInt("Autonomous Select", 3); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
 		SmartDashboard.putNumber("Field Side", 0); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 50);
-		SmartDashboard.putNumber("auto first drive distance", 17000);
+		SmartDashboard.putNumber("auto first drive distance", 16000);
 		SmartDashboard.putNumber("auto second drive distance", 5000);
 		SmartDashboard.putNumber("Gear Drop Time", 2);
-		SmartDashboard.putNumber("auto drive speed", 0.6);
+		SmartDashboard.putNumber("auto drive speed", 0.6);                                
 		SmartDashboard.putNumber("current auto gear" , 100);
 		SmartDashboard.putNumber("Gear Drive", 750);
 		SmartDashboard.putNumber("Auto Turn Speed", 0.7);
@@ -517,10 +523,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("climber steady", 0.6);
 		SmartDashboard.putNumber("shooter test rpm", 0);
 		SmartDashboard.putNumber("shooter test velocity", 0);
-		SmartDashboard.putNumber("shooter voltage", -0.6);
+		SmartDashboard.putNumber("shooter voltage", -0.5);
 		SmartDashboard.putNumber("Deflector Angle", 0);
 		SmartDashboard.putNumber("Field Side Number", 0);
 		SmartDashboard.putNumber("Distance From Line (inches)", 0);
+		SmartDashboard.putNumber("Climb Half Speed", 0.8);
 		
 	}
 
@@ -690,7 +697,7 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_BUTTON = 1;
 			 AUGER_FORWARD_BUTTON = 6;
 			 AUGER_BACKWARD_BUTTON = 5;
-			 AUGER_INVERT = -1;
+			 AUGER_INVERT = 1;
 			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
 			 GEAR_TOGGLE_BUTTON = 2;
 			 HALF_ACTIVATION_TOGGLE = 2;
@@ -704,6 +711,8 @@ public class Robot extends IterativeRobot {
 			 THUMP_SIDE_SIDE_BUTTON = 6;
 			 DEFLECTOR_ENCODER_RESET_BUTTON_1 = 9;
 			 DEFLECTOR_ENCODER_RESET_BUTTON_2 = 10;
+			 CLIMB_UP_BUTTON = 6;
+			 CLIMB_DOWN_BUTTON = 5;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -720,6 +729,9 @@ public class Robot extends IterativeRobot {
 			 AUTO_INTAKE_MOTOR_REVERSE = -1;
 			 
 			 DEFLECTOR_AUTO_INVERT = 1;
+			 
+			 CLIMBER_INVERT = 1;
+			 INTAKE_INVERT = -1;
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}
@@ -765,7 +777,7 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_BUTTON = 1;
 			 AUGER_FORWARD_BUTTON = 6;
 			 AUGER_BACKWARD_BUTTON = 5;
-			 AUGER_INVERT = -1;
+			 AUGER_INVERT = 1;
 			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
 			 GEAR_TOGGLE_BUTTON = 2;
 			 HALF_ACTIVATION_TOGGLE = 2;
@@ -779,6 +791,8 @@ public class Robot extends IterativeRobot {
 			 THUMP_SIDE_SIDE_BUTTON = 6;
 			 DEFLECTOR_ENCODER_RESET_BUTTON_1 = 9;
 			 DEFLECTOR_ENCODER_RESET_BUTTON_2 = 10;
+			 CLIMB_UP_BUTTON = 6;
+			 CLIMB_DOWN_BUTTON = 5;
 			
 			 ARCADE_DRIVE_ROTATE_INVERT = -1;// INVERT JOYSTICK
 			 MECANUM_DRIVE_XAXIS_INVERT = 1;
@@ -796,6 +810,9 @@ public class Robot extends IterativeRobot {
 			 
 			 DEFLECTOR_AUTO_INVERT = 1;
 			 
+			 CLIMBER_INVERT = 1;
+			 INTAKE_INVERT = -1;
+
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
 		}
 	}

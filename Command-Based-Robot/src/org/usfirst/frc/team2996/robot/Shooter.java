@@ -64,7 +64,7 @@ public class Shooter {
 	}
 	
 	public int getDeflectorEncoder(){
-		return Robot.DEFLECTOR_REVERSE_ENCODER*deflectorMotor.getEncPosition();
+		return Robot.DEFLECTOR_REVERSE_ENCODER * deflectorMotor.getEncPosition();
 	}
 	
 	/**
@@ -156,7 +156,9 @@ public class Shooter {
 		SmartDashboard.putBoolean("Toggle Up Button", toggleUpButton.toggle());
 		SmartDashboard.putBoolean("Toggle Down Button", toggleDownButton.toggle());
 		
-//		deflectorMotor.set(-(Threshold.threshold(stick.getRawAxis(1)) / 5));
+		deflectorMotor.set(-(Threshold.threshold(stick.getRawAxis(1) / 5)));
+		
+		/*
 		
 		int deflectorEncoder = getDeflectorEncoder();
 		
@@ -181,7 +183,7 @@ public class Shooter {
 		}/* else if(deflectorEncoder> boilerEncoder && toggleDownButton.toggle() == true){
 	
 			deflectorMotor.set(0.2* Robot.DEFLECTOR_AUTO_INVERT);
-		} */
+		} remember comment
 		else if(toggleDownButton.toggle() == true){
 			
 			deflectorMotor.set(0.2 * Robot.DEFLECTOR_AUTO_INVERT);
@@ -191,8 +193,9 @@ public class Shooter {
 //			toggleDownButton.reset();
 		else{
 			deflectorMotor.set(0);
-		}
-		SmartDashboard.putNumber("Deflector Encoder", getDeflectorEncoder());
+		}*/
+		
+		SmartDashboard.putNumber("Deflector Encoder", deflectorMotor.getEncPosition());
 		SmartDashboard.putBoolean("Deflector Limit", deflectorMotor.isFwdLimitSwitchClosed());
 	}
 	
