@@ -237,12 +237,11 @@ public class AutonomousMethods {
 		gearTimer.start();
 		drive.mecanumDrive();
 		while(gearTimer.get() <= dropTime-1 && DriverStation.getInstance().isAutonomous()){
-			intake.intakeOuttake(false, false);
 			intake.gearActivation(false);
 		}
 		moveStraightMecanum("forward", (int) SmartDashboard.getNumber("Gear Drive", 0), driveSpeed);
 		while(gearTimer.get() <= dropTime && DriverStation.getInstance().isAutonomous()){
-			intake.intakeOuttake(true, false);
+//			intake.intakeOuttake(true, false);
 			intake.gearActivation(true);
 			moveStraightMecanum("backward", 1000 , driveSpeed);
 		}

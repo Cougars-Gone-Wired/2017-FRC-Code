@@ -260,7 +260,7 @@ public class Robot extends IterativeRobot {
 		CameraServer camera = CameraServer.getInstance();
 		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
 		usbCam.setResolution(600, 480);
-		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
+//		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
 		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
@@ -499,7 +499,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putInt("Autonomous Select", 3); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
 		SmartDashboard.putNumber("Field Side", 0); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 50);
-		SmartDashboard.putNumber("auto first drive distance", 16000);
+		SmartDashboard.putNumber("auto first drive distance", 11300);
 		SmartDashboard.putNumber("auto second drive distance", 5000);
 		SmartDashboard.putNumber("Gear Drop Time", 2);
 		SmartDashboard.putNumber("auto drive speed", 0.6);                                
@@ -726,7 +726,7 @@ public class Robot extends IterativeRobot {
 			 
 			 SHOOTER_REVERSE_OUTPUT = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
-			 AUTO_INTAKE_MOTOR_REVERSE = -1;
+			 AUTO_INTAKE_MOTOR_REVERSE = 1;
 			 
 			 DEFLECTOR_AUTO_INVERT = 1;
 			 
@@ -801,12 +801,12 @@ public class Robot extends IterativeRobot {
 			 
 			 FRONT_LEFT_MOTOR_NEGATE_ENCODER = 1; // negates encoder counts
 			 FRONT_RIGHT_MOTOR_NEGATE_ENCODER = -1;
-			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1;
+			 BACK_LEFT_MOTOR_NEGATE_ENCODER = 1; 
 			 BACK_RIGHT_MOTOR_NEGATE_ENCODER = -1;
 			 
 			 SHOOTER_REVERSE_OUTPUT = true;
 			 DEFLECTOR_REVERSE_ENCODER = -1;
-			 AUTO_INTAKE_MOTOR_REVERSE = -1;
+			 AUTO_INTAKE_MOTOR_REVERSE = 1;
 			 
 			 DEFLECTOR_AUTO_INVERT = 1;
 			 
