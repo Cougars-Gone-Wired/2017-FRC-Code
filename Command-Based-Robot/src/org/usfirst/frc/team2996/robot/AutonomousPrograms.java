@@ -30,9 +30,9 @@ public class AutonomousPrograms extends AutonomousMethods {
 		stop();
 	}
 	public void placeGearCenterPeg(){
-		moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), SmartDashboard.getNumber("auto drive speed", 0));
+		moveStraight("forward", 11300, 0.6);
 		sleep();
-		gearDrop(SmartDashboard.getNumber("Gear Drop Time", 0), SmartDashboard.getNumber("auto drive speed", 0));
+		gearDrop(2, 0.6);
 		stop();
 	}
 	
