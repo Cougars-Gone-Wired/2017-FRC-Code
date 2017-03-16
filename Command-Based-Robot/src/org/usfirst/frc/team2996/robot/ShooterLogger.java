@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterLogger {
 	public static void main(String[] args) throws Exception, Throwable {
-		Logger log = ShooterFileLogging.getLogger();
+		Logger log = ShooterFileLogging.getLogger("test");
 		log.fine(", shooterPressed, shooterRpm, shooterThrottle, shooterVelocity, "
 			     + "augerPressed, augerRpm, augerThrottle, augerVelocity");
 		boolean buttonPushed = true;

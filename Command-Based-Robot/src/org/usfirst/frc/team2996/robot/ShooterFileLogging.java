@@ -12,12 +12,12 @@ public class ShooterFileLogging {
 	private static Date start = new Date();
 	private static Logger teamLogger = null;
 
-	public static Logger getLogger() throws Exception, Throwable {
+	public static Logger getLogger(String name) throws Exception, Throwable {
 		teamLogger = Logger.getGlobal();
 		teamLogger.setUseParentHandlers(false);
 		Level level = Level.FINE;
 		teamLogger.setLevel(level);
-		File file = new File("RPMTime_" + format.format(start) + ".csv");
+		File file = new File("/u/" + name + format.format(new Date()) + ".csv");
 		System.out.println(file.getAbsolutePath());
 		FileHandler fh = new FileHandler(file.getAbsolutePath());
 		fh.setFormatter(new ShooterLoggerFormatter());
