@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot {
 		return autonomousCommand;
 	}
 	
-	public static final boolean isCompBot = true;
+	public static boolean isCompBot = false;
 	
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -150,6 +150,8 @@ public class Robot extends IterativeRobot {
 	static int INTAKE_INVERT;
 	
 	static int SLEEP_AUTO;	// how long it waits before going to next .....step in auto //minimum = 100
+	
+	static double ENCODER_CONVERSION_CONSTANT;
 
 //	public double centerX;
 //	public double centerY;
@@ -379,7 +381,7 @@ public class Robot extends IterativeRobot {
 				auto.placeGearCenterPeg(); // drive forward, place gear
 				break;
 			case 4:
-				auto.placeGearRightPeg(); // drive forward, turn, place gear
+				auto.placeGearRightPeg(); // drive forward, turn left, place gear
 				break;
 			default:
 				auto.stop();
@@ -479,19 +481,21 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Timer", robotTimer.get());
 		//Displays the encoder for each motor (for debugging)
 		SmartDashboard.putNumber("shooter test rpm", shooterMotor.getSpeed());
+		
 		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
+		
 		SmartDashboard.putNumber("Deflector Encoder", PIDShooter.getDeflectorEncoder());
 		SmartDashboard.putNumber("CurrentFrontLeft", frontLeftMotor.getOutputCurrent());
 		SmartDashboard.putNumber("CurrentFrontRight", frontRightMotor.getOutputCurrent());
 		SmartDashboard.putBoolean("Thumper Tricks Enabled", thumperTricksToggle.toggle());
 		SmartDashboard.putNumber("Gyro Accel X", gyro.getRawAccelX());
 		SmartDashboard.putNumber("Gyro Y Accel", gyro.getRawAccelY());
-		SmartDashboard.putBoolean("Gear Pan Down", gearToggle.toggle());
 		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		SmartDashboard.putString("Gyro Firware Version", gyro.getFirmwareVersion());
+		
 	}
 	
 	public void displaySettings(){
@@ -499,24 +503,25 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putInt("Autonomous Select", 3); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
 		SmartDashboard.putNumber("Field Side", 0); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 50);
-		SmartDashboard.putNumber("auto first drive distance", 11300);
+		SmartDashboard.putNumber("auto first drive distance", 14900);
 		SmartDashboard.putNumber("auto second drive distance", 5000);
 		SmartDashboard.putNumber("Gear Drop Time", 2);
-		SmartDashboard.putNumber("auto drive speed", 0.6);                                
+		SmartDashboard.putNumber("auto drive speed", 0.7);                                
 		SmartDashboard.putNumber("current auto gear" , 100);
 		SmartDashboard.putNumber("Gear Drive", 750);
 		SmartDashboard.putNumber("Auto Turn Speed", 0.7);
 		SmartDashboard.putNumber("Auto Second Drive Speed", 0.6);
+		SmartDashboard.putNumber("driveP", 0.3);
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
 		
 		SmartDashboard.putNumber("Boiler Deflector Position", 0);
 		SmartDashboard.putNumber("Ship Deflector Position", 0);
-		SmartDashboard.putNumber("F", 0.1097);
-		SmartDashboard.putNumber("P", 5);
-		SmartDashboard.putNumber("I", 0.01); //PID Stuff 
-		SmartDashboard.putNumber("D", 0.05);
+		SmartDashboard.putNumber("F", 1.0);
+		SmartDashboard.putNumber("P", 3.2);
+		SmartDashboard.putNumber("I", 0.0); //PID Stuff 
+		SmartDashboard.putNumber("D", 10);
 		SmartDashboard.putNumber("shooter speed", 0);
 		SmartDashboard.putNumber("auger voltage", 0.5);
 		SmartDashboard.putNumber("climber full speed", 1.0);  //Dashboard variables that control motor speeds (mainly for testing)
@@ -734,9 +739,9 @@ public class Robot extends IterativeRobot {
 			 INTAKE_INVERT = -1;
 			 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
-		}
-		//IF ROBOT IS PRACTICE BOT
-		else{
+			 
+			 ENCODER_CONVERSION_CONSTANT = 1.5;
+		} else { //IF ROBOT IS PRACTICE BOT
 			 FRONT_LEFT_MOTOR_ID = 0;
 			 FRONT_RIGHT_MOTOR_ID = 1;
 			 BACK_LEFT_MOTOR_ID = 2;
@@ -777,7 +782,7 @@ public class Robot extends IterativeRobot {
 			 SHOOTER_BUTTON = 1;
 			 AUGER_FORWARD_BUTTON = 6;
 			 AUGER_BACKWARD_BUTTON = 5;
-			 AUGER_INVERT = 1;
+			 AUGER_INVERT = -1;
 			 DRIVE_TOGGLE_JOYSTICK_BUTTON = 1;
 			 GEAR_TOGGLE_BUTTON = 2;
 			 HALF_ACTIVATION_TOGGLE = 2;
@@ -811,9 +816,11 @@ public class Robot extends IterativeRobot {
 			 DEFLECTOR_AUTO_INVERT = 1;
 			 
 			 CLIMBER_INVERT = 1;
-			 INTAKE_INVERT = -1;
+			 INTAKE_INVERT = 1;
 
 			 SLEEP_AUTO = 100;	// how long it waits before going to next .....step in auto //minimum = 100
+			 
+			 ENCODER_CONVERSION_CONSTANT = 1.5;
 		}
 	}
 }

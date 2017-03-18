@@ -201,10 +201,10 @@ public class Shooter {
 	
 	public void setPID(){ // This method sets all PID settings for the shooter
 		shooterMotor.setProfile(0);
-		shooterMotor.setF(SmartDashboard.getNumber("F", 0.1097));
-		shooterMotor.setP(SmartDashboard.getNumber("P", 5));
-		shooterMotor.setI(SmartDashboard.getNumber("I", 0.011));
-		shooterMotor.setD(SmartDashboard.getNumber("D", 0.05));
+		shooterMotor.setF(SmartDashboard.getNumber("F", 1.0));
+		shooterMotor.setP(SmartDashboard.getNumber("P", 3.2));
+		shooterMotor.setI(SmartDashboard.getNumber("I", 0.01));
+		shooterMotor.setD(SmartDashboard.getNumber("D", 10.0));
 		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
 		shooterMotor.configPeakOutputVoltage(+12.0f, -12.0f);

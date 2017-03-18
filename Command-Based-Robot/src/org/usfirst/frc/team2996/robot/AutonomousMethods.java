@@ -54,12 +54,13 @@ public class AutonomousMethods {
 		int encodersWorking = 0;
 		direction = direction.toLowerCase();
 		gyro.reset();
+		sleep(1000);
 		drive.encoderReset();
 	
 			drive.arcadeDrive();
 
 		
-		sleep();
+		sleep(1000);
 		
 //	double distPerTick = (Math.PI * wheelDiameter);
 //	double circumference = distPerTick / Robot.TICKS_PER_REVOLUTION;
@@ -69,7 +70,7 @@ public class AutonomousMethods {
 
 		if (direction.equals("forward")) {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
-				robot.displayLive();
+				/*robot.displayLive();
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
 				SmartDashboard.putNumber("encoderAVG", encoderAverage);
@@ -84,8 +85,15 @@ public class AutonomousMethods {
 					drive.robotDrive.tankDrive(speed, speed + 0.1);
 				} else {
 					drive.robotDrive.tankDrive(speed, speed);
-				}
-			}
+				}*/
+				double driveP = SmartDashboard.getNumber("driveP", 0);
+				 double angle = gyro.getAngle(); // get current heading
+		            drive.robotDrive.drive(speed, -angle*driveP);
+		            Timer.delay(0.004);
+		            robot.displayLive();
+		            }
+			
+		
 		} else {
 
 			while ((-encoderAverage >= -distance) && DriverStation.getInstance().isAutonomous()) {
@@ -108,6 +116,7 @@ public class AutonomousMethods {
 
 		drive.robotDrive.tankDrive(0.0, 0.0);
 		drive.encoderReset();
+		gyro.reset();
 		robot.wait(100);
 		return encoderAverage;
 
@@ -197,14 +206,14 @@ public class AutonomousMethods {
 			while ((-encoderAverage > -distance) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking();
                 encoderAverage = encoderAverage(encodersWorking);
-				drive.robotDrive.mecanumDrive_Cartesian(speed, 0, 0, 0);
+				drive.robotDrive.mecanumDrive_Cartesian(speed, 0, 0, gyro.getAngle());
 			}
 
 		} else {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
-				drive.robotDrive.mecanumDrive_Cartesian(-speed, 0, 0, 0);
+				drive.robotDrive.mecanumDrive_Cartesian(-speed, 0, 0, gyro.getAngle());
 			}
 		}
 		drive.robotDrive.tankDrive(0.0, 0.0);
@@ -334,6 +343,49 @@ public class AutonomousMethods {
 			return gyro.getAngle() < -angle;
 		} else{
 			return gyro.getAngle() > angle;
+		}
+	}
+	
+	/*public int convertEncoders(String driveNumber){
+		if(Robot.isCompBot == true){
+			if(driveNumber == "first"){
+				int newEncoder = (int) ((int) SmartDashboard.getNumber("auto first drive distance", 0) / Robot.ENCODER_CONVERSION_CONSTANT);
+				return newEncoder;
+			} else {
+				int newEncoder = (int) ((int) SmartDashboard.getNumber("auto second drive distance", 0) / Robot.ENCODER_CONVERSION_CONSTANT);
+				return newEncoder;
+			}
+		} else {
+			if(driveNumber == "first"){
+				int newEncoder = (int) ((int) SmartDashboard.getNumber("auto first drive distance", 0));
+				return newEncoder;
+			} else {
+				int newEncoder = (int) ((int) SmartDashboard.getNumber("auto second drive distance", 0));
+				return newEncoder;
+			}
+		}
+	}
+	*/
+	public int getFirstDrive(){
+		if(Robot.isCompBot == true){
+			return (int)(SmartDashboard.getNumber("auto first drive distance", 0)/Robot.ENCODER_CONVERSION_CONSTANT);
+		} else{
+			return (int) SmartDashboard.getNumber("auto first drive distance", 0);
+		}
+	}
+	
+	public int getSecondDrive(){
+		if(Robot.isCompBot == true){
+			return (int)(SmartDashboard.getNumber("auto second drive distance", 0)/Robot.ENCODER_CONVERSION_CONSTANT);
+		} else{
+			return (int) SmartDashboard.getNumber("auto second drive distance", 0);
+		}
+	}
+	public double convert(double x){
+		if(Robot.isCompBot == true){
+			return x/Robot.ENCODER_CONVERSION_CONSTANT;
+		} else{
+			return x;
 		}
 	}
 }

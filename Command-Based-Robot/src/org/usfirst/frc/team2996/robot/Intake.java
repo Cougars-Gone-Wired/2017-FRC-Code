@@ -3,6 +3,7 @@ package org.usfirst.frc.team2996.robot;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * 
@@ -70,8 +71,10 @@ public class Intake {
 	public void gearActivation(){
 		if(gearActivateButton.toggle() == true){
 			gearSolenoid.set(true);
+			SmartDashboard.putString("Gear Pan", "DOWN");
 		}else{
 			gearSolenoid.set(false);
+			SmartDashboard.putString("Gear Pan", "UP");
 		}
 	}
 	
