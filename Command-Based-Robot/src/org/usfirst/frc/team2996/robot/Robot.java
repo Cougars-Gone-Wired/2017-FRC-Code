@@ -313,6 +313,9 @@ public class Robot extends IterativeRobot {
 		intake = new Intake(this);
 		climber = new Climber(this);
 		auto = new AutonomousPrograms(this);
+		if(robotLogger != null){
+			robotLogger.halt();
+		}
 		robotLogger = new RobotLogger(this);
 		new Thread(robotLogger).start();
 	}
