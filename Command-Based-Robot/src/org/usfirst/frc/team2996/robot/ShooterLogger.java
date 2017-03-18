@@ -10,6 +10,9 @@ public class ShooterLogger {
 		Logger log = ShooterFileLogging.getLogger("test");
 		log.fine(", shooterPressed, shooterRpm, shooterThrottle, shooterVelocity, "
 			     + "augerPressed, augerRpm, augerThrottle, augerVelocity");
+		Logger log2 = ShooterFileLogging.getLogger("test2");
+		log2.fine(", test");
+
 		boolean buttonPushed = true;
 		double rpm = 0;
 		double throttle = 0;
@@ -37,6 +40,7 @@ public class ShooterLogger {
 				rpm++;
 				log.fine(", " + shooterButton + ", " + shooterRpm + ", " + shooterThrottle + ", " + shooterVelocity + ", " 
 						  + augerButton + ", " + augerRpm + ", " + augerThrottle + ", " + augerVelocity);
+				log2.fine(", " + i);
 			}
 		}
 	}

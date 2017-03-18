@@ -13,11 +13,12 @@ public class ShooterFileLogging {
 	//private static Logger teamLogger = null;
 
 	public static Logger getLogger(String name) throws Exception, Throwable {
-		Logger teamLogger = Logger.getGlobal();
+		Logger teamLogger = Logger.getAnonymousLogger();
 		teamLogger.setUseParentHandlers(false);
 		Level level = Level.FINE;
 		teamLogger.setLevel(level);
 		File file = new File("/u/" + name + format.format(new Date()) + ".csv");
+		//File file = new File(name + format.format(new Date()) + ".csv");
 		System.out.println(file.getAbsolutePath());
 		FileHandler fh = new FileHandler(file.getAbsolutePath());
 		fh.setFormatter(new ShooterLoggerFormatter());
