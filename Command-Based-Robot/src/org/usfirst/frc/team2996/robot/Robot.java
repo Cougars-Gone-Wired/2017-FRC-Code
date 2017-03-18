@@ -372,7 +372,7 @@ public class Robot extends IterativeRobot {
 				auto.stop();// do nothing
 				break;
 			case 1:
-				auto.moveStraight("forward", (int) SmartDashboard.getNumber("auto first drive distance", 0), 0.6);
+				auto.driveForward();
 				break;
 			case 2:
 				auto.placeGearLeftPeg(); // drive forward, turn, place gear

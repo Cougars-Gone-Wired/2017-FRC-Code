@@ -36,4 +36,9 @@ public class AutonomousPrograms extends AutonomousMethods {
 		stop();
 	}
 	
+	public void driveForward(){
+		moveStraight("forward", 11300, 0.6);
+		stop();
+	}
+	
 }
