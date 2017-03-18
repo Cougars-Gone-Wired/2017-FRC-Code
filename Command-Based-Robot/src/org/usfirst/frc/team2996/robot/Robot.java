@@ -488,6 +488,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Timer", robotTimer.get());
 		//Displays the encoder for each motor (for debugging)
 		SmartDashboard.putNumber("shooter test rpm", shooterMotor.getSpeed());
+		SmartDashboard.putNumber("encodersAVG", auto.encoderAverage(auto.encodersWorking()));
+		SmartDashboard.putNumber("encodersWorking", auto.encodersWorking());
 		
 		SmartDashboard.putNumber("frontLeftMotor", drive.getFrontLeftEncoder());
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());

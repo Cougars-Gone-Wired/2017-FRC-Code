@@ -55,8 +55,7 @@ public class AutonomousMethods {
 		direction = direction.toLowerCase();
 		gyro.zeroYaw();
 		drive.encoderReset();
-	
-			drive.arcadeDrive();
+		drive.arcadeDrive();
 
 		
 		sleep();
@@ -73,11 +72,6 @@ public class AutonomousMethods {
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
 				
-				SmartDashboard.putNumber("encoderssAVG", encoderAverage);
-				SmartDashboard.putNumber("encodersssWorking", encodersWorking);
-				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
-				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
-				SmartDashboard.putNumber("gyro", gyro.getAngle());
 				/*
 				// gyro.correction while driving
 				if (gyro.getAngle() < -0.5) {
@@ -87,8 +81,9 @@ public class AutonomousMethods {
 				} else {
 					drive.robotDrive.tankDrive(speed, speed);
 				}*/
+				
 				double driveP = SmartDashboard.getNumber("driveP", 0);
-				 double angle = gyro.getAngle(); // get current heading
+				double angle = gyro.getAngle(); // get current heading
 		            drive.robotDrive.drive(speed, -angle*driveP);
 		            Timer.delay(0.004);
 		   
