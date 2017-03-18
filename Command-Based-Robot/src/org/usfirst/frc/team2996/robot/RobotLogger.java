@@ -93,7 +93,7 @@ public class RobotLogger implements Runnable {
 	}
 
 	public void PIDlog() throws Throwable {
-		if ((robot.isTest() || robot.isOperatorControl()) && stickManipulator.getRawButton(Robot.SHOOTER_BUTTON)) {
+		if ((robot.isTest() || robot.isOperatorControl())) {
 			if (!shooterButtonPushed) {
 				log = ShooterFileLogging.getLogger("ShooterFPID_F:" + shooterMotor.getF() + "_P:" + shooterMotor.getP()
 						+ "_I:" + shooterMotor.getI() + "_D:" + shooterMotor.getD());

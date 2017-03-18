@@ -53,14 +53,13 @@ public class AutonomousMethods {
 		double encoderAverage = 0;
 		int encodersWorking = 0;
 		direction = direction.toLowerCase();
-		gyro.reset();
-		sleep(1000);
+		gyro.zeroYaw();
 		drive.encoderReset();
 	
 			drive.arcadeDrive();
 
 		
-		sleep(1000);
+		sleep();
 		
 //	double distPerTick = (Math.PI * wheelDiameter);
 //	double circumference = distPerTick / Robot.TICKS_PER_REVOLUTION;
@@ -70,14 +69,16 @@ public class AutonomousMethods {
 
 		if (direction.equals("forward")) {
 			while ((encoderAverage < distance) && DriverStation.getInstance().isAutonomous()) {
-				/*robot.displayLive();
+				robot.displayLive();
 				encodersWorking = encodersWorking();
 				encoderAverage = encoderAverage(encodersWorking);
-				SmartDashboard.putNumber("encoderAVG", encoderAverage);
-				SmartDashboard.putNumber("encodersWorking", encodersWorking);
+				
+				SmartDashboard.putNumber("encoderssAVG", encoderAverage);
+				SmartDashboard.putNumber("encodersssWorking", encodersWorking);
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("gyro", gyro.getAngle());
+				/*
 				// gyro.correction while driving
 				if (gyro.getAngle() < -0.5) {
 					drive.robotDrive.tankDrive(speed + 0.1, speed);
@@ -90,7 +91,8 @@ public class AutonomousMethods {
 				 double angle = gyro.getAngle(); // get current heading
 		            drive.robotDrive.drive(speed, -angle*driveP);
 		            Timer.delay(0.004);
-		            robot.displayLive();
+		   
+
 		            }
 			
 		
@@ -100,8 +102,8 @@ public class AutonomousMethods {
 				encodersWorking = encodersWorking(); // amount of encoders
 														// working
 				encoderAverage = encoderAverage(encodersWorking);
-				SmartDashboard.putNumber("encoderAVG", encoderAverage);
-				SmartDashboard.putNumber("encodersWorking", encodersWorking);
+				SmartDashboard.putNumber("encodersAVG", encoderAverage);
+				SmartDashboard.putNumber("encodersssWorking", encodersWorking);
 				SmartDashboard.putNumber("frontLeft", drive.frontLeftMotor.getEncPosition());
 				SmartDashboard.putNumber("backLeft", drive.backLeftMotor.getEncPosition());
 				if (gyro.getAngle() < -0.5) {
@@ -116,7 +118,7 @@ public class AutonomousMethods {
 
 		drive.robotDrive.tankDrive(0.0, 0.0);
 		drive.encoderReset();
-		gyro.reset();
+		gyro.zeroYaw();
 		robot.wait(100);
 		return encoderAverage;
 

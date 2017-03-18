@@ -308,6 +308,11 @@ public class Robot extends IterativeRobot {
 		
 //	visionThread.setDaemon(true);
 //	visionThread.start();
+		if(robotLogger != null){
+			robotLogger.halt();
+		}
+		robotLogger = new RobotLogger(this);
+		new Thread(robotLogger).start();
 		
 		//THIS NEEDS TO BE AT BOTTOM AND AUTO IS LAST
 		drive = new Drive(this);
@@ -315,11 +320,6 @@ public class Robot extends IterativeRobot {
 		intake = new Intake(this);
 		climber = new Climber(this);
 		auto = new AutonomousPrograms(this);
-		if(robotLogger != null){
-			robotLogger.halt();
-		}
-		robotLogger = new RobotLogger(this);
-		new Thread(robotLogger).start();
 	}
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
@@ -353,7 +353,7 @@ public class Robot extends IterativeRobot {
 		autoFinished = false;
 		compressor.setClosedLoopControl(true);
 		compressor.start();
-		gyro.reset();
+		gyro.zeroYaw();
 		drive.arcadeDrive();
  		drive.encoderReset();
  		deflectorMotor.setEncPosition(0);//resets deflector encoder to 0
@@ -493,7 +493,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("frontRightMotor", drive.getFrontRightEncoder());
 		SmartDashboard.putNumber("backLeftMotor", drive.getBackLeftEncoder());
 		SmartDashboard.putNumber("backRightMotor", drive.getBackRightEncoder());
-		
+		SmartDashboard.putNumber("EncodersAverage", auto.encoderAverage(auto.encodersWorking()));
 		SmartDashboard.putNumber("Deflector Encoder", PIDShooter.getDeflectorEncoder());
 		SmartDashboard.putNumber("CurrentFrontLeft", frontLeftMotor.getOutputCurrent());
 		SmartDashboard.putNumber("CurrentFrontRight", frontRightMotor.getOutputCurrent());
@@ -518,7 +518,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Gear Drive", 750);
 		SmartDashboard.putNumber("Auto Turn Speed", 0.7);
 		SmartDashboard.putNumber("Auto Second Drive Speed", 0.6);
-		SmartDashboard.putNumber("driveP", 0.3);
+		SmartDashboard.putNumber("driveP", 0.03);
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID
@@ -540,7 +540,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Field Side Number", 0);
 		SmartDashboard.putNumber("Distance From Line (inches)", 0);
 		SmartDashboard.putNumber("Climb Half Speed", 0.8);
-		
 		SmartDashboard.putBoolean("logging", false);
 	}
 	
