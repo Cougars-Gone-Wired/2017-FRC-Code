@@ -200,6 +200,8 @@ public class Robot extends IterativeRobot {
 	Toggle toggleDownButton;
 	TwoButtonToggle defEncReset;
 	
+	RobotLogger robotLogger = null;
+	
 //	Mat visionMat;
 //	GripPipeline gripPipeline;
 //	private final Object imageLock = new Object();
@@ -313,6 +315,11 @@ public class Robot extends IterativeRobot {
 		intake = new Intake(this);
 		climber = new Climber(this);
 		auto = new AutonomousPrograms(this);
+		if(robotLogger != null){
+			robotLogger.halt();
+		}
+		robotLogger = new RobotLogger(this);
+		new Thread(robotLogger).start();
 	}
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
@@ -534,8 +541,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Distance From Line (inches)", 0);
 		SmartDashboard.putNumber("Climb Half Speed", 0.8);
 		
+		SmartDashboard.putBoolean("logging", false);
 	}
-
+	
 	//SO MANY GETTERS
 	public RobotDrive getRobotDrive() {
 		return robotDrive;
