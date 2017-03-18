@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotLogger implements Runnable {
 	private Joystick stickManipulator;
-	boolean shooterButtonPushed = false;
 	private CANTalon shooterMotor;
 	Logger log = null;
 	Logger autoLog;
@@ -19,6 +18,7 @@ public class RobotLogger implements Runnable {
 	private volatile boolean running = false;
 	boolean autonomousState = false;
 	boolean teleopState = false;
+	boolean shooterState = false;
 
 	RobotLogger(Robot robot) {
 		this.stickManipulator = robot.getStickManipulator();
@@ -37,7 +37,8 @@ public class RobotLogger implements Runnable {
 		System.out.println("Logging Started");
 		while (running) {
 			boolean loggingActive = SmartDashboard.getBoolean("logging", false);
-			if (loggingActive) {
+			boolean enabled = robot.isEnabled();
+			if (loggingActive && enabled) {
 				try {
 					PIDlog();
 					movementLog();
@@ -46,6 +47,10 @@ public class RobotLogger implements Runnable {
 					// e.printStackTrace();
 				}
 
+			} else {
+				autonomousState = false;
+				teleopState = false;
+				shooterState = false;
 			}
 			// 20 milliseconds
 			Timer.delay(0.02);
@@ -93,23 +98,23 @@ public class RobotLogger implements Runnable {
 	}
 
 	public void PIDlog() throws Throwable {
-		if ((robot.isTest() || robot.isOperatorControl())) {
-			if (!shooterButtonPushed) {
+		if (robot.isOperatorControl()) {
+			if (!shooterState) {
 				log = ShooterFileLogging.getLogger("ShooterFPID_F:" + shooterMotor.getF() + "_P:" + shooterMotor.getP()
 						+ "_I:" + shooterMotor.getI() + "_D:" + shooterMotor.getD());
 				log.fine(", shooterRpm, augerFwdPushed, augerBackPushed");
 
-				shooterButtonPushed = true;
+				shooterState = true;
 			}
 
-			if (shooterButtonPushed) {
+			if (shooterState) {
 				log.fine(", " + shooterMotor.getSpeed() + ", "
 						+ stickManipulator.getRawButton(Robot.AUGER_FORWARD_BUTTON) + ", "
 						+ stickManipulator.getRawButton(Robot.AUGER_BACKWARD_BUTTON));
 			}
 
 		} else {
-			shooterButtonPushed = false;
+			shooterState = false;
 		}
 	}
 }

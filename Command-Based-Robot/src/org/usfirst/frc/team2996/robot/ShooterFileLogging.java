@@ -10,10 +10,10 @@ import java.util.logging.Logger;
 public class ShooterFileLogging {
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
 	private static Date start = new Date();
-	private static Logger teamLogger = null;
+	//private static Logger teamLogger = null;
 
 	public static Logger getLogger(String name) throws Exception, Throwable {
-		teamLogger = Logger.getGlobal();
+		Logger teamLogger = Logger.getGlobal();
 		teamLogger.setUseParentHandlers(false);
 		Level level = Level.FINE;
 		teamLogger.setLevel(level);
