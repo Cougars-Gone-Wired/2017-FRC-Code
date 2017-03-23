@@ -54,8 +54,8 @@ public class AutonomousMethods {
 		int encodersWorking = 0;
 		direction = direction.toLowerCase();
 		gyro.zeroYaw();
-		drive.encoderReset();
 		drive.arcadeDrive();
+		drive.encoderReset();
 
 		
 		sleep();
@@ -125,8 +125,7 @@ public class AutonomousMethods {
 		direction = direction.toLowerCase();
 		gyro.reset();
 		drive.encoderReset();
-	
-			drive.mecanumDrive();
+		drive.mecanumDrive();
 
 		
 		sleep();

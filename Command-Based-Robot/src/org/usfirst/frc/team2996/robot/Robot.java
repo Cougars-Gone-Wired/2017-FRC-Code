@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot {
 		return autonomousCommand;
 	}
 	
-	public static boolean isCompBot = false;
+	public static boolean isCompBot = true;
 	
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -264,7 +264,7 @@ public class Robot extends IterativeRobot {
 		CameraServer camera = CameraServer.getInstance();
 		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
 		usbCam.setResolution(600, 480);
-//		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
+		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
 		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
@@ -436,7 +436,7 @@ public class Robot extends IterativeRobot {
 		}
 		drive.arcadeDrive();
 		robotTimer.start();
-		PIDToggle.set(); // THIS BASICALLY SETS THE SHOOTER TO VOLTAGE FOR PID USE .RESET()
+		PIDToggle.reset(); // THIS BASICALLY SETS THE SHOOTER TO VOLTAGE FOR PID USE .RESET()
 	}
 
 	/**
@@ -531,7 +531,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("P", 3.2);
 		SmartDashboard.putNumber("I", 0.0); //PID Stuff 
 		SmartDashboard.putNumber("D", 10);
-		SmartDashboard.putNumber("shooter speed", 0);
+		SmartDashboard.putNumber("shooter speed", 2850);
 		SmartDashboard.putNumber("auger voltage", 0.5);
 		SmartDashboard.putNumber("climber full speed", 1.0);  //Dashboard variables that control motor speeds (mainly for testing)
 		SmartDashboard.putNumber("climber steady", 0.6);
