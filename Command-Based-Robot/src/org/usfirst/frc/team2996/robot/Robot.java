@@ -512,15 +512,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putInt("Autonomous Select", 3); // the number put in the dashboard corresponds to an autonomous program INT BECAUSE WE DONT WANT CASTING ERRORS
 		SmartDashboard.putNumber("Field Side", 0); // red or blue
 		SmartDashboard.putNumber("auto turn angle", 50);
-		SmartDashboard.putNumber("auto first drive distance", 14900);
+		SmartDashboard.putNumber("auto first drive distance", 11300);
 		SmartDashboard.putNumber("auto second drive distance", 5000);
 		SmartDashboard.putNumber("Gear Drop Time", 2);
-		SmartDashboard.putNumber("auto drive speed", 0.7);                                
+		SmartDashboard.putNumber("auto drive speed", 0.45);                                
 		SmartDashboard.putNumber("current auto gear" , 100);
 		SmartDashboard.putNumber("Gear Drive", 750);
 		SmartDashboard.putNumber("Auto Turn Speed", 0.7);
 		SmartDashboard.putNumber("Auto Second Drive Speed", 0.6);
-		SmartDashboard.putNumber("driveP", 0.03);
+		SmartDashboard.putNumber("driveP", 0.01);
+		SmartDashboard.putNumber("auto gear speed", 0.5);
 		
 //		shooterMotor.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms); // new method that helps with PID
 //		shooterMotor.SetVelocityMeasurementWindow((int) SmartDashboard.getNumber("Velocity Measurement Period", 0)); // new method that helps with PID

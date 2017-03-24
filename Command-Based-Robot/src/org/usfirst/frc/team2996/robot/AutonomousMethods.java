@@ -245,15 +245,12 @@ public class AutonomousMethods {
 			intake.gearActivation(false);
 		}
 		moveStraightMecanum("forward", (int) SmartDashboard.getNumber("Gear Drive", 0), driveSpeed);
-		while(gearTimer.get() <= dropTime && DriverStation.getInstance().isAutonomous()){
-//			intake.intakeOuttake(true, false);
+
 			intake.gearActivation(true);
 			moveStraightMecanum("backward", 1000 , driveSpeed);
-		}
-		
-		intake.intakeOuttake(false, true);
-		intake.gearActivation(false);
-		gearTimer.reset();
+			intake.intakeOuttake(false, true);
+			intake.gearActivation(false);
+			gearTimer.reset();
 	}
 
 	public int encodersWorking() { // calculates number of encoders working
