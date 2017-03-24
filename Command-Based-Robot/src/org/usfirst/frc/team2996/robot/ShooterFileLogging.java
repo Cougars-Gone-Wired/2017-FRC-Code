@@ -17,7 +17,7 @@ public class ShooterFileLogging {
 		teamLogger.setUseParentHandlers(false);
 		Level level = Level.FINE;
 		teamLogger.setLevel(level);
-		File file = new File("/u/" + name + format.format(new Date()) + ".csv");
+		File file = new File(name + format.format(new Date()) + ".csv");
 		//File file = new File(name + format.format(new Date()) + ".csv");
 		System.out.println(file.getAbsolutePath());
 		FileHandler fh = new FileHandler(file.getAbsolutePath());

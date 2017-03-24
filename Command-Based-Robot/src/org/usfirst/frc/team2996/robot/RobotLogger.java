@@ -69,7 +69,7 @@ public class RobotLogger implements Runnable {
 				autoLog.fine(", " + robot.getGyro().getYaw() + ", " + robot.getGyro().getWorldLinearAccelX() + ", "
 						+ robot.getGyro().getWorldLinearAccelY() + ", " + robot.getFrontLeftMotor().getEncPosition()
 						+ ", " + robot.getBackLeftMotor().getEncPosition() + ", "
-						+ robot.getFrontLeftMotor().getEncPosition() + ", " + robot.getBackRightMotor().getEncPosition()
+						+ robot.getFrontRightMotor().getEncPosition() + ", " + robot.getBackRightMotor().getEncPosition()
 						+ ", " + robot.getDrive().isMecanum());
 			}
 
@@ -88,7 +88,7 @@ public class RobotLogger implements Runnable {
 				teleLog.fine(", " + robot.getGyro().getYaw() + ", " + robot.getGyro().getWorldLinearAccelX() + ", "
 						+ robot.getGyro().getWorldLinearAccelY() + ", " + robot.getFrontLeftMotor().getEncPosition()
 						+ ", " + robot.getBackLeftMotor().getEncPosition() + ", "
-						+ robot.getFrontLeftMotor().getEncPosition() + ", " + robot.getBackRightMotor().getEncPosition()
+						+ robot.getFrontRightMotor().getEncPosition() + ", " + robot.getBackRightMotor().getEncPosition()
 						+ ", " + robot.getDrive().isMecanum());
 			}
 
