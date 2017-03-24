@@ -264,7 +264,7 @@ public class Robot extends IterativeRobot {
 		CameraServer camera = CameraServer.getInstance();
 		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
 		usbCam.setResolution(600, 480);
-		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
+//		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
 		
 //		gripPipeline = new GripPipeline();
 //		  new Thread(() -> {
@@ -515,7 +515,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("auto first drive distance", 11300);
 		SmartDashboard.putNumber("auto second drive distance", 5000);
 		SmartDashboard.putNumber("Gear Drop Time", 2);
-		SmartDashboard.putNumber("auto drive speed", 0.45);                                
+		SmartDashboard.putNumber("auto drive speed", 0.6);                                
 		SmartDashboard.putNumber("current auto gear" , 100);
 		SmartDashboard.putNumber("Gear Drive", 750);
 		SmartDashboard.putNumber("Auto Turn Speed", 0.7);
@@ -533,7 +533,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("I", 0.0); //PID Stuff 
 		SmartDashboard.putNumber("D", 10);
 		SmartDashboard.putNumber("shooter speed", 2850);
-		SmartDashboard.putNumber("auger voltage", 0.5);
+		SmartDashboard.putNumber("auger voltage", 1.0);
 		SmartDashboard.putNumber("climber full speed", 1.0);  //Dashboard variables that control motor speeds (mainly for testing)
 		SmartDashboard.putNumber("climber steady", 0.6);
 		SmartDashboard.putNumber("shooter test rpm", 0);
@@ -543,7 +543,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Field Side Number", 0);
 		SmartDashboard.putNumber("Distance From Line (inches)", 0);
 		SmartDashboard.putNumber("Climb Half Speed", 0.8);
-		SmartDashboard.putBoolean("logging", false);
+		SmartDashboard.putBoolean("logging", true);
 	}
 	
 	//SO MANY GETTERS

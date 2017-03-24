@@ -100,9 +100,9 @@ public class RobotLogger implements Runnable {
 	public void PIDlog() throws Throwable {
 		if (robot.isOperatorControl()) {
 			if (!shooterState) {
-				log = ShooterFileLogging.getLogger("ShooterFPID_F:" + shooterMotor.getF() + "_P:" + shooterMotor.getP()
-						+ "_I:" + shooterMotor.getI() + "_D:" + shooterMotor.getD());
-				log.fine(", shooterRpm, augerFwdPushed, augerBackPushed");
+				log = ShooterFileLogging.getLogger("ShooterFPID_F-" + shooterMotor.getF() + "_P-" + shooterMotor.getP()
+						+ "_I-" + shooterMotor.getI() + "_D-" + shooterMotor.getD());
+				log.fine(", shooterRpm, augerFwdPushed, augerBackPushed, augerCurrent");
 
 				shooterState = true;
 			}
@@ -110,7 +110,7 @@ public class RobotLogger implements Runnable {
 			if (shooterState) {
 				log.fine(", " + shooterMotor.getSpeed() + ", "
 						+ stickManipulator.getRawButton(Robot.AUGER_FORWARD_BUTTON) + ", "
-						+ stickManipulator.getRawButton(Robot.AUGER_BACKWARD_BUTTON));
+						+ stickManipulator.getRawButton(Robot.AUGER_BACKWARD_BUTTON) + ", " + robot.getAugerMotor().getOutputCurrent());
 			}
 
 		} else {
