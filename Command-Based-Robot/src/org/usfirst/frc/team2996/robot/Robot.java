@@ -18,7 +18,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.SPI;
+
+import java.net.MalformedURLException;
 
 import javax.naming.LimitExceededException;
 
@@ -28,6 +31,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
 import org.usfirst.frc.team2996.robot.commands.ExampleCommand;
 import org.usfirst.frc.team2996.robot.subsystems.ExampleSubsystem;
 
@@ -73,7 +77,7 @@ public class Robot extends IterativeRobot {
 		return autonomousCommand;
 	}
 	
-	public static boolean isCompBot = true;
+	public static boolean isCompBot = false;
 	
 	static int FRONT_LEFT_MOTOR_ID;
 	static int FRONT_RIGHT_MOTOR_ID;
@@ -195,16 +199,18 @@ public class Robot extends IterativeRobot {
 	ThumperTricks thumperTricks;
 	boolean autoFinished; // checks if autonomous is finished
 	boolean shooterState;
-//	Thread visionThread;
+	Thread visionThread;
 	Toggle toggleUpButton;
 	Toggle toggleDownButton;
 	TwoButtonToggle defEncReset;
 	
 	RobotLogger robotLogger = null;
 	
-//	Mat visionMat;
-//	GripPipeline gripPipeline;
-//	private final Object imageLock = new Object();
+//	Ultrasonic sonic;
+	
+	Mat visionMat;
+	GripPipeline gripPipeline;
+	private final Object imageLock = new Object();
 
 	
 	
@@ -259,14 +265,19 @@ public class Robot extends IterativeRobot {
 		toggleDownButton = new Toggle(stickManipulator, SHOOTER_DOWN_TOGGLE);
 		defEncReset = new TwoButtonToggle(stickManipulator, DEFLECTOR_ENCODER_RESET_BUTTON_1, DEFLECTOR_ENCODER_RESET_BUTTON_2);
 		
+//		sonic = new Ultrasonic(1, 1);
+		
 		displaySettings();
 		
 		CameraServer camera = CameraServer.getInstance();
 		UsbCamera usbCam = camera.startAutomaticCapture("usb", 0);
 		usbCam.setResolution(600, 480);
-//		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
-		
+		AxisCamera axisCamera = camera.addAxisCamera("10.29.96.11"); // IP may need to change for comp bot
+		axisCamera.setResolution(600, 480);
+		axisCamera.setFPS(1);
+
 //		gripPipeline = new GripPipeline();
+//		
 //		  new Thread(() -> {
 //              UsbCamera camera = CameraServer.getInstance().startAutomaticCapture("usb", 0);
 //              camera.setResolution(640, 480);
@@ -280,13 +291,13 @@ public class Robot extends IterativeRobot {
 //              while(!Thread.interrupted()) {
 //                 cvSink.grabFrame(source);
 //                 Core.extractChannel(source, output, 1);
-//                 Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
+//                 Imgproc.cvtColor(source, output, Im-tgproc.COLOR_BGR2HSV);
 //                 outputStream.putFrame(output);
 //              }
 //          }).start();
 
 //		visionThread = new VisionThread(usbCam, new GripPipeline(), pipeline -> {
-//		pipeline.process(visionMat);
+//			pipeline.process(visionMat);
 //		if (!pipeline.filterContoursOutput().isEmpty()) {
 //            Rect rectangle = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 //            synchronized (imageLock) {
@@ -294,6 +305,7 @@ public class Robot extends IterativeRobot {
 //            }
 //		}
 //	});
+		
 		
 		
 //		visionThread = new VisionThread(usbCam, new GripPipeline(), pipeline -> {
@@ -529,11 +541,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Boiler Deflector Position", 0);
 		SmartDashboard.putNumber("Ship Deflector Position", 0);
 		SmartDashboard.putNumber("F", 1.0);
-		SmartDashboard.putNumber("P", 3.2);
+		SmartDashboard.putNumber("P", 10.0);
 		SmartDashboard.putNumber("I", 0.0); //PID Stuff 
 		SmartDashboard.putNumber("D", 10);
 		SmartDashboard.putNumber("shooter speed", 2850);
-		SmartDashboard.putNumber("auger voltage", 1.0);
+		SmartDashboard.putNumber("auger voltage", 0.8);
 		SmartDashboard.putNumber("climber full speed", 1.0);  //Dashboard variables that control motor speeds (mainly for testing)
 		SmartDashboard.putNumber("climber steady", 0.6);
 		SmartDashboard.putNumber("shooter test rpm", 0);
