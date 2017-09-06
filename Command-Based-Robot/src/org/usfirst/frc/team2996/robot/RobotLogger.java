@@ -80,7 +80,9 @@ public class RobotLogger implements Runnable {
 		if (robot.isOperatorControl()) {
 			if (!teleopState) {
 				teleLog = ShooterFileLogging.getLogger("TeleopMovement");
-				teleLog.fine(", yawAngle, accelX, accelY, frontLeft, backLeft, frontRight, backRight, mecanumFlag");
+				teleLog.fine(", yawAngle, accelX, accelY, frontLeftEnc, backLeftEnc, frontRightEnc, backRightEnc, "
+						+ "frontLeftCur, backLeftCur, frontRightCur, backRightCur, "
+						+ "frontLeftVolt, backLeftVolt, frontRightVolt, backRightVolt, mecanumFlag");
 				teleopState = true;
 			}
 
@@ -89,6 +91,10 @@ public class RobotLogger implements Runnable {
 						+ robot.getGyro().getWorldLinearAccelY() + ", " + robot.getFrontLeftMotor().getEncPosition()
 						+ ", " + robot.getBackLeftMotor().getEncPosition() + ", "
 						+ robot.getFrontRightMotor().getEncPosition() + ", " + robot.getBackRightMotor().getEncPosition()
+						+ ", " + robot.getFrontLeftMotor().getOutputCurrent() + ", " + robot.getBackLeftMotor().getOutputCurrent() + ", "
+						+ robot.getFrontRightMotor().getOutputCurrent() + ", " + robot.getBackRightMotor().getOutputCurrent()
+						+ ", " + robot.getFrontLeftMotor().getOutputVoltage() + ", " + robot.getBackLeftMotor().getOutputVoltage() + ", "
+						+ robot.getFrontRightMotor().getOutputVoltage() + ", " + robot.getBackRightMotor().getOutputVoltage()
 						+ ", " + robot.getDrive().isMecanum());
 			}
 
