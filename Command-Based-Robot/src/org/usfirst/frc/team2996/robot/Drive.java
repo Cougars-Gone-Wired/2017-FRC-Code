@@ -18,7 +18,7 @@ public class Drive {
 	Solenoid frontRightSolenoid;
 	Solenoid frontLeftSolenoid;
 	Solenoid backRightSolenoid;
-	Solenoid backLeftSolenoid;;
+	Solenoid backLeftSolenoid;
 
 	int wheelDiameter;
 	AHRS gyro;
