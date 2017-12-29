@@ -556,6 +556,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Distance From Line (inches)", 0);
 		SmartDashboard.putNumber("Climb Half Speed", 0.8);
 		SmartDashboard.putBoolean("logging", true);
+		
+		SmartDashboard.putNumber("Mod Drive Speed", 0.5);
+		SmartDashboard.putBoolean("Mod Drive Speed?", false);
 	}
 	
 	//SO MANY GETTERS

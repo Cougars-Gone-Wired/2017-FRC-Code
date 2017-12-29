@@ -3,6 +3,7 @@ package org.usfirst.frc.team2996.robot;
 import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 
@@ -20,6 +21,8 @@ public class Drive {
 	Solenoid backRightSolenoid;
 	Solenoid backLeftSolenoid;
 
+	boolean ModDrive;
+	
 	int wheelDiameter;
 	AHRS gyro;
 	boolean driveState = false; // state = true means Mechanum , false is arcade
@@ -49,6 +52,8 @@ public class Drive {
 		frontRightMotor.configEncoderCodesPerRev(20);
 		backLeftMotor.configEncoderCodesPerRev(20);
 		backRightMotor.configEncoderCodesPerRev(20);
+		
+		ModDrive = SmartDashboard.getBoolean("Mod Drive Speed?", false);
 	}
 
 	public void setSolenoids(boolean frontRightSolenoid, boolean frontLeftSolenoid, boolean backRightSolenoid, boolean backLeftSolenoid) {
@@ -68,23 +73,37 @@ public class Drive {
 	public void arcadeDrive() {
 		driveState = false; // in arcade
 		invertMotors(false, false, false, false);
-		robotDrive.arcadeDrive(
+		if(ModDrive = false) {
+			robotDrive.arcadeDrive(
 				Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)),
 				Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)));
-		setSolenoids(true, true, true, true);
-
+			setSolenoids(true, true, true, true);
+		} else {
+			robotDrive.arcadeDrive(
+				(Threshold.threshold((Robot.ARCADE_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_YAXIS)))*SmartDashboard.getNumber("Mod Drive Speed", 0.5),
+				(Threshold.threshold((Robot.ARCADE_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.ARCADE_DRIVE_ROTATE)))*SmartDashboard.getNumber("Mod Drive Speed", 0.5));
+			setSolenoids(true, true, true, true);
+		}
 	}
 
 	public void mecanumDrive() {
 		driveState = true;// in mechanum
 		invertMotors(true, false, true, false);
-		robotDrive.mecanumDrive_Cartesian(
+		if(ModDrive = false) {
+			robotDrive.mecanumDrive_Cartesian(
 				Threshold.threshold((Robot.MECANUM_DRIVE_XAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_XAXIS)),
 				Threshold.threshold((Robot.MECANUM_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVEY_AXIS)),
 				Threshold.threshold((Robot.MECANUM_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_ROTATE)),
 				0.0);
-		setSolenoids(false, false, false, false);
-
+			setSolenoids(false, false, false, false);
+		} else {
+			robotDrive.mecanumDrive_Cartesian(
+				(Threshold.threshold((Robot.MECANUM_DRIVE_XAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_XAXIS)))*SmartDashboard.getNumber("Mod Drive Speed", 0.5),
+				(Threshold.threshold((Robot.MECANUM_DRIVE_YAXIS_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVEY_AXIS)))*SmartDashboard.getNumber("Mod Drive Speed", 0.5),
+				(Threshold.threshold((Robot.MECANUM_DRIVE_ROTATE_INVERT) * stick.getRawAxis(Robot.MECANUM_DRIVE_ROTATE)))*SmartDashboard.getNumber("Mod Drive Speed", 0.5),
+				0.0);
+			setSolenoids(false, false, false, false);
+		}
 	}
 	
 	public void halfActivation(){
